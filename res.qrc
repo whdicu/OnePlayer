@@ -1,0 +1,17 @@
+<RCC>
+    <qresource prefix="/">
+        <file>svgs/shutdown.svg</file>
+        <file>svgs/pause.svg</file>
+        <file>svgs/play.svg</file>
+        <file>svgs/jia.svg</file>
+        <file>svgs/jian.svg</file>
+        <file>svgs/again.svg</file>
+        <file>svgs/next.svg</file>
+        <file>svgs/previous.svg</file>
+        <file>svgs/one_again.svg</file>
+        <file>svgs/random.svg</file>
+        <file>svgs/more.svg</file>
+        <file>svgs/back.svg</file>
+        <file>svgs/right.svg</file>
+    </qresource>
+</RCC>
