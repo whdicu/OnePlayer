@@ -16,8 +16,6 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-//    out_argv(argc, argv);
-
     QString file_path;
     if (argc == 1)
         file_path = "";

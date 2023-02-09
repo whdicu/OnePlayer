@@ -14,6 +14,7 @@
 #include <QRandomGenerator64>
 #include <QRegularExpression>
 #include <QScrollBar>
+#include <QShortcut>
 #include <QTimer>
 #include "settinghandler.h"
 
@@ -23,7 +24,7 @@
 static QStringList TYPE_LIST = {"mp3", "flac", "wav", "ogg", "acc"};
 
 Widget::Widget(const QString& filepath, QWidget *parent)
-    : QWidget(parent), ui(new Ui::Widget), pressed_ctrl_(false), moving_progress(false), player_(new QMediaPlayer(this)), audio_op_(new QAudioOutput(this))
+    : QWidget(parent), ui(new Ui::Widget), hook_(Hook::getInstance()), pressed_ctrl_(false), moving_progress(false), player_(new QMediaPlayer(this)), audio_op_(new QAudioOutput(this))
 {
     ui->setupUi(this);
 
@@ -31,6 +32,8 @@ Widget::Widget(const QString& filepath, QWidget *parent)
     setAttribute(Qt::WA_TranslucentBackground);
     setAcceptDrops(true);
     grabKeyboard();
+    hook_->installHook();
+    connect(hook_, &Hook::sendKeyType, this, &Widget::slot_key_pressed);
 
     // 初始化设置
     SettingHandler::init_setting();
@@ -172,43 +175,43 @@ void Widget::set_listener()
 
 
     // 一些没用的事件
-    connect(player_, &QMediaPlayer::tracksChanged, this, [this]()
+    connect(player_, &QMediaPlayer::tracksChanged, this, []()
     {
         qDebug() << 1;
     });
-    connect(player_, &QMediaPlayer::videoOutputChanged, this, [this]()
+    connect(player_, &QMediaPlayer::videoOutputChanged, this, []()
     {
         qDebug() << 2;
     });
-    connect(player_, &QMediaPlayer::seekableChanged, this, [this](bool seekable)
+    connect(player_, &QMediaPlayer::seekableChanged, this, [](bool )
     {
         qDebug() << 3;
     });
-    connect(player_, &QMediaPlayer::playbackStateChanged, this, [this]()
+    connect(player_, &QMediaPlayer::playbackStateChanged, this, []()
     {
         qDebug() << 4;
     });
-    connect(player_, &QMediaPlayer::playbackRateChanged, this, [this]()
+    connect(player_, &QMediaPlayer::playbackRateChanged, this, []()
     {
         qDebug() << 5;
     });
-    connect(player_, &QMediaPlayer::metaDataChanged, this, [this]()
+    connect(player_, &QMediaPlayer::metaDataChanged, this, []()
     {
         qDebug() << 6;
     });
-    connect(player_, &QMediaPlayer::activeTracksChanged, this, [this]()
+    connect(player_, &QMediaPlayer::activeTracksChanged, this, []()
     {
         qDebug() << 7;
     });
-    connect(player_, &QMediaPlayer::audioOutputChanged, this, [this]()
+    connect(player_, &QMediaPlayer::audioOutputChanged, this, []()
     {
         qDebug() << 8;
     });
-    connect(player_, &QMediaPlayer::bufferProgressChanged, this, [this]()
+    connect(player_, &QMediaPlayer::bufferProgressChanged, this, []()
     {
         qDebug() << 9;
     });
-    connect(player_, &QMediaPlayer::hasAudioChanged, this, [this]()
+    connect(player_, &QMediaPlayer::hasAudioChanged, this, []()
     {
         qDebug() << 10;
     });
@@ -692,5 +695,28 @@ void Widget::keyReleaseEvent(QKeyEvent *event)
 Widget::~Widget()
 {
     delete ui;
+}
+
+void Widget::slot_key_pressed(DWORD key)
+{
+    auto state = player_->playbackState();
+    switch (key)
+    {
+    case 179ul:
+        if (QMediaPlayer::StoppedState == state || QMediaPlayer::PausedState == state)
+            player_->play();
+        else if (QMediaPlayer::PlayingState == state)
+            player_->pause();
+        break;
+    case 176ul:
+        next_music();
+        break;
+    case 177ul:
+        previous_music();
+        break;
+    case 178ul:
+        player_->stop();
+        break;
+    }
 }
 
