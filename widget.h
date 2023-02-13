@@ -5,6 +5,7 @@
 #include <QGridLayout>
 #include <QMediaPlayer>
 #include "musicbutton.h"
+#include <QLabel>
 #include <QWidget>
 
 QT_BEGIN_NAMESPACE
@@ -28,6 +29,7 @@ public:
 
 private slots:
     void slot_key_pressed(DWORD key);
+    void on_btn_change_dir_clicked();
 
 private:
     void set_listener();
@@ -49,7 +51,6 @@ private:
     bool moving_progress;
     QMediaPlayer* player_;
     QAudioOutput* audio_op_;
-    QGridLayout* layout_;
     QList<MusicButton*>::iterator now_music_it_;
     QList<MusicButton*> btn_list_;
     int find_index;
@@ -61,5 +62,7 @@ private:
     int press_y;
     bool pressed_ctrl_;
     bool this_is_move_window;
+    QLabel* mask_label_;
+
 };
 #endif // WIDGET_H

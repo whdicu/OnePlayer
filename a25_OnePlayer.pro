@@ -12,6 +12,7 @@ CONFIG += c++11
 
 SOURCES += \
     hook.cpp \
+    imagewidget.cpp \
     main.cpp \
     musicbutton.cpp \
     settinghandler.cpp \
@@ -19,6 +20,7 @@ SOURCES += \
 
 HEADERS += \
     hook.h \
+    imagewidget.h \
     musicbutton.h \
     settinghandler.h \
     widget.h

@@ -7,9 +7,12 @@
 #include <QKeyEvent>
 #include <QFileDialog>
 #include <QLocale>
+#include <QMediaMetaData>
 #include <QMessageBox>
 #include <QMimeData>
 #include <QMouseEvent>
+#include <QPainter>
+#include <QPainterPath>
 #include <QPixmap>
 #include <QRandomGenerator64>
 #include <QRegularExpression>
@@ -18,8 +21,6 @@
 #include <QTimer>
 #include "settinghandler.h"
 
-#define RADIUS 40
-#define BORDER 20
 #define MUSIC_HEIGHT 45
 static QStringList TYPE_LIST = {"mp3", "flac", "wav", "ogg", "acc"};
 
@@ -40,12 +41,16 @@ Widget::Widget(const QString& filepath, QWidget *parent)
     ui->find_widget->hide();
     ui->label_dir->setText(SettingHandler::get_music_dir());
 
-    layout_ = new QGridLayout();
-    layout_->setSpacing(7);
-    layout_->setAlignment(Qt::AlignTop);
-    ui->scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    ui->scrollArea->setContentsMargins(0, 0, 0, 0);
-    ui->scrollArea->widget()->setLayout(layout_);//把布局放置到QScrollArea的内部QWidget中
+    mask_label_ = new QLabel("拖入音乐/视频", ui->music);
+    mask_label_->move(20, 20);
+    mask_label_->resize(ui->scrollArea->width() + ui->scrollArea->x() - 20, ui->scrollArea->height());
+    mask_label_->setStyleSheet("font-size: 40px; background-color: white; border: 3px dashed #5c5c66; border-radius: 20px;");
+    mask_label_->setAlignment(Qt::AlignCenter);
+
+    QWidget* ww = new QWidget(ui->music);
+    ww->move(10, 10);
+    ww->resize(ui->stacked_info->width() + 20, ui->stacked_info->height() + 20);
+    ww->setStyleSheet("background-color: transparent; border: 10px solid white; border-radius: 30px;");
 
     set_listener();
 
@@ -73,7 +78,7 @@ Widget::Widget(const QString& filepath, QWidget *parent)
                 auto coll = QCollator(QLocale(QLocale::Chinese));
                 std::sort(list.begin(), list.end(), coll);
 
-                ui->label_info->hide();
+                mask_label_->hide();
                 for (const auto &url_str : list)
                 {
                     add_music(QUrl::fromLocalFile(dir.absolutePath() + '/' + url_str));
@@ -107,7 +112,7 @@ Widget::Widget(const QString& filepath, QWidget *parent)
     }
     else
     {
-        ui->label_info->hide();
+        mask_label_->hide();
         QUrl url = QUrl::fromLocalFile(filepath);
         add_music(url);
         now_music_it_ = btn_list_.begin();
@@ -172,48 +177,94 @@ void Widget::set_listener()
         ui->btn_music_name->setText(file_name);
         SettingHandler::set_last_music(media);
     });
+    connect(player_, &QMediaPlayer::metaDataChanged, this, [this]()
+    {
+        QMediaMetaData meta_data = player_->metaData();
+        if (meta_data.isEmpty())
+            return;
 
+        QString title = meta_data.value(QMediaMetaData::Title).toString();
+        QStringList author_list = meta_data.value(QMediaMetaData::Author).toStringList();  // 去重
+        QString genre = meta_data.value(QMediaMetaData::Genre).toString();  // 流派
+        QImage thumbnail_image = meta_data.value(QMediaMetaData::ThumbnailImage).value<QImage>();  // 缩略图
+        QString album_title = meta_data.value(QMediaMetaData::AlbumTitle).toString();  // 专辑标题
+        QStringList album_artist = meta_data.value(QMediaMetaData::AlbumArtist).toStringList();  // 去重 专辑艺术家
+        QStringList contributing_artist = meta_data.value(QMediaMetaData::ContributingArtist).toStringList();  // 去重 贡献艺术家
+
+        QPixmap pixmap = QPixmap::fromImage(thumbnail_image);
+
+        // 绘制圆角图片
+        QPixmap resultPixmap(ui->label_image->size());
+        resultPixmap.fill(Qt::transparent);
+        QPainter painter(&resultPixmap);
+        painter.setRenderHints(QPainter::Antialiasing);
+        painter.setRenderHints(QPainter::SmoothPixmapTransform);
+        QPainterPath path;  // 绘制路径
+        //绘制圆角矩形，其中最后两个参数值的范围为（0-99），就是圆角的px值
+        path.addRoundedRect(0, 0, ui->label_image->width(), ui->label_image->height(), 20, 20);
+        painter.setClipPath(path);
+        painter.drawPixmap(0, 0, ui->label_image->width(), ui->label_image->height()
+                           , pixmap.scaled(resultPixmap.size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+
+        ui->label_image->setPixmap(resultPixmap);
+        ui->widget_music_mask->setPixmap(pixmap);
+
+
+//        qDebug() << "Comment" << meta_data.value(QMediaMetaData::Comment);
+//        qDebug() << "Description" << meta_data.value(QMediaMetaData::Description);
+//        qDebug() << "Date" << meta_data.value(QMediaMetaData::Date);
+//        qDebug() << "Language" << meta_data.value(QMediaMetaData::Language);
+//        qDebug() << "Publisher" << meta_data.value(QMediaMetaData::Publisher);
+//        qDebug() << "Copyright" << meta_data.value(QMediaMetaData::Copyright);
+//        qDebug() << "Duration" << meta_data.value(QMediaMetaData::Duration);
+//        qDebug() << "MediaType" << meta_data.value(QMediaMetaData::MediaType);
+//        qDebug() << "FileFormat" << meta_data.value(QMediaMetaData::FileFormat);
+//        qDebug() << "AudioBitRate" << meta_data.value(QMediaMetaData::AudioBitRate);
+//        qDebug() << "AudioCodec" << meta_data.value(QMediaMetaData::AudioCodec);
+//        qDebug() << "TrackNumber" << meta_data.value(QMediaMetaData::TrackNumber);
+//        qDebug() << "Composer" << meta_data.value(QMediaMetaData::Composer);
+//        qDebug() << "LeadPerformer" << meta_data.value(QMediaMetaData::LeadPerformer);
+//        qDebug() << "CoverArtImage" << meta_data.value(QMediaMetaData::CoverArtImage);
+//        qDebug() << "Orientation" << meta_data.value(QMediaMetaData::Orientation);
+//        qDebug() << "Resolution" << meta_data.value(QMediaMetaData::Resolution);
+    });
 
     // 一些没用的事件
     connect(player_, &QMediaPlayer::tracksChanged, this, []()
     {
-        qDebug() << 1;
+//        qDebug() << 1;
     });
     connect(player_, &QMediaPlayer::videoOutputChanged, this, []()
     {
-        qDebug() << 2;
+//        qDebug() << 2;
     });
     connect(player_, &QMediaPlayer::seekableChanged, this, [](bool )
     {
-        qDebug() << 3;
+//        qDebug() << 3;
     });
     connect(player_, &QMediaPlayer::playbackStateChanged, this, []()
     {
-        qDebug() << 4;
+//        qDebug() << 4;
     });
     connect(player_, &QMediaPlayer::playbackRateChanged, this, []()
     {
-        qDebug() << 5;
-    });
-    connect(player_, &QMediaPlayer::metaDataChanged, this, []()
-    {
-        qDebug() << 6;
+//        qDebug() << 5;
     });
     connect(player_, &QMediaPlayer::activeTracksChanged, this, []()
     {
-        qDebug() << 7;
+//        qDebug() << 7;
     });
     connect(player_, &QMediaPlayer::audioOutputChanged, this, []()
     {
-        qDebug() << 8;
+//        qDebug() << 8;
     });
     connect(player_, &QMediaPlayer::bufferProgressChanged, this, []()
     {
-        qDebug() << 9;
+//        qDebug() << 9;
     });
     connect(player_, &QMediaPlayer::hasAudioChanged, this, []()
     {
-        qDebug() << 10;
+//        qDebug() << 10;
     });
 
     // 使本次播放进度变成上次关闭时的进度
@@ -390,14 +441,6 @@ void Widget::set_listener()
         ui->scrollArea->ensureWidgetVisible(*now_music_it_);
     });
 
-    // 更改初始目录按钮
-    connect(ui->btn_change_dir, &QPushButton::clicked, this, [this]()
-    {
-        QString dir = QFileDialog::getExistingDirectory(this, "选择音乐目录", ui->label_dir->text());
-        ui->label_dir->setText(dir);
-        SettingHandler::set_music_dir(dir);
-    });
-
     connect(ui->le_find, &QLineEdit::textChanged, this, [this]()
     {
         if (ui->le_find->text() == "")
@@ -512,7 +555,7 @@ void Widget::add_music(const QUrl& url)
             random_index_ = 0;
         }
     });
-    layout_->addWidget(btn);  //把按钮添加到布局控件中
+    ui->music_layout->addWidget(btn);
     btn_list_.push_back(btn);
 }
 
@@ -569,7 +612,7 @@ void Widget::dropEvent(QDropEvent *event)
     // 说明本来没有歌曲在播放列表中
     if (play && ! btn_list_.isEmpty())
     {
-        ui->label_info->hide();
+        mask_label_->hide();
         now_music_it_ = btn_list_.begin();
         btn_list_.first()->setStyleSheet("background-color: #b6d1c8;");
         player_->setSource((*now_music_it_)->get_url());
@@ -695,6 +738,7 @@ void Widget::keyReleaseEvent(QKeyEvent *event)
 Widget::~Widget()
 {
     delete ui;
+    hook_->unInstallHook();
 }
 
 void Widget::slot_key_pressed(DWORD key)
@@ -717,6 +761,61 @@ void Widget::slot_key_pressed(DWORD key)
     case 178ul:
         player_->stop();
         break;
+    }
+}
+
+// 更改初始目录按钮
+void Widget::on_btn_change_dir_clicked()
+{
+    QLayoutItem* child;
+    while (true)
+    {
+        child = ui->music_layout->itemAt(0);
+        if (nullptr == child)
+            break;
+
+        ui->music_layout->removeItem(child);
+        if (child->widget())
+            delete child->widget();
+    }
+
+    btn_list_.clear();
+
+    QString str_dir = QFileDialog::getExistingDirectory(this, "选择音乐目录", ui->label_dir->text());
+    ui->label_dir->setText(str_dir);
+    SettingHandler::set_music_dir(str_dir);
+
+    QDir dir(SettingHandler::get_music_dir());
+    dir.setFilter(QDir::Files);
+
+    QStringList type_filter;
+    foreach(const QString& t, TYPE_LIST)
+    {
+        type_filter.push_back("*." + t);
+    }
+
+    dir.setNameFilters(type_filter);
+
+    QStringList list = dir.entryList(QDir::Files);
+    if (list.size() > 0)
+    {
+        // 先排个序
+        auto coll = QCollator(QLocale(QLocale::Chinese));
+        std::sort(list.begin(), list.end(), coll);
+
+        mask_label_->hide();
+        for (const auto &url_str : list)
+        {
+            add_music(QUrl::fromLocalFile(dir.absolutePath() + '/' + url_str));
+        }
+
+        now_music_it_ = btn_list_.begin();
+        btn_list_.first()->setStyleSheet("background-color: #b6d1c8;");
+        player_->setSource(btn_list_.first()->get_url());
+    }
+    else
+    {
+        mask_label_->show();
     }
 }
 

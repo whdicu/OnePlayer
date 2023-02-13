@@ -13,5 +13,7 @@
         <file>svgs/more.svg</file>
         <file>svgs/back.svg</file>
         <file>svgs/right.svg</file>
+        <file>svgs/full_screen.svg</file>
+        <file>svgs/min.svg</file>
     </qresource>
 </RCC>
