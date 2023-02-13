@@ -167,6 +167,12 @@ QLabel {
 	border: none;
 	border-radius: 10px;
 	color: #5c5c66;
+}
+
+#label_mask {
+	background-color: white;
+	border: 3px dashed #5c5c66;
+	border-radius: 20px;
 }</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
@@ -576,7 +582,29 @@ QLabel {
        </property>
       </widget>
      </widget>
-     <widget class="QWidget" name="p"/>
+     <widget class="QWidget" name="p">
+      <widget class="QLabel" name="label_mask">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>20</y>
+         <width>840</width>
+         <height>409</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>30</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>拖入音乐/视频</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </widget>
     </widget>
    </item>
    <item>

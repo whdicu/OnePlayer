@@ -35,17 +35,11 @@ Widget::Widget(const QString& filepath, QWidget *parent)
     grabKeyboard();
     hook_->installHook();
     connect(hook_, &Hook::sendKeyType, this, &Widget::slot_key_pressed);
-
+    ui->stacked_widget->setCurrentIndex(2);
     // 初始化设置
     SettingHandler::init_setting();
     ui->find_widget->hide();
     ui->label_dir->setText(SettingHandler::get_music_dir());
-
-    mask_label_ = new QLabel("拖入音乐/视频", ui->music);
-    mask_label_->move(20, 20);
-    mask_label_->resize(ui->scrollArea->width() + ui->scrollArea->x() - 20, ui->scrollArea->height());
-    mask_label_->setStyleSheet("font-size: 40px; background-color: white; border: 3px dashed #5c5c66; border-radius: 20px;");
-    mask_label_->setAlignment(Qt::AlignCenter);
 
     QWidget* ww = new QWidget(ui->music);
     ww->move(10, 10);
@@ -72,13 +66,14 @@ Widget::Widget(const QString& filepath, QWidget *parent)
             dir.setNameFilters(type_filter);
 
             QStringList list = dir.entryList(QDir::Files);
+
             if (list.size() > 0)
             {
                 // 先排个序
                 auto coll = QCollator(QLocale(QLocale::Chinese));
                 std::sort(list.begin(), list.end(), coll);
 
-                mask_label_->hide();
+                ui->stacked_widget->setCurrentIndex(0);
                 for (const auto &url_str : list)
                 {
                     add_music(QUrl::fromLocalFile(dir.absolutePath() + '/' + url_str));
@@ -112,7 +107,7 @@ Widget::Widget(const QString& filepath, QWidget *parent)
     }
     else
     {
-        mask_label_->hide();
+        ui->stacked_widget->setCurrentIndex(0);
         QUrl url = QUrl::fromLocalFile(filepath);
         add_music(url);
         now_music_it_ = btn_list_.begin();
@@ -374,12 +369,13 @@ void Widget::set_listener()
         switch (ui->stacked_widget->currentIndex())
         {
         case 0:
+        case 2:
             ui->btn_more->setIcon(QIcon(":/svgs/back.svg"));
             ui->stacked_widget->setCurrentIndex(1);
             break;
         case 1:
             ui->btn_more->setIcon(QIcon(":/svgs/more.svg"));
-            ui->stacked_widget->setCurrentIndex(0);
+            ui->stacked_widget->setCurrentIndex(btn_list_.isEmpty() ? 2 : 0);
             break;
         }
     });
@@ -612,7 +608,7 @@ void Widget::dropEvent(QDropEvent *event)
     // 说明本来没有歌曲在播放列表中
     if (play && ! btn_list_.isEmpty())
     {
-        mask_label_->hide();
+        ui->stacked_widget->setCurrentIndex(1);
         now_music_it_ = btn_list_.begin();
         btn_list_.first()->setStyleSheet("background-color: #b6d1c8;");
         player_->setSource((*now_music_it_)->get_url());
@@ -803,7 +799,7 @@ void Widget::on_btn_change_dir_clicked()
         auto coll = QCollator(QLocale(QLocale::Chinese));
         std::sort(list.begin(), list.end(), coll);
 
-        mask_label_->hide();
+        ui->stacked_widget->setCurrentIndex(0);
         for (const auto &url_str : list)
         {
             add_music(QUrl::fromLocalFile(dir.absolutePath() + '/' + url_str));
@@ -815,7 +811,7 @@ void Widget::on_btn_change_dir_clicked()
     }
     else
     {
-        mask_label_->show();
+        ui->stacked_widget->setCurrentIndex(2);
     }
 }
 

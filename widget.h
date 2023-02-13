@@ -62,7 +62,6 @@ private:
     int press_y;
     bool pressed_ctrl_;
     bool this_is_move_window;
-    QLabel* mask_label_;
 
 };
 #endif // WIDGET_H
