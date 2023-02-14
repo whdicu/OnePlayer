@@ -829,6 +829,10 @@ void Widget::on_btn_min_clicked()
 // 更改初始目录按钮
 void Widget::on_btn_change_dir_clicked()
 {
+    QString str_dir = QFileDialog::getExistingDirectory(this, "选择音乐目录", ui->label_dir->text());
+    if (str_dir.isEmpty())
+        return;
+
     QLayoutItem* child;
     while (true)
     {
@@ -840,10 +844,8 @@ void Widget::on_btn_change_dir_clicked()
         if (child->widget())
             delete child->widget();
     }
-
     btn_list_.clear();
 
-    QString str_dir = QFileDialog::getExistingDirectory(this, "选择音乐目录", ui->label_dir->text());
     ui->label_dir->setText(str_dir);
     SettingHandler::set_music_dir(str_dir);
 
@@ -874,10 +876,14 @@ void Widget::on_btn_change_dir_clicked()
         now_music_it_ = btn_list_.begin();
         btn_list_.first()->setStyleSheet("background-color: #b6d1c8;");
         player_->setSource(btn_list_.first()->get_url());
+        player_->play();
     }
     else
     {
         ui->stacked_widget->setCurrentIndex(2);
+        player_->stop();
+        player_->setSource(QUrl());
     }
+    ui->btn_more->setIcon(QIcon(":/svgs/more.svg"));
 }
 
