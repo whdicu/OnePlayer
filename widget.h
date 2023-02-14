@@ -29,6 +29,10 @@ public:
 
 private slots:
     void slot_key_pressed(DWORD key);
+    void on_btn_mode_clicked();
+    void on_btn_more_clicked();
+    void on_btn_min_clicked();
+
     void on_btn_change_dir_clicked();
 
 private:

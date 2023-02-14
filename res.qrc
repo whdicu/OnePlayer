@@ -15,5 +15,8 @@
         <file>svgs/right.svg</file>
         <file>svgs/full_screen.svg</file>
         <file>svgs/min.svg</file>
+        <file>svgs/music.svg</file>
+        <file>images/music.png</file>
+        <file>icon.ico</file>
     </qresource>
 </RCC>

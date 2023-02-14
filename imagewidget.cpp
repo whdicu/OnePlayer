@@ -32,6 +32,6 @@ void ImageWidget::paintEvent(QPaintEvent* event)
     QPainter this_painter(this);
     if (!m_pixmap.isNull())
     {
-        this_painter.drawPixmap(rect(), m_pixmap);
+        this_painter.drawPixmap((width() - height()) / 2, 0, height(), height(), m_pixmap);
     }
 }

@@ -24,6 +24,35 @@
 #define MUSIC_HEIGHT 45
 static QStringList TYPE_LIST = {"mp3", "flac", "wav", "ogg", "acc"};
 
+QRgb getMainColor(const QImage& image)
+{
+    unsigned long long r = 0, g = 0, b = 0, a = 0;
+    unsigned long long cnt = 0;
+    // 下半部分图像抽样取点
+    for (int i = 0; i < image.width(); i += 4)
+    {
+        for (int j = image.height() / 2; j < image.height(); j += 4)
+        {
+            QRgb pix = image.pixel(i, j);
+            r += qRed(pix);
+            g += qGreen(pix);
+            b += qBlue(pix);
+            a += qAlpha(pix);
+            ++cnt;
+        }
+    }
+    return qRgba(r / cnt, g / cnt, b / cnt, a / cnt);
+}
+
+QString getTextColor(const QImage& image)
+{
+    QRgb c3 = getMainColor(image);
+    if (qRed(c3) + qGreen(c3) + qBlue(c3) < 384)
+        return "#b6d1c8";
+    else
+        return "#5c5c66";
+}
+
 Widget::Widget(const QString& filepath, QWidget *parent)
     : QWidget(parent), ui(new Ui::Widget), hook_(Hook::getInstance()), pressed_ctrl_(false), moving_progress(false), player_(new QMediaPlayer(this)), audio_op_(new QAudioOutput(this))
 {
@@ -163,17 +192,20 @@ void Widget::set_listener()
         QMessageBox::critical(this, "发生了意想不到的事情", "详情：" + err_str + "\n文件：" + player_->source().fileName());
     });
 
-    // 歌曲发生变化
+    // 先sourceChanged，再metaDataChanged
     connect(player_, &QMediaPlayer::sourceChanged, this, [this](const QUrl &media)
     {
+
         QString file_type = media.fileName().section('.', 0, -1);
         QString file_name = media.fileName().section('.', 0, -2);
 
         ui->btn_music_name->setText(file_name);
+        ui->label_sound_name->setText(file_name);
         SettingHandler::set_last_music(media);
     });
     connect(player_, &QMediaPlayer::metaDataChanged, this, [this]()
     {
+
         QMediaMetaData meta_data = player_->metaData();
         if (meta_data.isEmpty())
             return;
@@ -186,9 +218,13 @@ void Widget::set_listener()
         QStringList album_artist = meta_data.value(QMediaMetaData::AlbumArtist).toStringList();  // 去重 专辑艺术家
         QStringList contributing_artist = meta_data.value(QMediaMetaData::ContributingArtist).toStringList();  // 去重 贡献艺术家
 
-        QPixmap pixmap = QPixmap::fromImage(thumbnail_image);
 
         // 绘制圆角图片
+        static QImage default_image(":/images/music.png");
+        if (thumbnail_image.isNull())
+            thumbnail_image = default_image;
+        QPixmap pixmap = QPixmap::fromImage(thumbnail_image);
+
         QPixmap resultPixmap(ui->label_image->size());
         resultPixmap.fill(Qt::transparent);
         QPainter painter(&resultPixmap);
@@ -203,7 +239,32 @@ void Widget::set_listener()
 
         ui->label_image->setPixmap(resultPixmap);
         ui->widget_music_mask->setPixmap(pixmap);
+        ui->page_music_info->setStyleSheet(QString("QLabel{color: %1;}").arg(getTextColor(thumbnail_image)));
 
+        // 设置歌曲名
+        if (!title.isEmpty())
+        {
+            ui->label_sound_name->setText(title);
+            ui->btn_music_name->setText(title);
+        }
+
+        QSet<QString> singer_set(author_list.begin(), author_list.end());
+        QString temp = "";
+        for (const QString& singer : singer_set)
+        {
+            temp.append(singer).append(' ');
+        }
+        QString singers = temp.trimmed();
+        if (!singers.isEmpty())
+            ui->label_singer->setText(singers);
+        else
+            ui->label_singer->setText("未知歌手");
+
+
+        if (!album_title.isEmpty())
+            ui->label_album->setText(album_title);
+        else
+            ui->label_album->setText("未知专辑");
 
 //        qDebug() << "Comment" << meta_data.value(QMediaMetaData::Comment);
 //        qDebug() << "Description" << meta_data.value(QMediaMetaData::Description);
@@ -334,50 +395,6 @@ void Widget::set_listener()
         else
             SettingHandler::set_volume(1.0f);
         audio_op_->setVolume(SettingHandler::get_volume());
-    });
-
-    // 模式切换按钮
-    connect(ui->btn_mode, &QPushButton::clicked, this, [this]()
-    {
-        if (play_mode == AGAIN)
-        {
-            play_mode = ONE_AGAIN;
-            player_->setLoops(-1);
-            ui->btn_mode->setIcon(QIcon(":/svgs/one_again.svg"));
-        }
-        else if (play_mode == ONE_AGAIN)
-        {
-            random_index_list_.clear();
-            random_index_list_.push_back(now_music_it_ - btn_list_.begin());
-            random_index_ = 0;
-            play_mode = RANDOM;
-            player_->setLoops(1);
-            ui->btn_mode->setIcon(QIcon(":/svgs/random.svg"));
-        }
-        else
-        {
-            play_mode = AGAIN;
-            player_->setLoops(1);
-            ui->btn_mode->setIcon(QIcon(":/svgs/again.svg"));
-        }
-        SettingHandler::set_old_mode(play_mode);
-    });
-
-    // 更多按钮
-    connect(ui->btn_more, &QPushButton::clicked, this, [this]()
-    {
-        switch (ui->stacked_widget->currentIndex())
-        {
-        case 0:
-        case 2:
-            ui->btn_more->setIcon(QIcon(":/svgs/back.svg"));
-            ui->stacked_widget->setCurrentIndex(1);
-            break;
-        case 1:
-            ui->btn_more->setIcon(QIcon(":/svgs/more.svg"));
-            ui->stacked_widget->setCurrentIndex(btn_list_.isEmpty() ? 2 : 0);
-            break;
-        }
     });
 
     // 播放完毕
@@ -758,6 +775,55 @@ void Widget::slot_key_pressed(DWORD key)
         player_->stop();
         break;
     }
+}
+
+// 模式切换按钮
+void Widget::on_btn_mode_clicked()
+{
+    if (play_mode == AGAIN)
+    {
+        play_mode = ONE_AGAIN;
+        player_->setLoops(-1);
+        ui->btn_mode->setIcon(QIcon(":/svgs/one_again.svg"));
+    }
+    else if (play_mode == ONE_AGAIN)
+    {
+        random_index_list_.clear();
+        random_index_list_.push_back(now_music_it_ - btn_list_.begin());
+        random_index_ = 0;
+        play_mode = RANDOM;
+        player_->setLoops(1);
+        ui->btn_mode->setIcon(QIcon(":/svgs/random.svg"));
+    }
+    else
+    {
+        play_mode = AGAIN;
+        player_->setLoops(1);
+        ui->btn_mode->setIcon(QIcon(":/svgs/again.svg"));
+    }
+    SettingHandler::set_old_mode(play_mode);
+}
+
+// 更多按钮
+void Widget::on_btn_more_clicked()
+{
+    switch (ui->stacked_widget->currentIndex())
+    {
+    case 0:
+    case 2:
+        ui->btn_more->setIcon(QIcon(":/svgs/back.svg"));
+        ui->stacked_widget->setCurrentIndex(1);
+        break;
+    case 1:
+        ui->btn_more->setIcon(QIcon(":/svgs/more.svg"));
+        ui->stacked_widget->setCurrentIndex(btn_list_.isEmpty() ? 2 : 0);
+        break;
+    }
+}
+
+void Widget::on_btn_min_clicked()
+{
+    setWindowState(Qt::WindowMinimized);
 }
 
 // 更改初始目录按钮

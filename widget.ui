@@ -16,6 +16,10 @@
   <property name="windowTitle">
    <string>Widget</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="res.qrc">
+    <normaloff>:/icon.ico</normaloff>:/icon.ico</iconset>
+  </property>
   <property name="styleSheet">
    <string notr="true">#widget_radius1 {
 	background: radial-gradient(circle at bottom right, transparent 0px, transparent 40px, blue 40px);
@@ -513,6 +517,54 @@ QLabel {
           <bool>false</bool>
          </property>
         </widget>
+        <widget class="QLabel" name="label_sound_name">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>250</y>
+           <width>360</width>
+           <height>20</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>歌曲名</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_singer">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>295</y>
+           <width>360</width>
+           <height>20</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>歌手名</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_album">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>340</y>
+           <width>360</width>
+           <height>20</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>专辑</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
        </widget>
        <widget class="QWidget" name="page_video_info"/>
       </widget>
@@ -994,7 +1046,7 @@ QLabel {
        </size>
       </property>
      </widget>
-     <widget class="QPushButton" name="btn_full_screen">
+     <widget class="QPushButton" name="btn_min">
       <property name="geometry">
        <rect>
         <x>760</x>
@@ -1016,7 +1068,7 @@ QLabel {
       </property>
       <property name="icon">
        <iconset resource="res.qrc">
-        <normaloff>:/svgs/full_screen.svg</normaloff>:/svgs/full_screen.svg</iconset>
+        <normaloff>:/svgs/min.svg</normaloff>:/svgs/min.svg</iconset>
       </property>
       <property name="iconSize">
        <size>
