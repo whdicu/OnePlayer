@@ -22,7 +22,7 @@
 #include "settinghandler.h"
 
 #define MUSIC_HEIGHT 45
-static QStringList TYPE_LIST = {"mp3", "flac", "wav", "ogg", "acc"};
+static QStringList TYPE_LIST = {"mp3", "flac", "wav", "ogg", "acc", "m4a"};
 
 QRgb getMainColor(const QImage& image)
 {
@@ -524,8 +524,8 @@ void Widget::dragEnterEvent(QDragEnterEvent *event)
 
 void Widget::dropEvent(QDropEvent *event)
 {
-    // 在音乐页才接受拖入事件
-    if (ui->stacked_widget->currentIndex() != 0)
+    // 在设置页不接受拖入事件
+    if (ui->stacked_widget->currentIndex() == 1)
         return;
 
     bool play = btn_list_.isEmpty();
@@ -534,7 +534,7 @@ void Widget::dropEvent(QDropEvent *event)
     for (const auto &url : all)
     {
         QString type = url.toLocalFile().section('.', -1);
-        qDebug() << type;
+
         if (TYPE_LIST.indexOf(type) != -1)
             add_music(url);
     }
@@ -545,7 +545,7 @@ void Widget::dropEvent(QDropEvent *event)
     // 说明本来没有歌曲在播放列表中
     if (play && ! btn_list_.isEmpty())
     {
-        ui->stacked_widget->setCurrentIndex(1);
+        ui->stacked_widget->setCurrentIndex(0);
         now_music_it_ = btn_list_.begin();
         btn_list_.first()->setStyleSheet("background-color: #b6d1c8;");
         player_->setSource((*now_music_it_)->get_url());
