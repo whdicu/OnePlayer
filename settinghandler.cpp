@@ -1,11 +1,24 @@
 #include "settinghandler.h"
+#include <QApplication>
 
-QFile SettingHandler::file = QFile("./setting.xq");
-QUrl SettingHandler::last_music = QUrl();
-QString SettingHandler::music_dir_ = "";
-PLAY_MODE SettingHandler::old_mode = AGAIN;
-float SettingHandler::volume_ = 0.5f;
-qint64 SettingHandler::music_position_ = 0;
+static SettingHandler* setting_handler = nullptr;
+SettingHandler *SettingHandler::getInstance()
+{
+    if (nullptr == setting_handler)
+        setting_handler = new SettingHandler();
+    return setting_handler;
+}
+
+SettingHandler::SettingHandler()
+    : file(QApplication::applicationDirPath() + "/setting.xq")
+    , old_mode_(AGAIN)
+    , music_dir_(QString())
+    , last_music_(QUrl())
+    , volume_(0.5f)
+    , music_position_(0)
+{
+    init_setting();
+}
 
 QMap<QString, QStringList> SettingHandler::read_all()
 {
@@ -37,8 +50,8 @@ void SettingHandler::write_all()
 {
     file.open(QIODevice::WriteOnly);
     file.write(("music_dir," + music_dir_ + "\n").toUtf8());
-    file.write(("old_mode," + QString::number(old_mode) + "\n").toUtf8());
-    file.write(("last_music," + last_music.path() + "\n").toUtf8());
+    file.write(("old_mode," + QString::number(old_mode_) + "\n").toUtf8());
+    file.write(("last_music," + last_music_.path() + "\n").toUtf8());
     file.write(("volume," + QString::number(volume_) + "\n").toUtf8());
     file.write(("music_position," + QString::number(music_position_) + "\n").toUtf8());
     file.close();

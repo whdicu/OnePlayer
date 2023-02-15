@@ -65,10 +65,9 @@ Widget::Widget(const QString& filepath, QWidget *parent)
     hook_->installHook();
     connect(hook_, &Hook::sendKeyType, this, &Widget::slot_key_pressed);
     ui->stacked_widget->setCurrentIndex(2);
-    // 初始化设置
-    SettingHandler::init_setting();
+
     ui->find_widget->hide();
-    ui->label_dir->setText(SettingHandler::get_music_dir());
+    ui->label_dir->setText(SETTING_HANDLER->get_music_dir());
 
     QWidget* ww = new QWidget(ui->music);
     ww->move(10, 10);
@@ -77,13 +76,13 @@ Widget::Widget(const QString& filepath, QWidget *parent)
 
     set_listener();
 
-    audio_op_->setVolume(SettingHandler::get_volume());
+    audio_op_->setVolume(SETTING_HANDLER->get_volume());
     player_->setAudioOutput(audio_op_);
     if (filepath.isEmpty())  // 没有指定打开的歌曲则打开默认文件夹
     {
-        if (SettingHandler::get_music_dir() != "")
+        if (SETTING_HANDLER->get_music_dir() != "")
         {
-            QDir dir(SettingHandler::get_music_dir());
+            QDir dir(SETTING_HANDLER->get_music_dir());
             dir.setFilter(QDir::Files);
 
             QStringList type_filter;
@@ -112,7 +111,7 @@ Widget::Widget(const QString& filepath, QWidget *parent)
                 now_music_it_ = btn_list_.end();
                 for (auto it = btn_list_.begin(); it != btn_list_.end(); ++it)
                 {
-                    if ((*it)->get_url() == SettingHandler::get_last_music())
+                    if ((*it)->get_url() == SETTING_HANDLER->get_last_music())
                     {
                         now_music_it_ = it;
                         break;
@@ -145,7 +144,7 @@ Widget::Widget(const QString& filepath, QWidget *parent)
         player_->play();
     }
 
-    play_mode = SettingHandler::get_old_mode();
+    play_mode = SETTING_HANDLER->get_old_mode();
     switch (play_mode)
     {
     case ONE_AGAIN:
@@ -196,27 +195,26 @@ void Widget::set_listener()
     connect(player_, &QMediaPlayer::sourceChanged, this, [this](const QUrl &media)
     {
 
-        QString file_type = media.fileName().section('.', 0, -1);
+//        QString file_type = media.fileName().section('.', 0, -1);
         QString file_name = media.fileName().section('.', 0, -2);
 
         ui->btn_music_name->setText(file_name);
         ui->label_sound_name->setText(file_name);
-        SettingHandler::set_last_music(media);
+        SETTING_HANDLER->set_last_music(media);
     });
     connect(player_, &QMediaPlayer::metaDataChanged, this, [this]()
     {
-
         QMediaMetaData meta_data = player_->metaData();
         if (meta_data.isEmpty())
             return;
 
         QString title = meta_data.value(QMediaMetaData::Title).toString();
         QStringList author_list = meta_data.value(QMediaMetaData::Author).toStringList();  // 去重
-        QString genre = meta_data.value(QMediaMetaData::Genre).toString();  // 流派
         QImage thumbnail_image = meta_data.value(QMediaMetaData::ThumbnailImage).value<QImage>();  // 缩略图
         QString album_title = meta_data.value(QMediaMetaData::AlbumTitle).toString();  // 专辑标题
         QStringList album_artist = meta_data.value(QMediaMetaData::AlbumArtist).toStringList();  // 去重 专辑艺术家
-        QStringList contributing_artist = meta_data.value(QMediaMetaData::ContributingArtist).toStringList();  // 去重 贡献艺术家
+//        QString genre = meta_data.value(QMediaMetaData::Genre).toString();  // 流派
+//        QStringList contributing_artist = meta_data.value(QMediaMetaData::ContributingArtist).toStringList();  // 去重 贡献艺术家
 
 
         // 绘制圆角图片
@@ -330,8 +328,8 @@ void Widget::set_listener()
         if (first_play && status == QMediaPlayer::LoadedMedia)
         {
             first_play = false;
-            player_->setPosition(SettingHandler::get_music_position());
-//            qDebug() << "pos = " << SettingHandler::get_music_position() << player_->position() << player_->duration();
+            player_->setPosition(SETTING_HANDLER->get_music_position());
+//            qDebug() << "pos = " << SETTING_HANDLER->get_music_position() << player_->position() << player_->duration();
             player_->play();
         }
     });
@@ -343,58 +341,6 @@ void Widget::set_listener()
 //        ui->label_end->setText(QString::number(time_s / 60).append(":%1").arg(time_s % 60, 2, 10, QLatin1Char('0')));
         // 设置进度条范围
         ui->progress->setMaximum(time_s);
-    });
-
-    // 关闭按钮
-    connect(ui->btn_shutdown, &QPushButton::clicked, this, [this]()
-    {
-        close();
-    });
-
-    // 播放暂停按钮
-    connect(ui->btn_play, &QPushButton::clicked, this, [this]()
-    {
-        auto state = player_->playbackState();
-        if (QMediaPlayer::StoppedState == state || QMediaPlayer::PausedState == state)
-        {
-            player_->play();
-        }
-        else if (QMediaPlayer::PlayingState == state)
-        {
-            player_->pause();
-        }
-    });
-
-    // 上一首
-    connect(ui->btn_previoud, &QPushButton::clicked, this, [this]()
-    {
-        previous_music();
-    });
-
-    // 下一首
-    connect(ui->btn_next, &QPushButton::clicked, this, [this]()
-    {
-        next_music();
-    });
-
-    // 音量减
-    connect(ui->btn_down, &QPushButton::clicked, this, [this]()
-    {
-        if (SettingHandler::get_volume() > 0.05f)
-            SettingHandler::set_volume(SettingHandler::get_volume() - 0.05f);
-        else
-            SettingHandler::set_volume(0.0f);
-        audio_op_->setVolume(SettingHandler::get_volume());
-    });
-
-    // 音量加
-    connect(ui->btn_up, &QPushButton::clicked, this, [this]()
-    {
-        if (SettingHandler::get_volume() < 0.95f)
-            SettingHandler::set_volume(SettingHandler::get_volume() + 0.05f);
-        else
-            SettingHandler::set_volume(1.0f);
-        audio_op_->setVolume(SettingHandler::get_volume());
     });
 
     // 播放完毕
@@ -410,7 +356,7 @@ void Widget::set_listener()
         if (! moving_progress)  // 如果没有手动拖动进度条，才根据音乐进度改变进度条
         {
             if (pos > 0)
-                SettingHandler::set_music_position(pos);
+                SETTING_HANDLER->set_music_position(pos);
 //            qDebug() << pos << player_->position();
             auto time_s = pos / 1000;
             auto rest_time = (player_->duration() - pos) / 1000;
@@ -448,40 +394,12 @@ void Widget::set_listener()
         moving_progress = false;
     });
 
-    // 歌曲名按钮点击事件
-    connect(ui->btn_music_name, &QPushButton::clicked, this, [this]()
-    {
-        ui->scrollArea->ensureWidgetVisible(*now_music_it_);
-    });
-
     connect(ui->le_find, &QLineEdit::textChanged, this, [this]()
     {
         if (ui->le_find->text() == "")
             ui->label_count->setText("0/0");
         else
             find_music(ui->le_find->text());
-    });
-
-    connect(ui->btn_left, &QPushButton::clicked, this, [this]()
-    {
-        if (find_index > 0)
-            --find_index;
-        else
-            find_index = find_index_list.size() - 1;
-
-        ui->scrollArea->ensureWidgetVisible(btn_list_.at(find_index_list.at(find_index)));
-        ui->label_count->setText(QString::number(find_index + 1) + "/" + QString::number(find_index_list.size()));
-    });
-
-    connect(ui->btn_right, &QPushButton::clicked, this, [this]()
-    {
-        if (find_index < find_index_list.size() - 1)
-            ++find_index;
-        else
-            find_index = 0;
-
-        ui->scrollArea->ensureWidgetVisible(btn_list_.at(find_index_list.at(find_index)));
-        ui->label_count->setText(QString::number(find_index + 1) + "/" + QString::number(find_index_list.size()));
     });
 }
 
@@ -546,6 +464,8 @@ void Widget::previous_music()
 
 void Widget::add_music(const QUrl& url)
 {
+    QMediaMetaData a;
+
     MusicButton* btn = new MusicButton(url, this);
     btn->setText(url.fileName());
     btn->setMinimumSize(QSize(60, MUSIC_HEIGHT));
@@ -563,9 +483,9 @@ void Widget::add_music(const QUrl& url)
 
         if (play_mode == RANDOM)
         {
-            random_index_list_.clear();
+            random_index_ = random_index_list_.size();
             random_index_list_.push_back(music_index);
-            random_index_ = 0;
+            now_music_it_ = btn_list_.begin() + random_index_list_.at(random_index_);
         }
     });
     ui->music_layout->addWidget(btn);
@@ -697,18 +617,18 @@ void Widget::keyPressEvent(QKeyEvent *event)
         }
         break;
     case Qt::Key_Up:
-        if (SettingHandler::get_volume() < 0.95f)
-            SettingHandler::set_volume(SettingHandler::get_volume() + 0.05f);
+        if (SETTING_HANDLER->get_volume() < 0.95f)
+            SETTING_HANDLER->set_volume(SETTING_HANDLER->get_volume() + 0.05f);
         else
-            SettingHandler::set_volume(1.0f);
-        audio_op_->setVolume(SettingHandler::get_volume());
+            SETTING_HANDLER->set_volume(1.0f);
+        audio_op_->setVolume(SETTING_HANDLER->get_volume());
         break;
     case Qt::Key_Down:
-        if (SettingHandler::get_volume() > 0.05f)
-            SettingHandler::set_volume(SettingHandler::get_volume() - 0.05f);
+        if (SETTING_HANDLER->get_volume() > 0.05f)
+            SETTING_HANDLER->set_volume(SETTING_HANDLER->get_volume() - 0.05f);
         else
-            SettingHandler::set_volume(0.0f);
-        audio_op_->setVolume(SettingHandler::get_volume());
+            SETTING_HANDLER->set_volume(0.0f);
+        audio_op_->setVolume(SETTING_HANDLER->get_volume());
         break;
     case Qt::Key_F:
         if (pressed_ctrl_)  // 按了ctrl + f弹出搜索框
@@ -777,6 +697,58 @@ void Widget::slot_key_pressed(DWORD key)
     }
 }
 
+// 关闭
+void Widget::on_btn_shutdown_clicked()
+{
+    close();
+}
+
+// 播放/暂停
+void Widget::on_btn_play_clicked()
+{
+    auto state = player_->playbackState();
+    if (QMediaPlayer::StoppedState == state || QMediaPlayer::PausedState == state)
+    {
+        player_->play();
+    }
+    else if (QMediaPlayer::PlayingState == state)
+    {
+        player_->pause();
+    }
+}
+
+// 上一首
+void Widget::on_btn_previoud_clicked()
+{
+    previous_music();
+}
+
+// 下一首
+void Widget::on_btn_next_clicked()
+{
+    next_music();
+}
+
+// 音量减
+void Widget::on_btn_down_clicked()
+{
+    if (SETTING_HANDLER->get_volume() > 0.05f)
+        SETTING_HANDLER->set_volume(SETTING_HANDLER->get_volume() - 0.05f);
+    else
+        SETTING_HANDLER->set_volume(0.0f);
+    audio_op_->setVolume(SETTING_HANDLER->get_volume());
+}
+
+// 音量加
+void Widget::on_btn_up_clicked()
+{
+    if (SETTING_HANDLER->get_volume() < 0.95f)
+        SETTING_HANDLER->set_volume(SETTING_HANDLER->get_volume() + 0.05f);
+    else
+        SETTING_HANDLER->set_volume(1.0f);
+    audio_op_->setVolume(SETTING_HANDLER->get_volume());
+}
+
 // 模式切换按钮
 void Widget::on_btn_mode_clicked()
 {
@@ -801,7 +773,7 @@ void Widget::on_btn_mode_clicked()
         player_->setLoops(1);
         ui->btn_mode->setIcon(QIcon(":/svgs/again.svg"));
     }
-    SettingHandler::set_old_mode(play_mode);
+    SETTING_HANDLER->set_old_mode(play_mode);
 }
 
 // 更多按钮
@@ -821,9 +793,16 @@ void Widget::on_btn_more_clicked()
     }
 }
 
+// 最小化
 void Widget::on_btn_min_clicked()
 {
     setWindowState(Qt::WindowMinimized);
+}
+
+// 歌曲名按钮
+void Widget::on_btn_music_name_clicked()
+{
+    ui->scrollArea->ensureWidgetVisible(*now_music_it_);
 }
 
 // 更改初始目录按钮
@@ -847,9 +826,9 @@ void Widget::on_btn_change_dir_clicked()
     btn_list_.clear();
 
     ui->label_dir->setText(str_dir);
-    SettingHandler::set_music_dir(str_dir);
+    SETTING_HANDLER->set_music_dir(str_dir);
 
-    QDir dir(SettingHandler::get_music_dir());
+    QDir dir(SETTING_HANDLER->get_music_dir());
     dir.setFilter(QDir::Files);
 
     QStringList type_filter;
@@ -887,3 +866,26 @@ void Widget::on_btn_change_dir_clicked()
     ui->btn_more->setIcon(QIcon(":/svgs/more.svg"));
 }
 
+// 查找框内上一个按钮
+void Widget::on_btn_left_clicked()
+{
+    if (find_index > 0)
+        --find_index;
+    else
+        find_index = find_index_list.size() - 1;
+
+    ui->scrollArea->ensureWidgetVisible(btn_list_.at(find_index_list.at(find_index)));
+    ui->label_count->setText(QString::number(find_index + 1) + "/" + QString::number(find_index_list.size()));
+}
+
+// 查找框内下一个按钮
+void Widget::on_btn_right_clicked()
+{
+    if (find_index < find_index_list.size() - 1)
+        ++find_index;
+    else
+        find_index = 0;
+
+    ui->scrollArea->ensureWidgetVisible(btn_list_.at(find_index_list.at(find_index)));
+    ui->label_count->setText(QString::number(find_index + 1) + "/" + QString::number(find_index_list.size()));
+}

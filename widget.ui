@@ -14,7 +14,7 @@
    <cursorShape>ArrowCursor</cursorShape>
   </property>
   <property name="windowTitle">
-   <string>Widget</string>
+   <string>OnePlayer</string>
   </property>
   <property name="windowIcon">
    <iconset resource="res.qrc">
@@ -282,7 +282,7 @@ QLabel {
       <widget class="QWidget" name="find_widget" native="true">
        <property name="geometry">
         <rect>
-         <x>230</x>
+         <x>430</x>
          <y>30</y>
          <width>400</width>
          <height>45</height>

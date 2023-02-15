@@ -7,28 +7,33 @@
 class SettingHandler
 {
 public:
-    static void init_setting();
-    static PLAY_MODE get_old_mode() {return old_mode;}
-    static void set_old_mode(PLAY_MODE mode) {old_mode = mode; write_all();}
-    static QString get_music_dir() {return music_dir_;}
-    static void set_music_dir(const QString& music_dir) {music_dir_ = music_dir; write_all();}
-    static const QUrl& get_last_music() {return last_music;}
-    static void set_last_music(const QUrl& music) {last_music = music; write_all();}
-    static float get_volume() {return volume_;}
-    static void set_volume(float volume) {volume_ = volume; write_all();}
-    static qint64 get_music_position() {return music_position_;}
-    static void set_music_position(qint64 pos) {music_position_ = pos; write_all();}
+    static SettingHandler* getInstance();
+    void init_setting();
+    PLAY_MODE get_old_mode() {return old_mode_;}
+    void set_old_mode(PLAY_MODE mode) {old_mode_ = mode; write_all();}
+    QString get_music_dir() {return music_dir_;}
+    void set_music_dir(const QString& music_dir) {music_dir_ = music_dir; write_all();}
+    const QUrl& get_last_music() {return last_music_;}
+    void set_last_music(const QUrl& music) {last_music_ = music; write_all();}
+    float get_volume() {return volume_;}
+    void set_volume(float volume) {volume_ = volume; write_all();}
+    qint64 get_music_position() {return music_position_;}
+    void set_music_position(qint64 pos) {music_position_ = pos; write_all();}
 
 private:
-    static QMap<QString, QStringList> read_all();
-    static void write_all();
+    SettingHandler();
+    ~SettingHandler() = default;
+    QMap<QString, QStringList> read_all();
+    void write_all();
 
-    static QFile file;
-    static PLAY_MODE old_mode;
-    static QString music_dir_;
-    static QUrl last_music;
-    static float volume_;
-    static qint64 music_position_;
+    QFile file;
+    PLAY_MODE old_mode_;
+    QString music_dir_;
+    QUrl last_music_;
+    float volume_;
+    qint64 music_position_;
 };
+
+#define SETTING_HANDLER SettingHandler::getInstance()
 
 #endif // SETTINGHANDLER_H
