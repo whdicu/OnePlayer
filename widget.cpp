@@ -54,7 +54,14 @@ QString getTextColor(const QImage& image)
 }
 
 Widget::Widget(const QString& filepath, QWidget *parent)
-    : QWidget(parent), ui(new Ui::Widget), hook_(Hook::getInstance()), pressed_ctrl_(false), moving_progress(false), player_(new QMediaPlayer(this)), audio_op_(new QAudioOutput(this))
+    : QWidget(parent)
+    , ui(new Ui::Widget)
+    , hook_(Hook::getInstance())
+    , moving_progress(false)
+    , player_(new QMediaPlayer(this))
+    , audio_op_(new QAudioOutput(this))
+    , pressed_ctrl_(false)
+    , this_is_move_window(false)
 {
     ui->setupUi(this);
 
@@ -118,7 +125,6 @@ Widget::Widget(const QString& filepath, QWidget *parent)
                     }
                 }
 
-                qDebug() << "now_music_index_ =" << *now_music_it_;
                 if (now_music_it_ == btn_list_.end())  // 如果上次播放的音乐不在这个文件夹中，则从头开始播放
                 {
                     now_music_it_ = btn_list_.begin();
@@ -194,7 +200,6 @@ void Widget::set_listener()
     // 先sourceChanged，再metaDataChanged
     connect(player_, &QMediaPlayer::sourceChanged, this, [this](const QUrl &media)
     {
-
 //        QString file_type = media.fileName().section('.', 0, -1);
         QString file_name = media.fileName().section('.', 0, -2);
 
@@ -296,10 +301,6 @@ void Widget::set_listener()
     {
 //        qDebug() << 3;
     });
-    connect(player_, &QMediaPlayer::playbackStateChanged, this, []()
-    {
-//        qDebug() << 4;
-    });
     connect(player_, &QMediaPlayer::playbackRateChanged, this, []()
     {
 //        qDebug() << 5;
@@ -325,30 +326,30 @@ void Widget::set_listener()
     static bool first_play = true;
     connect(player_, &QMediaPlayer::mediaStatusChanged, this, [this](QMediaPlayer::MediaStatus status)
     {
-        if (first_play && status == QMediaPlayer::LoadedMedia)
+        if (QMediaPlayer::EndOfMedia == status)
+            next_music();
+
+        if (first_play)
         {
-            first_play = false;
-            player_->setPosition(SETTING_HANDLER->get_music_position());
-//            qDebug() << "pos = " << SETTING_HANDLER->get_music_position() << player_->position() << player_->duration();
-            player_->play();
+            if (status == QMediaPlayer::LoadedMedia)
+            {
+                first_play = false;
+                // 延时播放音乐，防止进度不正确
+                QTimer* timer = new QTimer(this);
+                connect(timer, &QTimer::timeout, this, [this, timer]()
+                {
+                    qint64 pos = SETTING_HANDLER->get_music_position();  // 放到player_->play()后面会导致音乐播放后新的进度写入，覆盖原有进度
+                    player_->setPosition(pos);
+                    player_->play();
+                    timer->deleteLater();
+                });
+                timer->start(10);
+            }
         }
     });
 
     // 音乐时长改变
-    connect(player_, &QMediaPlayer::durationChanged, this, [this](qint64 duration)
-    {
-        auto time_s = duration / 1000;
-//        ui->label_end->setText(QString::number(time_s / 60).append(":%1").arg(time_s % 60, 2, 10, QLatin1Char('0')));
-        // 设置进度条范围
-        ui->progress->setMaximum(time_s);
-    });
-
-    // 播放完毕
-    connect(player_, &QMediaPlayer::mediaStatusChanged, this, [this](QMediaPlayer::MediaStatus status)
-    {
-        if (QMediaPlayer::EndOfMedia == status)
-            next_music();
-    });
+    connect(player_, &QMediaPlayer::durationChanged, ui->progress, &QSlider::setMaximum);
 
     // 音乐前进，改变进度条
     connect(player_, &QMediaPlayer::positionChanged, this, [this](qint64 pos)
@@ -357,13 +358,17 @@ void Widget::set_listener()
         {
             if (pos > 0)
                 SETTING_HANDLER->set_music_position(pos);
-//            qDebug() << pos << player_->position();
+
             auto time_s = pos / 1000;
             auto rest_time = (player_->duration() - pos) / 1000;
             ui->label_now->setText(QString::number(time_s / 60).append(":%1").arg(time_s % 60, 2, 10, QLatin1Char('0')));
             ui->label_rest->setText(QString::number(rest_time / 60).append(":%1").arg(rest_time % 60, 2, 10, QLatin1Char('0')));
-            ui->progress->setValue(time_s);  // 进度条1格对应1秒
+            ui->progress->setValue(pos);  // 进度条1格对应1秒
         }
+
+        // 进度超过最大，强制播放下一首
+        if (pos > player_->duration())
+            next_music();
     });
 
     // 按下进度条，停止根据音乐改变进度条
@@ -372,28 +377,30 @@ void Widget::set_listener()
         moving_progress = true;
     });
 
-    connect(ui->progress, &QSlider::actionTriggered, this, [this](int action)
-    {
-        switch (action)
-        {
-        case 0:
-            player_->setPosition(ui->progress->value() * 1000);
-            moving_progress = false;
-            break;
-        case 3:
-        case 4:
-            moving_progress = true;
-            break;
-        }
-    });
+//    connect(ui->progress, &QSlider::actionTriggered, this, [this](int action)
+//    {
+//        qDebug() << action;
+//        switch (action)
+//        {
+//        case 0:
+//            player_->setPosition(ui->progress->value());
+//            moving_progress = false;
+//            break;
+//        case 3:
+//        case 4:
+//            moving_progress = true;
+//            break;
+//        }
+//    });
 
     // 松开进度条，改变音乐进度
     connect(ui->progress, &QSlider::sliderReleased, this, [this]()
     {
-        player_->setPosition(ui->progress->value() * 1000);
+        player_->setPosition(ui->progress->value());
         moving_progress = false;
     });
 
+    // 搜索框文字改变
     connect(ui->le_find, &QLineEdit::textChanged, this, [this]()
     {
         if (ui->le_find->text() == "")
