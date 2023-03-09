@@ -16,13 +16,21 @@ LRESULT CALLBACK keyProc(int nCode, WPARAM wParam, LPARAM lParam)
 	KBDLLHOOKSTRUCT* pkbhs = (KBDLLHOOKSTRUCT*)lParam;
 	if (wParam == WM_KEYDOWN)
 	{
-		Hook::getInstance()->sendSignal(pkbhs->vkCode);
+        switch (pkbhs->vkCode)
+        {
+        case 176ul:
+        case 177ul:
+        case 178ul:
+        case 179ul:
+            Hook::getInstance()->sendSignal(pkbhs->vkCode);
+            return true;
+        }
 		//if (pkbhs->vkCode == 0x31 && GetAsyncKeyState(VK_CONTROL))
 		//{//按下Ctrl+1
 		//	Hook::getInstance().sendSignal(Hook::CHANGE);
-		//}
+        //}
 	}
-	return CallNextHookEx(keyHook, nCode, wParam, lParam);//继续原有的事件队列
+    return CallNextHookEx(keyHook, nCode, wParam, lParam);//继续原有的事件队列
 }
 
 void Hook::installHook()
