@@ -4,6 +4,7 @@
 #include <QAudioOutput>
 #include <QCollator>
 #include <QDebug>
+#include <QDesktopServices>
 #include <QKeyEvent>
 #include <QFileDialog>
 #include <QLocale>
@@ -810,6 +811,11 @@ void Widget::on_btn_min_clicked()
 void Widget::on_btn_music_name_clicked()
 {
     ui->scrollArea->ensureWidgetVisible(*now_music_it_);
+}
+
+void Widget::on_btn_open_dir_clicked()
+{
+    QDesktopServices::openUrl(QUrl::fromLocalFile(ui->label_dir->text()));
 }
 
 // 更改初始目录按钮
