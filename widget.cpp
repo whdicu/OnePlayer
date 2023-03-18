@@ -116,26 +116,26 @@ Widget::Widget(const QString& filepath, QWidget *parent)
                 }
 
                 // 如果上次播放的音乐也在这个文件夹中
-                now_music_it_ = btn_list_.end();
-                for (auto it = btn_list_.begin(); it != btn_list_.end(); ++it)
+                now_music_index_ = btn_list_.size();
+                for (DSizeType i = 0; i < btn_list_.size(); ++i)
                 {
-                    if ((*it)->get_url() == SETTING_HANDLER->get_last_music())
+                    if (btn_list_.at(i)->get_url() == SETTING_HANDLER->get_last_music())
                     {
-                        now_music_it_ = it;
+                        now_music_index_ = i;
                         break;
                     }
                 }
 
-                if (now_music_it_ == btn_list_.end())  // 如果上次播放的音乐不在这个文件夹中，则从头开始播放
+                if (now_music_index_ == btn_list_.size())  // 如果上次播放的音乐不在这个文件夹中，则从头开始播放
                 {
-                    now_music_it_ = btn_list_.begin();
+                    now_music_index_ = 0;
                     btn_list_.first()->setStyleSheet("background-color: #b6d1c8;");
                     player_->setSource(btn_list_.first()->get_url());
                 }
                 else
                 {
-                    (*now_music_it_)->setStyleSheet("background-color: #b6d1c8;");
-                    player_->setSource((*now_music_it_)->get_url());
+                    btn_list_.at(now_music_index_)->setStyleSheet("background-color: #b6d1c8;");
+                    player_->setSource(btn_list_.at(now_music_index_)->get_url());
                 }
             }
         }
@@ -145,7 +145,7 @@ Widget::Widget(const QString& filepath, QWidget *parent)
         ui->stacked_widget->setCurrentIndex(0);
         QUrl url = QUrl::fromLocalFile(filepath);
         add_music(url);
-        now_music_it_ = btn_list_.begin();
+        now_music_index_ = 0;
         btn_list_.first()->setStyleSheet("background-color: #b6d1c8;");
         player_->setSource(url);
         player_->play();
@@ -164,7 +164,7 @@ Widget::Widget(const QString& filepath, QWidget *parent)
         break;
     case RANDOM:
         random_index_ = 0;
-        random_index_list_.push_back(now_music_it_ - btn_list_.begin());
+        random_index_list_.pushBack(now_music_index_);
         player_->setLoops(1);
         ui->btn_mode->setIcon(QIcon(":/svgs/random.svg"));
         break;
@@ -414,35 +414,35 @@ void Widget::set_listener()
 void Widget::next_music()
 {
     // 重新设置旧的歌曲按钮的颜色
-    (*now_music_it_)->setStyleSheet("QPushButton {background-color: rgba(182, 209, 200, 0.25);} QPushButton:hover {background-color: rgba(182, 209, 200, 0.5);}");
+    btn_list_.at(now_music_index_)->setStyleSheet("QPushButton {background-color: rgba(182, 209, 200, 0.25);} QPushButton:hover {background-color: rgba(182, 209, 200, 0.5);}");
 
     if (play_mode == AGAIN)  // 循环播放
     {
-        ++now_music_it_;
-        if (now_music_it_ == btn_list_.end())
-            now_music_it_ = btn_list_.begin();
+        ++now_music_index_;
+        if (now_music_index_ == btn_list_.size())
+            now_music_index_ = 0;
     }
     else if (play_mode == RANDOM)  // 随机播放
     {
         ++random_index_;
         if (random_index_ == random_index_list_.size())
         {
-            int music_index = QRandomGenerator64::global()->bounded(0, btn_list_.size());
-            random_index_list_.push_back(music_index);
+            DSizeType music_index = QRandomGenerator64::global()->bounded(0, (int)btn_list_.size());
+            random_index_list_.pushBack(music_index);
         }
-            now_music_it_ = btn_list_.begin() + random_index_list_.at(random_index_);
+            now_music_index_ = random_index_list_.at(random_index_);
     }
 
     // 设置新的歌曲按钮的颜色
-    (*now_music_it_)->setStyleSheet("background-color: rgb(182, 209, 200);");
-    player_->setSource((*now_music_it_)->get_url());
+    btn_list_.at(now_music_index_)->setStyleSheet("background-color: rgb(182, 209, 200);");
+    player_->setSource(btn_list_.at(now_music_index_)->get_url());
     player_->play();
 }
 
 void Widget::previous_music()
 {
     // 重新设置旧的歌曲按钮的颜色
-    (*now_music_it_)->setStyleSheet("QPushButton {background-color: rgba(182, 209, 200, 0.25);} QPushButton:hover {background-color: rgba(182, 209, 200, 0.5);}");
+    btn_list_.at(now_music_index_)->setStyleSheet("QPushButton {background-color: rgba(182, 209, 200, 0.25);} QPushButton:hover {background-color: rgba(182, 209, 200, 0.5);}");
 
     if (play_mode == RANDOM)
     {
@@ -450,23 +450,23 @@ void Widget::previous_music()
             --random_index_;
         else
         {
-            int music_index = QRandomGenerator64::global()->bounded(0, btn_list_.size());
-            random_index_list_.push_front(music_index);
+            DSizeType music_index = QRandomGenerator64::global()->bounded(0, (int)btn_list_.size());
+            random_index_list_.pushFront(music_index);
         }
 
-        now_music_it_ = btn_list_.begin() + random_index_list_.at(random_index_);
+        now_music_index_ = random_index_list_.at(random_index_);
     }
     else
     {
-        if (now_music_it_ == btn_list_.begin())
-            now_music_it_ = btn_list_.end() - 1;
+        if (now_music_index_ == 0)
+            now_music_index_ = btn_list_.size() - 1;
         else
-            --now_music_it_;
+            --now_music_index_;
 
     }
     // 设置新的歌曲按钮的颜色
-    (*now_music_it_)->setStyleSheet("background-color: rgb(182, 209, 200);");
-    player_->setSource((*now_music_it_)->get_url());
+    btn_list_.at(now_music_index_)->setStyleSheet("background-color: rgb(182, 209, 200);");
+    player_->setSource(btn_list_.at(now_music_index_)->get_url());
     player_->play();
 }
 
@@ -481,9 +481,9 @@ void Widget::add_music(const QUrl& url)
     connect(btn, &QPushButton::clicked, this, [this, btn]()
     {
         // 重新设置旧的歌曲按钮的颜色
-        (*now_music_it_)->setStyleSheet("QPushButton {background-color: rgba(182, 209, 200, 0.25);} QPushButton:hover {background-color: rgba(182, 209, 200, 0.5);}");
-        int music_index = btn_list_.indexOf(btn);
-        now_music_it_ = btn_list_.begin() + music_index;
+        btn_list_.at(now_music_index_)->setStyleSheet("QPushButton {background-color: rgba(182, 209, 200, 0.25);} QPushButton:hover {background-color: rgba(182, 209, 200, 0.5);}");
+        DSizeType music_index = btn_list_.indexOf(btn);
+        now_music_index_ = music_index;
         // 设置新的歌曲按钮的颜色
         btn->setStyleSheet("background-color: rgb(182, 209, 200);");
         player_->setSource(btn->get_url());
@@ -492,12 +492,12 @@ void Widget::add_music(const QUrl& url)
         if (play_mode == RANDOM)
         {
             random_index_ = random_index_list_.size();
-            random_index_list_.push_back(music_index);
-            now_music_it_ = btn_list_.begin() + random_index_list_.at(random_index_);
+            random_index_list_.pushBack(music_index);
+            now_music_index_ = random_index_list_.at(random_index_);
         }
     });
     ui->music_layout->addWidget(btn);
-    btn_list_.push_back(btn);
+    btn_list_.pushBack(btn);
 }
 
 void Widget::find_music(const QString& word)
@@ -508,13 +508,13 @@ void Widget::find_music(const QString& word)
     find_index = 0;
     ui->label_count->setText("0/0");
     find_index_list.clear();
-    for (int i = 0; i < btn_list_.size(); ++i)
+    for (DSizeType i = 0; i < btn_list_.size(); ++i)
     {
         QRegularExpression reg(".*" + word + ".*");
         auto ret = reg.match(btn_list_.at(i)->get_filename());
         if (ret.hasMatch())
         {
-            find_index_list.push_back(i);
+            find_index_list.pushBack(i);
         }
     }
 
@@ -554,9 +554,9 @@ void Widget::dropEvent(QDropEvent *event)
     if (play && ! btn_list_.isEmpty())
     {
         ui->stacked_widget->setCurrentIndex(0);
-        now_music_it_ = btn_list_.begin();
+        now_music_index_ = 0;
         btn_list_.first()->setStyleSheet("background-color: #b6d1c8;");
-        player_->setSource((*now_music_it_)->get_url());
+        player_->setSource(btn_list_.at(now_music_index_)->get_url());
         player_->play();
     }
 }
@@ -769,7 +769,7 @@ void Widget::on_btn_mode_clicked()
     else if (play_mode == ONE_AGAIN)
     {
         random_index_list_.clear();
-        random_index_list_.push_back(now_music_it_ - btn_list_.begin());
+        random_index_list_.pushBack(now_music_index_);
         random_index_ = 0;
         play_mode = RANDOM;
         player_->setLoops(1);
@@ -810,7 +810,7 @@ void Widget::on_btn_min_clicked()
 // 歌曲名按钮
 void Widget::on_btn_music_name_clicked()
 {
-    ui->scrollArea->ensureWidgetVisible(*now_music_it_);
+    ui->scrollArea->ensureWidgetVisible(btn_list_.at(now_music_index_));
 }
 
 void Widget::on_btn_open_dir_clicked()
@@ -865,7 +865,7 @@ void Widget::on_btn_change_dir_clicked()
             add_music(QUrl::fromLocalFile(dir.absolutePath() + '/' + url_str));
         }
 
-        now_music_it_ = btn_list_.begin();
+        now_music_index_ = 0;
         btn_list_.first()->setStyleSheet("background-color: #b6d1c8;");
         player_->setSource(btn_list_.first()->get_url());
         player_->play();

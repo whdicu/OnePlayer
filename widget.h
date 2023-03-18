@@ -1,6 +1,7 @@
 #ifndef WIDGET_H
 #define WIDGET_H
 
+#include "HDBase/DList.hpp"
 #include "hook.h"
 #include <QGridLayout>
 #include <QMediaPlayer>
@@ -65,12 +66,12 @@ private:
     bool moving_progress;
     QMediaPlayer* player_;
     QAudioOutput* audio_op_;
-    QList<MusicButton*>::iterator now_music_it_;
-    QList<MusicButton*> btn_list_;
-    int find_index;
-    QList<int> find_index_list;
-    QList<int> random_index_list_;  // 随机播放时保存音乐顺序下标的列表
-    int random_index_;  // 随机播放时的列表下表
+    DSizeType now_music_index_;
+    DList<MusicButton*> btn_list_;
+    DSizeType find_index;
+    DList<DSizeType> find_index_list;
+    DList<DSizeType> random_index_list_;  // 随机播放时保存音乐顺序下标的列表
+    DSizeType random_index_;  // 随机播放时的列表下表
 
     int press_x;
     int press_y;
