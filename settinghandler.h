@@ -19,6 +19,8 @@ public:
     void set_volume(float volume) {volume_ = volume; write_all();}
     qint64 get_music_position() {return music_position_;}
     void set_music_position(qint64 pos) {music_position_ = pos; write_all();}
+    bool get_is_online() {return is_online_;}
+    void set_is_online(bool is_online) {is_online_ = is_online; write_all();}
 
 private:
     SettingHandler();
@@ -32,6 +34,7 @@ private:
     QUrl last_music_;
     float volume_;
     qint64 music_position_;
+    bool is_online_;
 };
 
 #define SETTING_HANDLER SettingHandler::getInstance()

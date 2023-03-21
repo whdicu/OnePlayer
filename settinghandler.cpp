@@ -16,6 +16,7 @@ SettingHandler::SettingHandler()
     , last_music_(QUrl())
     , volume_(0.5f)
     , music_position_(0)
+    , is_online_(false)
 {
     init_setting();
 }
@@ -54,6 +55,7 @@ void SettingHandler::write_all()
     file.write(("last_music," + last_music_.path() + "\n").toUtf8());
     file.write(("volume," + QString::number(volume_) + "\n").toUtf8());
     file.write(("music_position," + QString::number(music_position_) + "\n").toUtf8());
+    file.write(("is_online," + QString::number(is_online_) + "\n").toUtf8());
     file.close();
 }
 
@@ -80,4 +82,8 @@ void SettingHandler::init_setting()
     auto v5 = setting_map.value("music_position", {});
     if (! v5.isEmpty())
         set_music_position(v5.begin()->toInt());
+
+    auto v6 = setting_map.value("is_online", {});
+    if (! v6.isEmpty())
+        set_is_online(v6.begin()->toInt());
 }
