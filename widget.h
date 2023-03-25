@@ -3,9 +3,10 @@
 
 #include "HDBase/DList.hpp"
 #include "hook.h"
+#include "basemusicbutton.h"
+#include "onlinehandler.h"
 #include <QGridLayout>
 #include <QMediaPlayer>
-#include "musicbutton.h"
 #include <QLabel>
 #include <QWidget>
 
@@ -42,9 +43,12 @@ private slots:
     void on_btn_music_name_clicked();
     void on_btn_open_dir_clicked();
     void on_btn_change_dir_clicked();
-    void on_btn_change_online_clicked();
+    void on_btn_local_clicked();
+    void on_btn_mysite_clicked();
+    void on_btn_online_clicked();
     void on_btn_left_clicked();
     void on_btn_right_clicked();
+    void on_btn_search_clicked();
 
 private:
     void set_source(const QUrl& url);
@@ -53,8 +57,10 @@ private:
     void next_music();
     void previous_music();
     void add_music(const QUrl& url);
+    void add_online_music(const MusicInfo& music);
     void find_music(const QString& word);
     void init_local();
+    void init_mysite();
     void init_online();
     void dragEnterEvent(QDragEnterEvent *);
     void dropEvent(QDropEvent *);
@@ -71,7 +77,7 @@ private:
     QMediaPlayer* player_;
     QAudioOutput* audio_op_;
     DSizeType now_music_index_;
-    DList<MusicButton*> btn_list_;
+    DList<BaseMusicButton*> btn_list_;
     DSizeType find_index;
     DList<DSizeType> find_index_list;
     DList<DSizeType> random_index_list_;  // 随机播放时保存音乐顺序下标的列表

@@ -1,11 +1,10 @@
 #include "imagewidget.h"
-#include "ui_imagewidget.h"
 
 #include <QPainter>
 #include <QPainterPath>
 
 ImageWidget::ImageWidget(QWidget* parent)
-    :QWidget(parent)
+    : QWidget(parent)
 {
     // 缩略图背景模糊
     m_pBlurEffect = new QGraphicsBlurEffect;

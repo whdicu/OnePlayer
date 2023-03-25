@@ -15,17 +15,24 @@ SOURCES += \
     imagewidget.cpp \
     main.cpp \
     musicbutton.cpp \
+    onlinehandler.cpp \
+    onlinemusicbutton.cpp \
     settinghandler.cpp \
     widget.cpp
 
 HEADERS += \
+    basemusicbutton.h \
     hook.h \
     imagewidget.h \
     musicbutton.h \
+    onlinehandler.h \
+    onlinemusicbutton.h \
     settinghandler.h \
     widget.h
 
 FORMS += \
+    musicbutton.ui \
+    onlinemusicbutton.ui \
     widget.ui
 
 INCLUDEPATH += D:\coder\C++\HD
