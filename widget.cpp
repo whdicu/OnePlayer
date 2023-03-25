@@ -113,9 +113,7 @@ Widget::Widget(const QString& filepath, QWidget *parent)
         QUrl url = QUrl::fromLocalFile(filepath);
         add_music(url);
         now_music_index_ = 0;
-        btn_list_.first()->setPlayingStyle();
-        set_source(url);
-        player_->play();
+        play_music(btn_list_.first());
     }
 
     play_mode = SETTING_HANDLER->get_old_mode();
@@ -426,13 +424,11 @@ void Widget::load_music_list(QStringList &list)
         if (now_music_index_ == btn_list_.size())  // 如果上次播放的音乐不在这个文件夹中，则从头开始播放
         {
             now_music_index_ = 0;
-            btn_list_.first()->setPlayingStyle();
-            set_source(btn_list_.first()->get_url());
+            play_music(btn_list_.first());
         }
         else
         {
-            btn_list_.at(now_music_index_)->setPlayingStyle();
-            set_source(btn_list_.at(now_music_index_)->get_url());
+            play_music(btn_list_.at(now_music_index_));
         }
     }
 }
@@ -459,10 +455,7 @@ void Widget::next_music()
             now_music_index_ = random_index_list_.at(random_index_);
     }
 
-    // 设置新的歌曲按钮的颜色
-    btn_list_.at(now_music_index_)->setPlayingStyle();
-    set_source(btn_list_.at(now_music_index_)->get_url());
-    player_->play();
+    play_music(btn_list_.at(now_music_index_));
 }
 
 void Widget::previous_music()
@@ -490,10 +483,7 @@ void Widget::previous_music()
             --now_music_index_;
 
     }
-    // 设置新的歌曲按钮的颜色
-    btn_list_.at(now_music_index_)->setPlayingStyle();
-    set_source(btn_list_.at(now_music_index_)->get_url());
-    player_->play();
+    play_music(btn_list_.at(now_music_index_));
 }
 
 void Widget::add_music(const QUrl& url)
@@ -503,17 +493,13 @@ void Widget::add_music(const QUrl& url)
     {
         // 重新设置旧的歌曲按钮的颜色
         btn_list_.at(now_music_index_)->setNormalStyle();
-        DSizeType music_index = btn_list_.indexOf(btn);
-        now_music_index_ = music_index;
-        // 设置新的歌曲按钮的颜色
-        btn->setPlayingStyle();
-        set_source(btn->get_url());
-        player_->play();
+        now_music_index_ = btn_list_.indexOf(btn);
+        play_music(btn);
 
         if (play_mode == RANDOM)
         {
             random_index_ = random_index_list_.size();
-            random_index_list_.pushBack(music_index);
+            random_index_list_.pushBack(now_music_index_);
             now_music_index_ = random_index_list_.at(random_index_);
         }
     });
@@ -526,20 +512,13 @@ void Widget::add_online_music(const MusicInfo& music)
     OnlineMusicButton* btn = new OnlineMusicButton(music, this);
     connect(btn, &BaseMusicButton::clicked, this, [this, btn]()
     {
-        OnlineHandler::getInstance()->get_music_info(btn->get_info());
-        // 重新设置旧的歌曲按钮的颜色
-        btn_list_.at(now_music_index_)->setNormalStyle();
-        DSizeType music_index = btn_list_.indexOf(btn);
-        now_music_index_ = music_index;
-        // 设置新的歌曲按钮的颜色
-        btn->setPlayingStyle();
-        set_source(btn->get_url());
-        player_->play();
+        now_music_index_ = btn_list_.indexOf(btn);
+        play_music(btn);
 
         if (play_mode == RANDOM)
         {
             random_index_ = random_index_list_.size();
-            random_index_list_.pushBack(music_index);
+            random_index_list_.pushBack(now_music_index_);
             now_music_index_ = random_index_list_.at(random_index_);
         }
     });
@@ -695,9 +674,7 @@ void Widget::dropEvent(QDropEvent *event)
     {
         ui->stacked_widget->setCurrentIndex(0);
         now_music_index_ = 0;
-        btn_list_.first()->setPlayingStyle();
-        set_source(btn_list_.at(now_music_index_)->get_url());
-        player_->play();
+        play_music(btn_list_.at(now_music_index_));
     }
 }
 
@@ -1023,15 +1000,13 @@ void Widget::on_btn_change_dir_clicked()
         }
 
         now_music_index_ = 0;
-        btn_list_.first()->setPlayingStyle();
-        set_source(btn_list_.first()->get_url());
-        player_->play();
+        play_music(btn_list_.first());
     }
     else
     {
         ui->stacked_widget->setCurrentIndex(2);
         player_->stop();
-        set_source(QUrl());
+        play_music();
     }
     ui->btn_more->setIcon(QIcon(":/svgs/more.svg"));
 }
@@ -1091,9 +1066,23 @@ void Widget::on_btn_search_clicked()
     }
 }
 
-void Widget::set_source(const QUrl& url)
+void Widget::play_music(BaseMusicButton* btn)
 {
-    player_->setSource(url);
+    if (nullptr == btn)
+    {
+        player_->setSource(QUrl());
+        return;
+    }
+
+    if (SETTING_HANDLER->get_player_mode() == ONLINE)
+    {
+        OnlineHandler::getInstance()->get_music_info(static_cast<OnlineMusicButton*>(btn)->get_info());
+    }
+
+    btn->setPlayingStyle();
+    player_->setSource(btn->get_url());
+    qDebug() << btn->get_url();
+    player_->play();
 //    switch (SETTING_HANDLER->get_player_mode())
 //    {
 //    case LOCAL:

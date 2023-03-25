@@ -51,7 +51,7 @@ private slots:
     void on_btn_search_clicked();
 
 private:
-    void set_source(const QUrl& url);
+    void play_music(BaseMusicButton* btn = nullptr);
     void set_listener();
     void load_music_list(QStringList& list);
     void next_music();
