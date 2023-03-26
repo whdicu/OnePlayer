@@ -17,6 +17,7 @@ SettingHandler::SettingHandler()
     , volume_(0.5f)
     , music_position_(0)
     , player_mode_(LOCAL)
+    , download_dir_(QString())
 {
     init_setting();
 }
@@ -56,6 +57,7 @@ void SettingHandler::write_all()
     file.write(("volume," + QString::number(volume_) + "\n").toUtf8());
     file.write(("music_position," + QString::number(music_position_) + "\n").toUtf8());
     file.write(("player_mode," + QString::number(player_mode_) + "\n").toUtf8());
+    file.write(("download_dir," + download_dir_ + "\n").toUtf8());
     file.close();
 }
 
@@ -86,4 +88,8 @@ void SettingHandler::init_setting()
     auto v6 = setting_map.value("player_mode", {});
     if (! v6.isEmpty())
         set_player_mode((PLAYER_MODE)v6.begin()->toInt());
+
+    auto v7 = setting_map.value("download_dir", {});
+    if (! v7.isEmpty())
+        set_download_dir(*v7.begin());
 }

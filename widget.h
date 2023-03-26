@@ -43,6 +43,8 @@ private slots:
     void on_btn_music_name_clicked();
     void on_btn_open_dir_clicked();
     void on_btn_change_dir_clicked();
+    void on_btn_open_dir_download_clicked();
+    void on_btn_change_dir_download_clicked();
     void on_btn_local_clicked();
     void on_btn_mysite_clicked();
     void on_btn_online_clicked();
@@ -62,6 +64,7 @@ private:
     void init_local();
     void init_mysite();
     void init_online();
+    void draw_image(QImage image, bool online = false);
     void dragEnterEvent(QDragEnterEvent *);
     void dropEvent(QDropEvent *);
     void mousePressEvent(QMouseEvent *);
@@ -69,6 +72,7 @@ private:
     void mouseReleaseEvent(QMouseEvent *);
     void keyPressEvent(QKeyEvent *);
     void keyReleaseEvent(QKeyEvent *);
+    void clear_button(QVBoxLayout* layout);
 
     Ui::Widget *ui;
     Hook* hook_;

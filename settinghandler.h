@@ -28,6 +28,8 @@ public:
     void set_music_position(qint64 pos) {music_position_ = pos; write_all();}
     PLAYER_MODE get_player_mode() {return player_mode_;}
     void set_player_mode(PLAYER_MODE player_mode) {player_mode_ = player_mode; write_all();}
+    QString get_download_dir() {return download_dir_;}
+    void set_download_dir(const QString& download_dir) {download_dir_ = download_dir; write_all();}
 
 private:
     SettingHandler();
@@ -42,6 +44,7 @@ private:
     float volume_;
     qint64 music_position_;
     PLAYER_MODE player_mode_;
+    QString download_dir_;
 };
 
 #define SETTING_HANDLER SettingHandler::getInstance()

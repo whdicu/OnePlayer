@@ -74,7 +74,6 @@ Widget::Widget(const QString& filepath, QWidget *parent)
     setWindowFlags(Qt::FramelessWindowHint);
     setAttribute(Qt::WA_TranslucentBackground);
     setAcceptDrops(true);
-    grabKeyboard();
     hook_->installHook();
     connect(hook_, &Hook::sendKeyType, this, &Widget::slot_key_pressed);
     ui->stacked_widget->setCurrentIndex(2);
@@ -201,28 +200,7 @@ void Widget::set_listener()
 //        QString genre = meta_data.value(QMediaMetaData::Genre).toString();  // 流派
 //        QStringList contributing_artist = meta_data.value(QMediaMetaData::ContributingArtist).toStringList();  // 去重 贡献艺术家
 
-
-        // 绘制圆角图片
-        static QImage default_image(":/images/music.png");
-        if (thumbnail_image.isNull())
-            thumbnail_image = default_image;
-        QPixmap pixmap = QPixmap::fromImage(thumbnail_image);
-
-        QPixmap resultPixmap(ui->label_image->size());
-        resultPixmap.fill(Qt::transparent);
-        QPainter painter(&resultPixmap);
-        painter.setRenderHints(QPainter::Antialiasing);
-        painter.setRenderHints(QPainter::SmoothPixmapTransform);
-        QPainterPath path;  // 绘制路径
-        //绘制圆角矩形，其中最后两个参数值的范围为（0-99），就是圆角的px值
-        path.addRoundedRect(0, 0, ui->label_image->width(), ui->label_image->height(), 20, 20);
-        painter.setClipPath(path);
-        painter.drawPixmap(0, 0, ui->label_image->width(), ui->label_image->height()
-                           , pixmap.scaled(resultPixmap.size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
-
-        ui->label_image->setPixmap(resultPixmap);
-        ui->widget_music_mask->setPixmap(pixmap);
-        ui->page_music_info->setStyleSheet(QString("QLabel{color: %1;}").arg(getTextColor(thumbnail_image)));
+        draw_image(thumbnail_image);
 
         // 设置歌曲名
         if (!title.isEmpty())
@@ -512,6 +490,8 @@ void Widget::add_online_music(const MusicInfo& music)
     OnlineMusicButton* btn = new OnlineMusicButton(music, this);
     connect(btn, &BaseMusicButton::clicked, this, [this, btn]()
     {
+        // 重新设置旧的歌曲按钮的颜色
+        btn_list_.at(now_music_index_)->setNormalStyle();
         now_music_index_ = btn_list_.indexOf(btn);
         play_music(btn);
 
@@ -524,7 +504,31 @@ void Widget::add_online_music(const MusicInfo& music)
     });
     connect(btn, &OnlineMusicButton::download_clicked, this, [this, btn]()
     {
+        if (SETTING_HANDLER->get_download_dir().isEmpty())
+        {
+            QMessageBox::warning(this, tr("警告你"), tr("请先选择下载歌曲保存目录"));
+            on_btn_change_dir_download_clicked();
+            if (SETTING_HANDLER->get_download_dir().isEmpty())
+            {
+                QMessageBox::warning(this, tr("警告你"), tr("你选择的目录为空"));
+                return;
+            }
+        }
 
+        QDir dir(SETTING_HANDLER->get_download_dir());
+        if (!dir.exists())
+        {
+            dir.mkdir(SETTING_HANDLER->get_download_dir());
+        }
+        OnlineHandler::getInstance()->get_music_info(btn->get_info());
+        QByteArray data = OnlineHandler::getInstance()->get_music(btn->get_info().absolute_url_);
+
+        QString url = btn->get_info().absolute_url_.toString();
+        QString type = url.mid(url.lastIndexOf('.'));
+        QFile file(SETTING_HANDLER->get_download_dir() + "/" + btn->get_info().name_ + "-" + btn->get_info().singer_ + type);
+        file.open(QIODevice::WriteOnly);
+        file.write(data);
+        file.close();
     });
 
     ui->music_layout_online->addWidget(btn);
@@ -558,11 +562,9 @@ void Widget::find_music(const QString& word)
 
 void Widget::init_local()
 {
-    for (BaseMusicButton* btn : btn_list_)
-    {
-        btn->deleteLater();
-    }
-    btn_list_.clear();
+    clear_button(ui->music_layout);
+
+    ui->stacked_info->setCurrentIndex(0);
 
     if (!SETTING_HANDLER->get_music_dir().isEmpty())
     {
@@ -589,11 +591,9 @@ void Widget::init_local()
 
 void Widget::init_mysite()
 {
-    for (BaseMusicButton* btn : btn_list_)
-    {
-        btn->deleteLater();
-    }
-    btn_list_.clear();
+    clear_button(ui->music_layout);
+
+    ui->stacked_info->setCurrentIndex(0);
 
     QTcpSocket* socket = new QTcpSocket(this);
     socket->connectToHost(IP, PORT);
@@ -633,15 +633,53 @@ void Widget::init_mysite()
 
 void Widget::init_online()
 {
-    for (BaseMusicButton* btn : btn_list_)
-    {
-        btn->deleteLater();
-    }
-    btn_list_.clear();
+    clear_button(ui->music_layout_online);
+    ui->stacked_info->setCurrentIndex(1);
 
     ui->btn_more->setIcon(QIcon(":/svgs/more.svg"));
     ui->stacked_widget->setCurrentIndex(0);
     ui->stacked_music_btn->setCurrentIndex(1);
+    draw_image(QImage(), true);
+}
+
+void Widget::draw_image(QImage image, bool online)
+{
+    QLabel* label = nullptr;
+    ImageWidget* mask = nullptr;
+    QWidget* page = nullptr;
+    if (online)
+    {
+        label = ui->label_image_online;
+        mask = ui->widget_music_mask_online;
+        page = ui->page_music_info_online;
+    }
+    else
+    {
+        label = ui->label_image;
+        mask = ui->widget_music_mask;
+        page = ui->page_music_info;
+    }
+    qDebug() << label;
+    static QImage default_image(":/images/music.png");
+    if (image.isNull())
+        image = default_image;
+    QPixmap pixmap = QPixmap::fromImage(image);
+
+    QPixmap resultPixmap(label->size());
+    resultPixmap.fill(Qt::transparent);
+    QPainter painter(&resultPixmap);
+    painter.setRenderHints(QPainter::Antialiasing);
+    painter.setRenderHints(QPainter::SmoothPixmapTransform);
+    QPainterPath path;  // 绘制路径
+    //绘制圆角矩形，其中最后两个参数值的范围为（0-99），就是圆角的px值
+    path.addRoundedRect(0, 0, label->width(), label->height(), 20, 20);
+    painter.setClipPath(path);
+    painter.drawPixmap(0, 0, label->width(), label->height()
+                       , pixmap.scaled(resultPixmap.size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+
+    label->setPixmap(resultPixmap);
+    mask->setPixmap(pixmap);
+    page->setStyleSheet(QString("QLabel{color: %1;}").arg(getTextColor(image)));
 }
 
 void Widget::dragEnterEvent(QDragEnterEvent *event)
@@ -705,7 +743,7 @@ void Widget::mouseReleaseEvent(QMouseEvent *)
 
 void Widget::keyPressEvent(QKeyEvent *event)
 {
-    qDebug() << event->key();
+//    qDebug() << event->key();
     switch (event->key())
     {
     case 32:  // space
@@ -761,7 +799,6 @@ void Widget::keyPressEvent(QKeyEvent *event)
             if (ui->find_widget->isHidden())
             {
                 ui->find_widget->show();
-                releaseKeyboard();
                 ui->le_find->setFocus();
             }
             else
@@ -771,13 +808,13 @@ void Widget::keyPressEvent(QKeyEvent *event)
             }
         }
         break;
-//    case 16777220:
-//    case 16777221:  // 回车
-//        if (ui->le_find->hasFocus())  // // 查找播放列表的输入框按下回车
-//        {
-//            find_music(ui->le_find->text());
-//        }
-//        break;
+    case 16777220:
+    case 16777221:  // 回车
+        if (ui->le_search->hasFocus())  // // 查找播放列表的输入框按下回车
+        {
+            on_btn_search_clicked();
+        }
+        break;
     }
 
     QWidget::keyPressEvent(event);
@@ -791,6 +828,22 @@ void Widget::keyReleaseEvent(QKeyEvent *event)
         pressed_ctrl_ = false;
         break;
     }
+}
+
+void Widget::clear_button(QVBoxLayout* layout)
+{
+    QLayoutItem* child;
+    while (true)
+    {
+        child = layout->itemAt(0);
+        if (nullptr == child)
+            break;
+
+        layout->removeItem(child);
+        if (child->widget())
+            delete child->widget();
+    }
+    btn_list_.clear();
 }
 
 Widget::~Widget()
@@ -949,28 +1002,17 @@ void Widget::on_btn_music_name_clicked()
 
 void Widget::on_btn_open_dir_clicked()
 {
-    QDesktopServices::openUrl(QUrl::fromLocalFile(ui->label_dir->text()));
+    QDesktopServices::openUrl(QUrl::fromLocalFile(SETTING_HANDLER->get_music_dir()));
 }
 
 // 更改初始目录按钮
 void Widget::on_btn_change_dir_clicked()
 {
-    QString str_dir = QFileDialog::getExistingDirectory(this, "选择音乐目录", ui->label_dir->text());
+    QString str_dir = QFileDialog::getExistingDirectory(this, "选择音乐目录", SETTING_HANDLER->get_music_dir());
     if (str_dir.isEmpty())
         return;
 
-    QLayoutItem* child;
-    while (true)
-    {
-        child = ui->music_layout->itemAt(0);
-        if (nullptr == child)
-            break;
-
-        ui->music_layout->removeItem(child);
-        if (child->widget())
-            delete child->widget();
-    }
-    btn_list_.clear();
+    clear_button(ui->music_layout);
 
     ui->label_dir->setText(str_dir);
     SETTING_HANDLER->set_music_dir(str_dir);
@@ -1009,6 +1051,21 @@ void Widget::on_btn_change_dir_clicked()
         play_music();
     }
     ui->btn_more->setIcon(QIcon(":/svgs/more.svg"));
+}
+
+void Widget::on_btn_open_dir_download_clicked()
+{
+    QDesktopServices::openUrl(QUrl::fromLocalFile(SETTING_HANDLER->get_download_dir()));
+}
+
+void Widget::on_btn_change_dir_download_clicked()
+{
+    QString str_dir = QFileDialog::getExistingDirectory(this, "选择下载歌曲保存目录", SETTING_HANDLER->get_download_dir());
+    if (str_dir.isEmpty())
+        return;
+
+    ui->label_dir_download->setText(str_dir);
+    SETTING_HANDLER->set_download_dir(str_dir);
 }
 
 void Widget::on_btn_local_clicked()
@@ -1059,6 +1116,8 @@ void Widget::on_btn_search_clicked()
     if (word.isEmpty())
         return;
 
+    clear_button(ui->music_layout_online);
+
     QList<MusicInfo> list = OnlineHandler::getInstance()->search_online_music(word);
     for (const MusicInfo& info : list)
     {
@@ -1076,7 +1135,14 @@ void Widget::play_music(BaseMusicButton* btn)
 
     if (SETTING_HANDLER->get_player_mode() == ONLINE)
     {
-        OnlineHandler::getInstance()->get_music_info(static_cast<OnlineMusicButton*>(btn)->get_info());
+        OnlineMusicButton* online_btn = static_cast<OnlineMusicButton*>(btn);
+
+        MusicInfo& info = online_btn->get_info();
+        OnlineHandler::getInstance()->get_music_info(info);
+        QImage image = OnlineHandler::getInstance()->get_image(info.image_url_);
+
+        ui->label_sound_name_online->setText(QString("%1  %2").arg(info.name_).arg(info.singer_));
+        draw_image(image, true);
     }
 
     btn->setPlayingStyle();

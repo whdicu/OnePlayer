@@ -16,7 +16,7 @@ OnlineHandler* OnlineHandler::getInstance()
     return online_handler;
 }
 
-QByteArray OnlineHandler::get_html(const QUrl &url)
+QByteArray OnlineHandler::get_html(const QUrl& url)
 {
     QNetworkRequest request(url);
     QNetworkAccessManager* manager(new QNetworkAccessManager());
@@ -96,6 +96,26 @@ void OnlineHandler::get_music_info(MusicInfo& music)
     {
         music.lyrics_ = match3.capturedTexts().at(1).split("<br />\n");
     }
+}
+
+QImage OnlineHandler::get_image(const QString& url)
+{
+    QNetworkRequest request(url);
+    QNetworkAccessManager* manager(new QNetworkAccessManager());
+    manager->get(request);
+    QByteArray data;
+
+    QEventLoop loop;
+    manager->connect(manager, &QNetworkAccessManager::finished, manager, [&data, &loop](QNetworkReply *reply)
+    {
+        data = reply->readAll();
+        loop.quit();
+    });
+    loop.exec();
+
+    QImage image;
+    image.loadFromData(data);
+    return image;
 }
 
 OnlineHandler::OnlineHandler()

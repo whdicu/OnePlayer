@@ -1,7 +1,7 @@
 #ifndef ONLINEHANDLER_H
 #define ONLINEHANDLER_H
 
-#include "qurl.h"
+#include <QImage>
 #include <QList>
 #include <QString>
 #include <QUrl>
@@ -35,6 +35,12 @@ public:
 
     // 根据一个音乐页面的链接，获取音乐文件的链接
     void get_music_info(MusicInfo& music);
+
+    // 根据图片链接获取图片
+    QImage get_image(const QString& url);
+
+    // 根据音乐链接获取音乐
+    QByteArray get_music(const QUrl& url) {return get_html(url);}
 
 private:
     OnlineHandler();
