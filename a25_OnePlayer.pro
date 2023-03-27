@@ -13,6 +13,7 @@ CONFIG += c++11
 SOURCES += \
     hook.cpp \
     imagewidget.cpp \
+    lyricswidget.cpp \
     main.cpp \
     musicbutton.cpp \
     onlinehandler.cpp \
@@ -24,6 +25,7 @@ HEADERS += \
     basemusicbutton.h \
     hook.h \
     imagewidget.h \
+    lyricswidget.h \
     musicbutton.h \
     onlinehandler.h \
     onlinemusicbutton.h \
@@ -31,6 +33,7 @@ HEADERS += \
     widget.h
 
 FORMS += \
+    lyricswidget.ui \
     musicbutton.ui \
     onlinemusicbutton.ui \
     widget.ui

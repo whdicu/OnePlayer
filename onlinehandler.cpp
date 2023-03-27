@@ -34,12 +34,12 @@ QByteArray OnlineHandler::get_html(const QUrl& url)
     return data;
 }
 
-QList<MusicInfo> OnlineHandler::search_online_music(const QString& word)
+DList<MusicInfo> OnlineHandler::search_online_music(const QString& word)
 {
     QString text = get_html(QString("%1/s/%2").arg(WEBSITE).arg(word));
     static QRegularExpression reg1("<tr>([\\s\\S]*?)</tr>");
     QRegularExpressionMatchIterator it = reg1.globalMatch(text);
-    QList<MusicInfo> ret;
+    DList<MusicInfo> ret;
     while (it.hasNext())
     {
         QRegularExpressionMatch match = it.next();
@@ -68,7 +68,7 @@ QList<MusicInfo> OnlineHandler::search_online_music(const QString& word)
         }
 
         if (! music.isEmpty())
-            ret.push_back(music);
+            ret.pushBack(music);
     }
     return ret;
 }
@@ -94,7 +94,26 @@ void OnlineHandler::get_music_info(MusicInfo& music)
     auto match3 = reg3.match(text);
     if (match3.hasMatch())
     {
-        music.lyrics_ = match3.capturedTexts().at(1).split("<br />\n");
+        music.lyrics_.clear();
+        QStringList temp = match3.capturedTexts().at(1).split("<br />\n");
+        for (const QString& one : temp)
+        {
+            int i1 = one.indexOf('[');
+            int i2 = one.indexOf(']');
+            if (-1 == i1 || -1 == i2)
+                continue;
+
+            QStringList minute_second = one.mid(i1 + 1, i2 - i1 - 1).split(':');
+            if (minute_second.size() != 2)
+                continue;
+
+            double minutes = minute_second.first().toDouble();
+            double seconds = minute_second.back().toDouble();
+
+            qint64 duration = (minutes * 60 + seconds) * qint64(1000);
+            Lyric ly(duration, one.mid(i2 + 1));
+            music.lyrics_.pushBack(ly);
+        }
     }
 }
 

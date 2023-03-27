@@ -70,7 +70,6 @@ Widget::Widget(const QString& filepath, QWidget *parent)
     , this_is_move_window(false)
 {
     ui->setupUi(this);
-
     setWindowFlags(Qt::FramelessWindowHint);
     setAttribute(Qt::WA_TranslucentBackground);
     setAcceptDrops(true);
@@ -321,7 +320,10 @@ void Widget::set_listener()
             auto rest_time = (player_->duration() - pos) / 1000;
             ui->label_now->setText(QString::number(time_s / 60).append(":%1").arg(time_s % 60, 2, 10, QLatin1Char('0')));
             ui->label_rest->setText(QString::number(rest_time / 60).append(":%1").arg(rest_time % 60, 2, 10, QLatin1Char('0')));
-            ui->progress->setValue(pos);  // 进度条1格对应1秒
+            ui->progress->setValue(pos);
+
+            if (SETTING_HANDLER->get_player_mode() == ONLINE)
+                ui->lyrics_widget->set_duration(pos);
         }
 
         // 进度超过最大，强制播放下一首
@@ -659,7 +661,7 @@ void Widget::draw_image(QImage image, bool online)
         mask = ui->widget_music_mask;
         page = ui->page_music_info;
     }
-    qDebug() << label;
+
     static QImage default_image(":/images/music.png");
     if (image.isNull())
         image = default_image;
@@ -679,7 +681,10 @@ void Widget::draw_image(QImage image, bool online)
 
     label->setPixmap(resultPixmap);
     mask->setPixmap(pixmap);
-    page->setStyleSheet(QString("QLabel{color: %1;}").arg(getTextColor(image)));
+
+    QString text_color = getTextColor(image);
+    page->setStyleSheet(QString("QLabel{color: %1;}").arg(text_color));
+    ui->lyrics_widget->set_color(text_color == "#5c5c66");
 }
 
 void Widget::dragEnterEvent(QDragEnterEvent *event)
@@ -1118,7 +1123,7 @@ void Widget::on_btn_search_clicked()
 
     clear_button(ui->music_layout_online);
 
-    QList<MusicInfo> list = OnlineHandler::getInstance()->search_online_music(word);
+    DList<MusicInfo> list = OnlineHandler::getInstance()->search_online_music(word);
     for (const MusicInfo& info : list)
     {
         add_online_music(info);
@@ -1127,12 +1132,13 @@ void Widget::on_btn_search_clicked()
 
 void Widget::play_music(BaseMusicButton* btn)
 {
+    qDebug() << 1;
     if (nullptr == btn)
     {
         player_->setSource(QUrl());
         return;
     }
-
+    qDebug() << 2;
     if (SETTING_HANDLER->get_player_mode() == ONLINE)
     {
         OnlineMusicButton* online_btn = static_cast<OnlineMusicButton*>(btn);
@@ -1140,14 +1146,18 @@ void Widget::play_music(BaseMusicButton* btn)
         MusicInfo& info = online_btn->get_info();
         OnlineHandler::getInstance()->get_music_info(info);
         QImage image = OnlineHandler::getInstance()->get_image(info.image_url_);
-
+qDebug() << 3;
         ui->label_sound_name_online->setText(QString("%1  %2").arg(info.name_).arg(info.singer_));
+        qDebug() << 4;
+        ui->lyrics_widget->set_lyrics(info.lyrics_);
+        qDebug() << 5;
         draw_image(image, true);
+        qDebug() << 6;
     }
 
     btn->setPlayingStyle();
     player_->setSource(btn->get_url());
-    qDebug() << btn->get_url();
+//    qDebug() << btn->get_url();
     player_->play();
 //    switch (SETTING_HANDLER->get_player_mode())
 //    {

@@ -203,7 +203,7 @@ QLabel {
     <number>1</number>
    </property>
    <property name="currentIndex">
-    <number>1</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="music">
     <widget class="QStackedWidget" name="stacked_info">
@@ -339,6 +339,16 @@ QLabel {
         <bool>false</bool>
        </property>
       </widget>
+      <widget class="LyricsWidget" name="lyrics_widget" native="true">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>290</y>
+         <width>360</width>
+         <height>99</height>
+        </rect>
+       </property>
+      </widget>
       <widget class="ImageWidget" name="widget_music_mask_online" native="true">
        <property name="geometry">
         <rect>
@@ -350,6 +360,7 @@ QLabel {
        </property>
       </widget>
       <zorder>widget_music_mask_online</zorder>
+      <zorder>lyrics_widget</zorder>
       <zorder>label_image_online</zorder>
       <zorder>label_sound_name_online</zorder>
      </widget>
@@ -1439,6 +1450,12 @@ QLabel {
    <class>ImageWidget</class>
    <extends>QWidget</extends>
    <header location="global">imagewidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>LyricsWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">lyricswidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
