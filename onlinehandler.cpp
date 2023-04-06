@@ -90,12 +90,14 @@ void OnlineHandler::get_music_info(MusicInfo& music)
         music.image_url_ = match2.capturedTexts().at(1);
     }
 
-    static QRegularExpression reg3("<div class=\"content-lrc mt-1\">([\\s\\S]*?)</div>");
+    static QRegularExpression reg3("<a id=\"btn-download-lrc\" href=\"(.*?)\"");
     auto match3 = reg3.match(text);
     if (match3.hasMatch())
     {
         music.lyrics_.clear();
-        QStringList temp = match3.capturedTexts().at(1).split("<br />\n");
+        QString lyrics_url = WEBSITE + match3.capturedTexts().at(1);
+        QString lyrics_str = get_html(lyrics_url).trimmed();
+        QStringList temp = lyrics_str.split('\n');
         for (const QString& one : temp)
         {
             int i1 = one.indexOf('[');
