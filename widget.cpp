@@ -79,6 +79,7 @@ Widget::Widget(const QString& filepath, QWidget *parent)
 
     ui->find_widget->hide();
     ui->label_dir->setText(SETTING_HANDLER->get_music_dir());
+    ui->label_dir_download->setText(SETTING_HANDLER->get_download_dir());
 
     // 圆角遮罩
     QWidget* ww = new QWidget(ui->music);
@@ -107,11 +108,13 @@ Widget::Widget(const QString& filepath, QWidget *parent)
     }
     else
     {
+        SETTING_HANDLER->set_player_mode(LOCAL);
         ui->stacked_widget->setCurrentIndex(0);
         QUrl url = QUrl::fromLocalFile(filepath);
         add_music(url);
         now_music_index_ = 0;
         play_music(btn_list_.first());
+        draw_image(QImage());
     }
 
     play_mode = SETTING_HANDLER->get_old_mode();
@@ -380,9 +383,9 @@ void Widget::load_music_list(QStringList &list)
 
         for (const auto &url_str : list)
         {
-            if (SETTING_HANDLER->get_player_mode())
+            if (MYSITE == SETTING_HANDLER->get_player_mode())
             {
-                add_music(url_str);
+                add_music(QString("http://%1:%2/%3").arg(IP).arg(PORT).arg(url_str));
             }
             else
             {
@@ -697,6 +700,15 @@ void Widget::dropEvent(QDropEvent *event)
     // 在设置页不接受拖入事件
     if (ui->stacked_widget->currentIndex() == 1)
         return;
+
+    if (SETTING_HANDLER->get_player_mode() != LOCAL)
+    {
+        SETTING_HANDLER->set_player_mode(LOCAL);
+        clear_button(ui->music_layout);
+
+        ui->stacked_info->setCurrentIndex(0);
+        ui->stacked_music_btn->setCurrentIndex(0);
+    }
 
     bool play = btn_list_.isEmpty();
 
@@ -1132,13 +1144,12 @@ void Widget::on_btn_search_clicked()
 
 void Widget::play_music(BaseMusicButton* btn)
 {
-    qDebug() << 1;
     if (nullptr == btn)
     {
         player_->setSource(QUrl());
         return;
     }
-    qDebug() << 2;
+
     if (SETTING_HANDLER->get_player_mode() == ONLINE)
     {
         OnlineMusicButton* online_btn = static_cast<OnlineMusicButton*>(btn);
@@ -1146,14 +1157,13 @@ void Widget::play_music(BaseMusicButton* btn)
         MusicInfo& info = online_btn->get_info();
         OnlineHandler::getInstance()->get_music_info(info);
         QImage image = OnlineHandler::getInstance()->get_image(info.image_url_);
-qDebug() << 3;
+
         ui->label_sound_name_online->setText(QString("%1  %2").arg(info.name_).arg(info.singer_));
-        qDebug() << 4;
         ui->lyrics_widget->set_lyrics(info.lyrics_);
-        qDebug() << 5;
         draw_image(image, true);
-        qDebug() << 6;
     }
+
+    qDebug() << btn->get_url();
 
     btn->setPlayingStyle();
     player_->setSource(btn->get_url());
