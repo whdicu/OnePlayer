@@ -130,7 +130,9 @@ Widget::Widget(const QString& filepath, QWidget *parent)
         break;
     case RANDOM:
         random_index_ = 0;
-        random_index_list_.pushBack(now_music_index_);
+        DSizeType music_index = QRandomGenerator64::global()->bounded(0, (int)btn_list_.size());
+        random_index_list_.pushBack(music_index);
+        now_music_index_ = random_index_list_.at(0);
         player_->setLoops(1);
         ui->btn_mode->setIcon(QIcon(":/svgs/random.svg"));
         break;
@@ -406,13 +408,20 @@ void Widget::load_music_list(QStringList &list)
 
         if (now_music_index_ == btn_list_.size())  // 如果上次播放的音乐不在这个文件夹中，则从头开始播放
         {
-            now_music_index_ = 0;
-            play_music(btn_list_.first());
+            qDebug() << play_mode;
+            if (play_mode == RANDOM)
+            {
+                random_index_list_.clear();
+                random_index_ = 0;
+                DSizeType music_index = QRandomGenerator64::global()->bounded(0, (int)btn_list_.size());
+                random_index_list_.pushBack(music_index);
+                now_music_index_ = random_index_list_.at(0);
+            }
+            else
+                now_music_index_ = 0;
+
         }
-        else
-        {
-            play_music(btn_list_.at(now_music_index_));
-        }
+        play_music(btn_list_.at(now_music_index_));
     }
 }
 
@@ -435,7 +444,7 @@ void Widget::next_music()
             DSizeType music_index = QRandomGenerator64::global()->bounded(0, (int)btn_list_.size());
             random_index_list_.pushBack(music_index);
         }
-            now_music_index_ = random_index_list_.at(random_index_);
+        now_music_index_ = random_index_list_.at(random_index_);
     }
 
     play_music(btn_list_.at(now_music_index_));
@@ -1163,7 +1172,7 @@ void Widget::play_music(BaseMusicButton* btn)
         draw_image(image, true);
     }
 
-    qDebug() << btn->get_url();
+    qDebug() << "播放->" << btn->get_url();
 
     btn->setPlayingStyle();
     player_->setSource(btn->get_url());
