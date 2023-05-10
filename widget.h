@@ -28,6 +28,8 @@ class Widget : public QWidget
 public:
     Widget(const QString& filepath="", QWidget *parent=nullptr);
     ~Widget();
+    void animateShow();
+    void animateHide(bool closeAfterFinshed=false);
 
 private slots:
     void slot_key_pressed(DWORD key);

@@ -9,8 +9,8 @@ namespace Ui {
 class MusicButton;
 }
 
-static const QString NORMAL_STYLE = "QPushButton {color: #5c5c66;background-color: rgba(182, 209, 200, 0.25);border-radius: 15px;padding-left: 10px;} QPushButton:hover {background-color: rgba(182, 209, 200, 0.5);}";
-static const QString PLAYING_STYLE = "QPushButton {color: #5c5c66;background-color: rgb(182, 209, 200);border-radius: 15px;padding-left: 10px;}";
+static const QString NORMAL_STYLE = "QPushButton {color: #5c5c66;background-color: rgba(182, 209, 200, 0.25);border-radius: 15px; padding-left: 10px; padding-right: 10px;} QPushButton:hover {background-color: rgba(182, 209, 200, 0.5);}";
+static const QString PLAYING_STYLE = "QPushButton {color: #5c5c66;background-color: rgb(182, 209, 200);border-radius: 15px; padding-left: 10px; padding-right: 10px;}";
 
 class MusicButton : public BaseMusicButton
 {

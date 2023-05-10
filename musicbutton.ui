@@ -6,19 +6,25 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>785</width>
+    <width>460</width>
     <height>45</height>
    </rect>
   </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
   <property name="minimumSize">
    <size>
-    <width>0</width>
+    <width>460</width>
     <height>45</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>16777215</width>
+    <width>460</width>
     <height>45</height>
    </size>
   </property>
@@ -31,6 +37,8 @@
 	background-color: rgba(182, 209, 200, 0.25);
 	border-radius: 15px;
 	padding-left: 10px;
+	padding-right: 10px;
+	/*text-overflow: ellipsis;*//*无效*/
 }
 
 #btn_name:hover {
@@ -56,7 +64,7 @@
    <item>
     <widget class="QPushButton" name="btn_name">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>

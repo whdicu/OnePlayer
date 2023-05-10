@@ -24,10 +24,14 @@
 #include <QTcpSocket>
 #include <QTimer>
 #include "settinghandler.h"
+#include "dmenu.h"
+#include <QPropertyAnimation>
+#include <QProcess>
 
 static QStringList TYPE_LIST = {"mp3", "flac", "wav", "ogg", "acc", "m4a"};
 const static QString IP = "47.113.231.74";
 const static int PORT = 9002;
+const static int TIME250 = 250;
 
 QRgb getMainColor(const QImage& image)
 {
@@ -56,6 +60,13 @@ QString getTextColor(const QImage& image)
         return "#b6d1c8";
     else
         return "#5c5c66";
+}
+
+bool point_in_widget(QWidget* widget, QPoint pos)
+{
+    QPoint p = widget->mapToGlobal(QPoint(0, 0));
+    return (pos.x() > p.x() && pos.x() < p.x() + widget->width() &&
+        pos.y() > p.y() && pos.y() < p.y() + widget->height());
 }
 
 Widget::Widget(const QString& filepath, QWidget *parent)
@@ -141,6 +152,56 @@ Widget::Widget(const QString& filepath, QWidget *parent)
 
 void Widget::set_listener()
 {
+    // 菜单失去焦点，判断是否需要隐藏
+    connect(DMenu::getButtonMenu(), &DMenu::maybeNeedHide, this, [this]()
+    {
+        QPoint pos = QCursor::pos();
+        // 遍历所有按钮，判断鼠标的绝对坐标是否在某个按钮上
+        bool need_hide = true;
+        for (BaseMusicButton* btn : btn_list_)
+        {
+            if (point_in_widget(btn, pos))
+            {
+                need_hide = false;
+                break;
+            }
+        }
+
+        if (need_hide)
+            DMenu::getButtonMenu()->animateHide();
+    });
+
+    // 菜单中点了某一项
+    connect(DMenu::getButtonMenu(), &DMenu::btn_clicked, this, [this](QString text)
+    {
+        if (text == "下一首播放")
+        {
+
+        }
+        else if (text == "打开文件所在位置")
+        {
+            QUrl url = DMenu::getButtonMenu()->getNowBtn()->get_url();
+            QString path = url.toLocalFile();
+//            int i = path.lastIndexOf('/');
+//            QString dir_path = path.mid(0, i);
+//            QDesktopServices::openUrl(QUrl::fromLocalFile(dir_path));
+
+            QProcess process;
+            path.replace("/", "\\"); // 只能识别 "\"
+            QString cmd = QString("\"%1\"").arg(path);
+            qDebug() << cmd;
+            process.startDetached("explorer.exe", {"/select,", path});
+        }
+        else if (text == "从列表中移除")
+        {
+
+        }
+        else if (text == "删除")
+        {
+
+        }
+    });
+
     // 音乐播放状态改变事件
     connect(player_, &QMediaPlayer::playbackStateChanged, this, [this](QMediaPlayer::PlaybackState state)
     {
@@ -481,6 +542,7 @@ void Widget::previous_music()
 void Widget::add_music(const QUrl& url)
 {
     MusicButton* btn = new MusicButton(url, this);
+    btn->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(btn, &MusicButton::clicked, this, [this, btn]()
     {
         // 重新设置旧的歌曲按钮的颜色
@@ -494,6 +556,11 @@ void Widget::add_music(const QUrl& url)
             random_index_list_.pushBack(now_music_index_);
             now_music_index_ = random_index_list_.at(random_index_);
         }
+    });
+    connect(btn, &QPushButton::customContextMenuRequested, this, [btn](const QPoint& pos)
+    {
+        DMenu* menu = DMenu::getButtonMenu();
+        menu->show(btn);
     });
     ui->music_layout->addWidget(btn);
     btn_list_.pushBack(btn);
@@ -872,6 +939,57 @@ void Widget::clear_button(QVBoxLayout* layout)
     btn_list_.clear();
 }
 
+void Widget::animateShow()
+{
+    QWidget::show();
+    int startx = QCursor::pos().x();
+    int starty = QCursor::pos().y();
+    int endx = startx - width() / 2;
+    if (endx < 0)
+        endx = 0;
+    int endy = starty - height() / 2;
+    if (endy < 0)
+        endy = 0;
+    static QPropertyAnimation* animation = nullptr;
+    if (nullptr == animation)
+    {
+        animation = new QPropertyAnimation(this, "geometry");
+        animation->setDuration(TIME250);
+        animation->setEasingCurve(QEasingCurve::InOutQuad);
+    }
+    animation->setStartValue(QRect(startx, starty, 0, 0));
+    animation->setEndValue(QRect(endx, endy, width(), height()));
+    animation->start();
+}
+
+void Widget::animateHide(bool closeAfterFinshed)
+{
+    int newx = QCursor::pos().x();
+    int newy = QCursor::pos().y();
+    int w = width();
+    int h = height();
+
+    QPropertyAnimation* animation = new QPropertyAnimation(this, "geometry");
+    animation->setDuration(TIME250);
+    animation->setEasingCurve(QEasingCurve::InOutQuad);
+    if (closeAfterFinshed)
+        connect(animation, &QPropertyAnimation::finished, this, &QWidget::close);
+    else
+        connect(animation, &QPropertyAnimation::finished, this, [this, animation, w, h]()
+        {
+            resize(w, h);
+            show();
+            animation->deleteLater();
+//            resize(w, h);
+            setWindowState(Qt::WindowMinimized);
+
+        });
+
+    animation->setStartValue(QRect(x(), y(), width(), height()));
+    animation->setEndValue(QRect(newx, newy, 0, 0));
+    animation->start();
+}
+
 Widget::~Widget()
 {
     delete ui;
@@ -904,7 +1022,7 @@ void Widget::slot_key_pressed(DWORD key)
 // 关闭
 void Widget::on_btn_shutdown_clicked()
 {
-    close();
+    animateHide(true);
 }
 
 // 播放/暂停
@@ -1009,6 +1127,7 @@ void Widget::on_btn_more_clicked()
 void Widget::on_btn_min_clicked()
 {
     setWindowState(Qt::WindowMinimized);
+//    animateHide();
 }
 
 // 歌曲名按钮
