@@ -14,6 +14,7 @@
 #include <QMessageBox>
 #include <QMimeData>
 #include <QMouseEvent>
+#include <QMutex>
 #include <QPainter>
 #include <QPainterPath>
 #include <QPixmap>
@@ -907,8 +908,10 @@ void Widget::clear_button(QVBoxLayout* layout)
     btn_list_.clear();
 }
 
+
 void Widget::refreshImageWidget(const QImage& image, const QString& title, const QString& singers, const QString& album_title)
 {
+//    static QMutex mutex;
     static QPropertyAnimation* animationHide = nullptr;
     static QPropertyAnimation* animationShow = nullptr;
     static QGraphicsOpacityEffect* opacityEffect = nullptr;
@@ -932,8 +935,15 @@ void Widget::refreshImageWidget(const QImage& image, const QString& title, const
         animationShow->setDuration(TIME350);
 
         connect(animationHide, &QPropertyAnimation::finished, &loop, &QEventLoop::quit);
+//        connect(animationShow, &QPropertyAnimation::finished, this, []()
+//        {
+////            mutex.unlock();
+//        });
     }
 
+//    mutex.lock();
+    if (loop.isRunning())
+        loop.quit();
     animationHide->start();
     loop.exec();
 
@@ -1296,7 +1306,6 @@ void Widget::on_btn_search_clicked()
 void Widget::play_music(DSizeType musicIndex)
 {
     // 重新设置旧的歌曲按钮的颜色
-    qDebug() << "old =" << now_music_index_;
     btn_list_.at(now_music_index_)->setNormalStyle();
 
     if (musicIndex >= btn_list_.size())
