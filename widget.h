@@ -55,7 +55,7 @@ private slots:
     void on_btn_search_clicked();
 
 private:
-    void play_music(BaseMusicButton* btn = nullptr);
+    void play_music(DSizeType musicIndex);
     void set_listener();
     void load_music_list(QStringList& list);
     void next_music();
@@ -75,6 +75,7 @@ private:
     void keyPressEvent(QKeyEvent *);
     void keyReleaseEvent(QKeyEvent *);
     void clear_button(QVBoxLayout* layout);
+    void refreshImageWidget(const QImage& image, const QString& title, const QString& singers, const QString& album_title);
 
     Ui::Widget *ui;
     Hook* hook_;

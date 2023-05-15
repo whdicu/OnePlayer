@@ -203,7 +203,7 @@ QLabel {
     <number>1</number>
    </property>
    <property name="currentIndex">
-    <number>1</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="music">
     <widget class="QStackedWidget" name="stacked_info">
@@ -216,7 +216,7 @@ QLabel {
       </rect>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="page_music_info">
       <widget class="ImageWidget" name="widget_music_mask" native="true">
@@ -375,7 +375,7 @@ QLabel {
       </rect>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="page_local_mysite">
       <widget class="QScrollArea" name="scrollArea">
