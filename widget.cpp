@@ -468,13 +468,7 @@ void Widget::load_music_list(QStringList &list)
 void Widget::next_music()
 {
     DSizeType newMusicIndex = now_music_index_;
-    if (play_mode == AGAIN)  // 循环播放
-    {
-        ++now_music_index_;
-        if (now_music_index_ == btn_list_.size())
-            newMusicIndex = 0;
-    }
-    else if (play_mode == RANDOM)  // 随机播放
+    if (play_mode == RANDOM)  // 随机播放
     {
         ++random_index_;
         if (random_index_ == random_index_list_.size())
@@ -483,6 +477,12 @@ void Widget::next_music()
             random_index_list_.pushBack(music_index);
         }
         newMusicIndex = random_index_list_.at(random_index_);
+    }
+    else
+    {
+        ++newMusicIndex;
+        if (newMusicIndex == btn_list_.size())
+            newMusicIndex = 0;
     }
 
     play_music(newMusicIndex);
@@ -505,10 +505,10 @@ void Widget::previous_music()
     }
     else
     {
-        if (now_music_index_ == 0)
+        if (newMusicIndex == 0)
             newMusicIndex = btn_list_.size() - 1;
         else
-            --now_music_index_;
+            --newMusicIndex;
 
     }
     play_music(newMusicIndex);
