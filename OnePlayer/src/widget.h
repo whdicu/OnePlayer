@@ -1,7 +1,7 @@
 #ifndef WIDGET_H
 #define WIDGET_H
 
-#include "HDBase/DList.hpp"
+#include "DList.hpp"
 #include "hook.h"
 #include "basemusicbutton.h"
 #include "onlinehandler.h"
