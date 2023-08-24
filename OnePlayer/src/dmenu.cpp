@@ -1,4 +1,4 @@
-#include "dmenu.h"
+﻿#include "dmenu.h"
 #include <QDebug>
 #include <QVBoxLayout>
 #include <QPushButton>
@@ -38,7 +38,7 @@ static DMenu* button_menu = nullptr;
 DMenu* DMenu::getButtonMenu()
 {
     if (nullptr == button_menu)
-        button_menu = new DMenu({ "下一首播放", "打开文件所在位置", "从列表中移除", "删除" });
+		button_menu = new DMenu({"下一首播放", "打开文件所在位置", "从列表中移除", "删除"});
     return button_menu;
 }
 

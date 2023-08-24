@@ -1,6 +1,6 @@
 #ifndef WIDGET_H
 #define WIDGET_H
-
+#pragma execution_character_set("utf-8")
 #include "DList.hpp"
 #include "hook.h"
 #include "basemusicbutton.h"
@@ -82,7 +82,7 @@ private:
     PLAY_MODE play_mode;
     bool moving_progress;
     QMediaPlayer* player_;
-    QAudioOutput* audio_op_;
+    //QAudioOutput* audio_op_;
     DSizeType now_music_index_;
     DList<BaseMusicButton*> btn_list_;
     DSizeType find_index;

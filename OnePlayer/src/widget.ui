@@ -17,7 +17,7 @@
    <string>OnePlayer</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="res.qrc">
+   <iconset>
     <normaloff>:/icon.ico</normaloff>:/icon.ico</iconset>
   </property>
   <property name="styleSheet">
@@ -216,7 +216,7 @@ QLabel {
       </rect>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="page_music_info">
       <widget class="ImageWidget" name="widget_music_mask" native="true">
@@ -375,7 +375,7 @@ QLabel {
       </rect>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="page_local_mysite">
       <widget class="QScrollArea" name="scrollArea">
@@ -608,7 +608,7 @@ QLabel {
             <string/>
            </property>
            <property name="icon">
-            <iconset resource="res.qrc">
+            <iconset resource="../res/res.qrc">
              <normaloff>:/svgs/back.svg</normaloff>:/svgs/back.svg</iconset>
            </property>
           </widget>
@@ -633,7 +633,7 @@ QLabel {
             <string/>
            </property>
            <property name="icon">
-            <iconset resource="res.qrc">
+            <iconset resource="../res/res.qrc">
              <normaloff>:/svgs/right.svg</normaloff>:/svgs/right.svg</iconset>
            </property>
           </widget>
@@ -1074,7 +1074,7 @@ QLabel {
      <string/>
     </property>
     <property name="icon">
-     <iconset resource="res.qrc">
+     <iconset resource="../res/res.qrc">
       <normaloff>:/svgs/shutdown.svg</normaloff>:/svgs/shutdown.svg</iconset>
     </property>
     <property name="iconSize">
@@ -1108,7 +1108,7 @@ QLabel {
      <string/>
     </property>
     <property name="icon">
-     <iconset resource="res.qrc">
+     <iconset resource="../res/res.qrc">
       <normaloff>:/svgs/play.svg</normaloff>:/svgs/play.svg</iconset>
     </property>
     <property name="iconSize">
@@ -1142,7 +1142,7 @@ QLabel {
      <string/>
     </property>
     <property name="icon">
-     <iconset resource="res.qrc">
+     <iconset resource="../res/res.qrc">
       <normaloff>:/svgs/jian.svg</normaloff>:/svgs/jian.svg</iconset>
     </property>
     <property name="iconSize">
@@ -1176,7 +1176,7 @@ QLabel {
      <string/>
     </property>
     <property name="icon">
-     <iconset resource="res.qrc">
+     <iconset resource="../res/res.qrc">
       <normaloff>:/svgs/jia.svg</normaloff>:/svgs/jia.svg</iconset>
     </property>
     <property name="iconSize">
@@ -1300,7 +1300,7 @@ QLabel {
      <string/>
     </property>
     <property name="icon">
-     <iconset resource="res.qrc">
+     <iconset resource="../res/res.qrc">
       <normaloff>:/svgs/previous.svg</normaloff>:/svgs/previous.svg</iconset>
     </property>
     <property name="iconSize">
@@ -1334,7 +1334,7 @@ QLabel {
      <string/>
     </property>
     <property name="icon">
-     <iconset resource="res.qrc">
+     <iconset resource="../res/res.qrc">
       <normaloff>:/svgs/next.svg</normaloff>:/svgs/next.svg</iconset>
     </property>
     <property name="iconSize">
@@ -1368,7 +1368,7 @@ QLabel {
      <string/>
     </property>
     <property name="icon">
-     <iconset resource="res.qrc">
+     <iconset resource="../res/res.qrc">
       <normaloff>:/svgs/again.svg</normaloff>:/svgs/again.svg</iconset>
     </property>
     <property name="iconSize">
@@ -1429,7 +1429,7 @@ QLabel {
      <string/>
     </property>
     <property name="icon">
-     <iconset resource="res.qrc">
+     <iconset resource="../res/res.qrc">
       <normaloff>:/svgs/more.svg</normaloff>:/svgs/more.svg</iconset>
     </property>
     <property name="iconSize">
@@ -1463,7 +1463,7 @@ QLabel {
      <string/>
     </property>
     <property name="icon">
-     <iconset resource="res.qrc">
+     <iconset resource="../res/res.qrc">
       <normaloff>:/svgs/min.svg</normaloff>:/svgs/min.svg</iconset>
     </property>
     <property name="iconSize">
@@ -1479,18 +1479,18 @@ QLabel {
   <customwidget>
    <class>ImageWidget</class>
    <extends>QWidget</extends>
-   <header location="global">imagewidget.h</header>
+   <header>imagewidget.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>LyricsWidget</class>
    <extends>QWidget</extends>
-   <header location="global">lyricswidget.h</header>
+   <header>lyricswidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="res.qrc"/>
+  <include location="../res/res.qrc"/>
  </resources>
  <connections/>
 </ui>

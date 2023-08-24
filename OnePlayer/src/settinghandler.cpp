@@ -43,7 +43,7 @@ QMap<QString, QStringList> SettingHandler::read_all()
         auto one = str.split(',');
 
         if (one.size() > 1)
-            ret.insert(one.at(0), QStringList(++one.begin(), one.end()));
+            ret.insert(one.at(0), one.mid(1));
     }
     return ret;
 }

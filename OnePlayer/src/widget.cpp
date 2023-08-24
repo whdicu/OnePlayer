@@ -1,4 +1,4 @@
-#include "widget.h"
+﻿#include "widget.h"
 #include "ui_widget.h"
 
 #include "musicbutton.h"
@@ -11,6 +11,7 @@
 #include <QFileDialog>
 #include <QLocale>
 #include <QMediaMetaData>
+#include <QMediaPlaylist>
 #include <QMessageBox>
 #include <QMimeData>
 #include <QMouseEvent>
@@ -18,7 +19,9 @@
 #include <QPainter>
 #include <QPainterPath>
 #include <QPixmap>
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 #include <QRandomGenerator64>
+#endif
 #include <QRegularExpression>
 #include <QScrollBar>
 #include <QShortcut>
@@ -28,6 +31,12 @@
 #include "dmenu.h"
 #include <QPropertyAnimation>
 #include <QProcess>
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#define GET_PLAY_STATE player_->playbackState()
+#else
+#define GET_PLAY_STATE player_->state()
+#endif
 
 static QStringList TYPE_LIST = {"mp3", "flac", "wav", "ogg", "acc", "m4a"};
 const static QString IP = "47.113.231.74";
@@ -77,7 +86,7 @@ Widget::Widget(const QString& filepath, QWidget *parent)
     , hook_(Hook::getInstance())
     , moving_progress(false)
     , player_(new QMediaPlayer(this))
-    , audio_op_(new QAudioOutput(this))
+    //, audio_op_(new QAudioOutput(this))
     , now_music_index_(0)
     , pressed_ctrl_(false)
     , this_is_move_window(false)
@@ -102,8 +111,9 @@ Widget::Widget(const QString& filepath, QWidget *parent)
 
     set_listener();
 
-    audio_op_->setVolume(SETTING_HANDLER->get_volume());
-    player_->setAudioOutput(audio_op_);
+    //audio_op_->setVolume(SETTING_HANDLER->get_volume());
+    //player_->setAudioOutput(audio_op_);
+	player_->setVolume(SETTING_HANDLER->get_volume());
     if (filepath.isEmpty())  // 没有指定打开的歌曲则打开默认文件夹
     {
         switch (SETTING_HANDLER->get_player_mode())
@@ -134,11 +144,19 @@ Widget::Widget(const QString& filepath, QWidget *parent)
     switch (play_mode)
     {
     case ONE_AGAIN:
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
         player_->setLoops(-1);
+#else
+		player_->setPlaybackRate(QMediaPlaylist::CurrentItemInLoop);
+#endif
         ui->btn_mode->setIcon(QIcon(":/svgs/one_again.svg"));
         break;
     case AGAIN:
-        player_->setLoops(1);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+		player_->setLoops(1);
+#else
+		player_->setPlaybackRate(QMediaPlaylist::CurrentItemOnce);
+#endif
         ui->btn_mode->setIcon(QIcon(":/svgs/again.svg"));
         break;
     case RANDOM:
@@ -147,7 +165,11 @@ Widget::Widget(const QString& filepath, QWidget *parent)
         random_index_list_.pushBack(now_music_index_);
 //        now_music_index_ = random_index_list_.at(0);
         qDebug() << "000 =" << random_index_list_.at(0);
-        player_->setLoops(1);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+		player_->setLoops(1);
+#else
+		player_->setPlaybackRate(QMediaPlaylist::CurrentItemOnce);
+#endif
         ui->btn_mode->setIcon(QIcon(":/svgs/random.svg"));
         break;
     }
@@ -201,8 +223,12 @@ void Widget::set_listener()
     });
 
     // 音乐播放状态改变事件
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     connect(player_, &QMediaPlayer::playbackStateChanged, this, [this](QMediaPlayer::PlaybackState state)
-    {
+#else
+	connect(player_, &QMediaPlayer::stateChanged, this, [this](QMediaPlayer::State state)
+#endif
+	{
         switch (state)
         {
         case QMediaPlayer::PlayingState:
@@ -219,80 +245,108 @@ void Widget::set_listener()
     });
 
     // 发生错误
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     connect(player_, &QMediaPlayer::errorOccurred, this, [this](QMediaPlayer::Error err, const QString& err_str)
-    {
-        qDebug() << err << "\n" << err_str << "\n";
-        QMessageBox::critical(this, "发生了意想不到的事情", "详情：" + err_str + "\n文件：" + player_->source().fileName());
-    });
+	{
+		//qDebug() << err << "\n" << err_str << "\n";
+		//QMessageBox::critical(this, "发生了意想不到的事情", "详情：" + err_str + "\n文件：" + player_->source().fileName());
+	});
+#else
+	auto slotError = [this](QMediaPlayer::Error err)
+	{
+		//qDebug() << err << "\n" << err_str << "\n";
+		//QMessageBox::critical(this, "发生了意想不到的事情", "详情：" + err_str + "\n文件：" + player_->source().fileName());
+	};
+	connect(player_, SIGNAL(error(QMediaPlayer::Error error)), this, SLOT(slotError));
+#endif
+	
 
     // 先sourceChanged，再metaDataChanged
-    connect(player_, &QMediaPlayer::sourceChanged, this, [this](const QUrl &media)
-    {
-        switch (SETTING_HANDLER->get_player_mode())
-        {
-        case LOCAL:
-        case MYSITE:
-        {
-//            QString file_type = media.fileName().section('.', 0, -1);
-            QString file_name = media.fileName().section('.', 0, -2);
-            ui->btn_music_name->setText(file_name);
-//            ui->label_sound_name->setText(file_name);
-        }
-            break;
-        case ONLINE:
-        {
-            OnlineMusicButton* btn = static_cast<OnlineMusicButton*> (btn_list_.at(now_music_index_));
-            MusicInfo& info = btn->get_info();
-            ui->btn_music_name->setText(info.name_);
-        }
-            break;
-        }
-        SETTING_HANDLER->set_last_music(media);
-    });
-    connect(player_, &QMediaPlayer::metaDataChanged, this, [this]()
-    {
-        QMediaMetaData meta_data = player_->metaData();
-        if (meta_data.isEmpty())
-            return;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    connect(player_, &QMediaPlayer::sourceChanged, this, [this](const QUrl& media)
+#else
+	// todo 不知道用哪个
+	//connect(player_, &QMediaPlayer::mediaChanged, this, [this](const QMediaContent& media)
+	//connect(player_, &QMediaPlayer::currentMediaChanged, this, [this](const QMediaContent& media)
+#endif
+//    {
+//        switch (SETTING_HANDLER->get_player_mode())
+//        {
+//        case LOCAL:
+//        case MYSITE:
+//        {
+////            QString file_type = media.fileName().section('.', 0, -1);
+//            QString file_name = media.fileName().section('.', 0, -2);
+//            ui->btn_music_name->setText(file_name);
+////            ui->label_sound_name->setText(file_name);
+//        }
+//            break;
+//        case ONLINE:
+//        {
+//            OnlineMusicButton* btn = static_cast<OnlineMusicButton*> (btn_list_.at(now_music_index_));
+//            MusicInfo& info = btn->get_info();
+//            ui->btn_music_name->setText(info.name_);
+//        }
+//            break;
+//        }
+//        SETTING_HANDLER->set_last_music(media);
+//    });
+	auto slotMetaDataChanged = [this]()
+	{
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#define GET_META_DATA player_->metaData().value
+#else
+#define GET_META_DATA player_->metaData
+#endif
+		QString title = GET_META_DATA(QMediaMetaData::Title).toString();
+		QStringList author_list = GET_META_DATA(QMediaMetaData::Author).toStringList();  // 去重
+		QImage thumbnail_image = GET_META_DATA(QMediaMetaData::ThumbnailImage).value<QImage>();  // 缩略图
+		QString album_title = GET_META_DATA(QMediaMetaData::AlbumTitle).toString();  // 专辑标题
+		QStringList album_artist = GET_META_DATA(QMediaMetaData::AlbumArtist).toStringList();  // 去重 专辑艺术家
+//        QString genre = GET_META_DATA(QMediaMetaData::Genre).toString();  // 流派
+//        QStringList contributing_artist = GET_META_DATA(QMediaMetaData::ContributingArtist).toStringList();  // 去重 贡献艺术家
 
-        QString title = meta_data.value(QMediaMetaData::Title).toString();
-        QStringList author_list = meta_data.value(QMediaMetaData::Author).toStringList();  // 去重
-        QImage thumbnail_image = meta_data.value(QMediaMetaData::ThumbnailImage).value<QImage>();  // 缩略图
-        QString album_title = meta_data.value(QMediaMetaData::AlbumTitle).toString();  // 专辑标题
-        QStringList album_artist = meta_data.value(QMediaMetaData::AlbumArtist).toStringList();  // 去重 专辑艺术家
-//        QString genre = meta_data.value(QMediaMetaData::Genre).toString();  // 流派
-//        QStringList contributing_artist = meta_data.value(QMediaMetaData::ContributingArtist).toStringList();  // 去重 贡献艺术家
+		//QSet<QString> singer_set(author_list.begin(), author_list.end());
+		QSet<QString> singer_set = author_list.toSet();
+		QString temp = "";
+		for (const QString& singer : singer_set)
+		{
+			temp.append(singer).append(' ');
+		}
+		QString singers = temp.trimmed();
 
-        QSet<QString> singer_set(author_list.begin(), author_list.end());
-        QString temp = "";
-        for (const QString& singer : singer_set)
-        {
-            temp.append(singer).append(' ');
-        }
-        QString singers = temp.trimmed();
+		refreshImageWidget(thumbnail_image, title, singers, album_title);
 
-        refreshImageWidget(thumbnail_image, title, singers, album_title);
-
-//        qDebug() << "Comment" << meta_data.value(QMediaMetaData::Comment);
-//        qDebug() << "Description" << meta_data.value(QMediaMetaData::Description);
-//        qDebug() << "Date" << meta_data.value(QMediaMetaData::Date);
-//        qDebug() << "Language" << meta_data.value(QMediaMetaData::Language);
-//        qDebug() << "Publisher" << meta_data.value(QMediaMetaData::Publisher);
-//        qDebug() << "Copyright" << meta_data.value(QMediaMetaData::Copyright);
-//        qDebug() << "Duration" << meta_data.value(QMediaMetaData::Duration);
-//        qDebug() << "MediaType" << meta_data.value(QMediaMetaData::MediaType);
-//        qDebug() << "FileFormat" << meta_data.value(QMediaMetaData::FileFormat);
-//        qDebug() << "AudioBitRate" << meta_data.value(QMediaMetaData::AudioBitRate);
-//        qDebug() << "AudioCodec" << meta_data.value(QMediaMetaData::AudioCodec);
-//        qDebug() << "TrackNumber" << meta_data.value(QMediaMetaData::TrackNumber);
-//        qDebug() << "Composer" << meta_data.value(QMediaMetaData::Composer);
-//        qDebug() << "LeadPerformer" << meta_data.value(QMediaMetaData::LeadPerformer);
-//        qDebug() << "CoverArtImage" << meta_data.value(QMediaMetaData::CoverArtImage);
-//        qDebug() << "Orientation" << meta_data.value(QMediaMetaData::Orientation);
-//        qDebug() << "Resolution" << meta_data.value(QMediaMetaData::Resolution);
-    });
+		//        qDebug() << "Comment" << meta_data.value(QMediaMetaData::Comment);
+		//        qDebug() << "Description" << meta_data.value(QMediaMetaData::Description);
+		//        qDebug() << "Date" << meta_data.value(QMediaMetaData::Date);
+		//        qDebug() << "Language" << meta_data.value(QMediaMetaData::Language);
+		//        qDebug() << "Publisher" << meta_data.value(QMediaMetaData::Publisher);
+		//        qDebug() << "Copyright" << meta_data.value(QMediaMetaData::Copyright);
+		//        qDebug() << "Duration" << meta_data.value(QMediaMetaData::Duration);
+		//        qDebug() << "MediaType" << meta_data.value(QMediaMetaData::MediaType);
+		//        qDebug() << "FileFormat" << meta_data.value(QMediaMetaData::FileFormat);
+		//        qDebug() << "AudioBitRate" << meta_data.value(QMediaMetaData::AudioBitRate);
+		//        qDebug() << "AudioCodec" << meta_data.value(QMediaMetaData::AudioCodec);
+		//        qDebug() << "TrackNumber" << meta_data.value(QMediaMetaData::TrackNumber);
+		//        qDebug() << "Composer" << meta_data.value(QMediaMetaData::Composer);
+		//        qDebug() << "LeadPerformer" << meta_data.value(QMediaMetaData::LeadPerformer);
+		//        qDebug() << "CoverArtImage" << meta_data.value(QMediaMetaData::CoverArtImage);
+		//        qDebug() << "Orientation" << meta_data.value(QMediaMetaData::Orientation);
+		//        qDebug() << "Resolution" << meta_data.value(QMediaMetaData::Resolution);
+	};
+    connect(player_, SIGNAL(QMediaPlayer::metaDataChanged()), this, SLOT(slotMetaDataChanged));
 
     // 一些没用的事件
+	connect(player_, &QMediaPlayer::seekableChanged, this, [](bool)
+	{
+		//        qDebug() << 3;
+	});
+	connect(player_, &QMediaPlayer::playbackRateChanged, this, []()
+	{
+		//        qDebug() << 5;
+	});
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     connect(player_, &QMediaPlayer::tracksChanged, this, []()
     {
 //        qDebug() << 1;
@@ -300,14 +354,6 @@ void Widget::set_listener()
     connect(player_, &QMediaPlayer::videoOutputChanged, this, []()
     {
 //        qDebug() << 2;
-    });
-    connect(player_, &QMediaPlayer::seekableChanged, this, [](bool )
-    {
-//        qDebug() << 3;
-    });
-    connect(player_, &QMediaPlayer::playbackRateChanged, this, []()
-    {
-//        qDebug() << 5;
     });
     connect(player_, &QMediaPlayer::activeTracksChanged, this, []()
     {
@@ -325,7 +371,7 @@ void Widget::set_listener()
     {
 //        qDebug() << 10;
     });
-
+#endif
     // 使本次播放进度变成上次关闭时的进度
     static bool first_play = true;
     connect(player_, &QMediaPlayer::mediaStatusChanged, this, [this](QMediaPlayer::MediaStatus status)
@@ -455,8 +501,12 @@ void Widget::load_music_list(QStringList &list)
             {
                 random_index_list_.clear();
                 random_index_ = 0;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
                 newMusicIndex = QRandomGenerator64::global()->bounded(0, (int)btn_list_.size());
-                random_index_list_.pushBack(newMusicIndex);
+#else
+				newMusicIndex = qrand() % btn_list_.size();
+#endif
+				random_index_list_.pushBack(newMusicIndex);
             }
             else
                 newMusicIndex = 0;
@@ -473,8 +523,12 @@ void Widget::next_music()
         ++random_index_;
         if (random_index_ == random_index_list_.size())
         {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
             DSizeType music_index = QRandomGenerator64::global()->bounded(0, (int)btn_list_.size());
-            random_index_list_.pushBack(music_index);
+#else
+			DSizeType music_index =  qrand() % btn_list_.size();
+#endif
+			random_index_list_.pushBack(music_index);
         }
         newMusicIndex = random_index_list_.at(random_index_);
     }
@@ -497,8 +551,12 @@ void Widget::previous_music()
             --random_index_;
         else
         {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
             DSizeType music_index = QRandomGenerator64::global()->bounded(0, (int)btn_list_.size());
-            random_index_list_.pushFront(music_index);
+#else
+			DSizeType music_index = qrand() % btn_list_.size();
+#endif
+			random_index_list_.pushFront(music_index);
         }
 
         newMusicIndex = random_index_list_.at(random_index_);
@@ -793,7 +851,11 @@ void Widget::mouseMoveEvent(QMouseEvent *ev)
 {
     if (this_is_move_window)
     {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
         auto global_pos = ev->globalPosition();
+#else
+		auto global_pos = ev->globalPos();
+#endif
         move(global_pos.x() - press_x, global_pos.y() - press_y);
     }
 }
@@ -809,11 +871,11 @@ void Widget::keyPressEvent(QKeyEvent *event)
     switch (event->key())
     {
     case 32:  // space
-        if (QMediaPlayer::StoppedState == player_->playbackState() || QMediaPlayer::PausedState == player_->playbackState())
+        if (QMediaPlayer::StoppedState == GET_PLAY_STATE || QMediaPlayer::PausedState == GET_PLAY_STATE)
         {
             player_->play();
         }
-        else if (QMediaPlayer::PlayingState == player_->playbackState())
+        else if (QMediaPlayer::PlayingState == GET_PLAY_STATE)
         {
             player_->pause();
         }
@@ -846,14 +908,16 @@ void Widget::keyPressEvent(QKeyEvent *event)
             SETTING_HANDLER->set_volume(SETTING_HANDLER->get_volume() + 0.05f);
         else
             SETTING_HANDLER->set_volume(1.0f);
-        audio_op_->setVolume(SETTING_HANDLER->get_volume());
+        //audio_op_->setVolume(SETTING_HANDLER->get_volume());
+        player_->setVolume(SETTING_HANDLER->get_volume());
         break;
     case Qt::Key_Down:
         if (SETTING_HANDLER->get_volume() > 0.05f)
             SETTING_HANDLER->set_volume(SETTING_HANDLER->get_volume() - 0.05f);
         else
             SETTING_HANDLER->set_volume(0.0f);
-        audio_op_->setVolume(SETTING_HANDLER->get_volume());
+        //audio_op_->setVolume(SETTING_HANDLER->get_volume());
+		player_->setVolume(SETTING_HANDLER->get_volume());
         break;
     case Qt::Key_F:
         if (pressed_ctrl_)  // 按了ctrl + f弹出搜索框
@@ -1032,7 +1096,7 @@ Widget::~Widget()
 
 void Widget::slot_key_pressed(DWORD key)
 {
-    auto state = player_->playbackState();
+    auto state = GET_PLAY_STATE;
     switch (key)
     {
     case 179ul:
@@ -1062,7 +1126,7 @@ void Widget::on_btn_shutdown_clicked()
 // 播放/暂停
 void Widget::on_btn_play_clicked()
 {
-    auto state = player_->playbackState();
+    auto state = GET_PLAY_STATE;
     if (QMediaPlayer::StoppedState == state || QMediaPlayer::PausedState == state)
     {
         player_->play();
@@ -1092,7 +1156,8 @@ void Widget::on_btn_down_clicked()
         SETTING_HANDLER->set_volume(SETTING_HANDLER->get_volume() - 0.05f);
     else
         SETTING_HANDLER->set_volume(0.0f);
-    audio_op_->setVolume(SETTING_HANDLER->get_volume());
+    //audio_op_->setVolume(SETTING_HANDLER->get_volume());
+	player_->setVolume(SETTING_HANDLER->get_volume());
 }
 
 // 音量加
@@ -1102,7 +1167,8 @@ void Widget::on_btn_up_clicked()
         SETTING_HANDLER->set_volume(SETTING_HANDLER->get_volume() + 0.05f);
     else
         SETTING_HANDLER->set_volume(1.0f);
-    audio_op_->setVolume(SETTING_HANDLER->get_volume());
+    //audio_op_->setVolume(SETTING_HANDLER->get_volume());
+	player_->setVolume(SETTING_HANDLER->get_volume());
 }
 
 // 模式切换按钮
@@ -1111,7 +1177,11 @@ void Widget::on_btn_mode_clicked()
     if (play_mode == AGAIN)
     {
         play_mode = ONE_AGAIN;
-        player_->setLoops(-1);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+		player_->setLoops(-1);
+#else
+		player_->setPlaybackRate(QMediaPlaylist::CurrentItemInLoop);
+#endif
         ui->btn_mode->setIcon(QIcon(":/svgs/one_again.svg"));
     }
     else if (play_mode == ONE_AGAIN)
@@ -1120,13 +1190,21 @@ void Widget::on_btn_mode_clicked()
         random_index_list_.pushBack(now_music_index_);
         random_index_ = 0;
         play_mode = RANDOM;
-        player_->setLoops(1);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+		player_->setLoops(1);
+#else
+		player_->setPlaybackRate(QMediaPlaylist::CurrentItemOnce);
+#endif
         ui->btn_mode->setIcon(QIcon(":/svgs/random.svg"));
     }
     else
     {
         play_mode = AGAIN;
-        player_->setLoops(1);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+		player_->setLoops(1);
+#else
+		player_->setPlaybackRate(QMediaPlaylist::CurrentItemOnce);
+#endif
         ui->btn_mode->setIcon(QIcon(":/svgs/again.svg"));
     }
     SETTING_HANDLER->set_old_mode(play_mode);
@@ -1334,7 +1412,12 @@ void Widget::play_music(DSizeType musicIndex)
     qDebug() << "播放->" << btn->get_url();
 
     btn->setPlayingStyle();
-    player_->setSource(btn->get_url());
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+	player_->setSource(btn->get_url());
+#else
+	player_->setMedia(btn->get_url());
+#endif
+    
 //    qDebug() << btn->get_url();
     player_->play();
 //    switch (SETTING_HANDLER->get_player_mode())
