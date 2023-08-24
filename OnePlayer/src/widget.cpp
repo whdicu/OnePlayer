@@ -38,7 +38,7 @@
 #define GET_PLAY_STATE player_->state()
 #endif
 
-static QStringList TYPE_LIST = {"mp3", "flac", "wav", "ogg", "acc", "m4a"};
+const static QStringList TYPE_LIST = {"mp3", "flac", "wav", "ogg", "acc", "m4a"};
 const static QString IP = "47.113.231.74";
 const static int PORT = 9002;
 const static int TIME250 = 250;
