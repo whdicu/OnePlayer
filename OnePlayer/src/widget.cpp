@@ -926,7 +926,6 @@ void Widget::keyPressEvent(QKeyEvent *event)
         audio_op_->setVolume(SETTING_HANDLER->get_volume());
 #else
         player_->setVolume(SETTING_HANDLER->get_volume());
-#include <QMediaPlaylist>
 #endif
         break;
     case Qt::Key_Down:
@@ -938,7 +937,6 @@ void Widget::keyPressEvent(QKeyEvent *event)
         audio_op_->setVolume(SETTING_HANDLER->get_volume());
 #else
         player_->setVolume(SETTING_HANDLER->get_volume());
-#include <QMediaPlaylist>
 #endif
         break;
     case Qt::Key_F:
@@ -1182,7 +1180,6 @@ void Widget::on_btn_down_clicked()
     audio_op_->setVolume(SETTING_HANDLER->get_volume());
 #else
     player_->setVolume(SETTING_HANDLER->get_volume());
-#include <QMediaPlaylist>
 #endif
 }
 
@@ -1197,7 +1194,6 @@ void Widget::on_btn_up_clicked()
     audio_op_->setVolume(SETTING_HANDLER->get_volume());
 #else
     player_->setVolume(SETTING_HANDLER->get_volume());
-#include <QMediaPlaylist>
 #endif
 }
 
