@@ -82,7 +82,10 @@ private:
     PLAY_MODE play_mode;
     bool moving_progress;
     QMediaPlayer* player_;
-    //QAudioOutput* audio_op_;
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QAudioOutput* audio_op_;
+#endif
     DSizeType now_music_index_;
     DList<BaseMusicButton*> btn_list_;
     DSizeType find_index;

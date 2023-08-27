@@ -11,7 +11,6 @@
 #include <QFileDialog>
 #include <QLocale>
 #include <QMediaMetaData>
-#include <QMediaPlaylist>
 #include <QMessageBox>
 #include <QMimeData>
 #include <QMouseEvent>
@@ -19,9 +18,6 @@
 #include <QPainter>
 #include <QPainterPath>
 #include <QPixmap>
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-#include <QRandomGenerator64>
-#endif
 #include <QRegularExpression>
 #include <QScrollBar>
 #include <QShortcut>
@@ -31,6 +27,12 @@
 #include "dmenu.h"
 #include <QPropertyAnimation>
 #include <QProcess>
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#include <QRandomGenerator64>
+#else
+#include <QMediaPlaylist>
+#endif
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 #define GET_PLAY_STATE player_->playbackState()
@@ -86,7 +88,9 @@ Widget::Widget(const QString& filepath, QWidget *parent)
     , hook_(Hook::getInstance())
     , moving_progress(false)
     , player_(new QMediaPlayer(this))
-    //, audio_op_(new QAudioOutput(this))
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    , audio_op_(new QAudioOutput(this))
+#endif
     , now_music_index_(0)
     , pressed_ctrl_(false)
     , this_is_move_window(false)
@@ -111,9 +115,15 @@ Widget::Widget(const QString& filepath, QWidget *parent)
 
     set_listener();
 
-    //audio_op_->setVolume(SETTING_HANDLER->get_volume());
-    //player_->setAudioOutput(audio_op_);
-	player_->setVolume(SETTING_HANDLER->get_volume());
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    audio_op_->setVolume(SETTING_HANDLER->get_volume());
+    player_->setAudioOutput(audio_op_);
+#else
+    player_->setVolume(SETTING_HANDLER->get_volume());
+#endif
+
+    
+	
     if (filepath.isEmpty())  // 没有指定打开的歌曲则打开默认文件夹
     {
         switch (SETTING_HANDLER->get_player_mode())
@@ -264,33 +274,34 @@ void Widget::set_listener()
     // 先sourceChanged，再metaDataChanged
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     connect(player_, &QMediaPlayer::sourceChanged, this, [this](const QUrl& media)
+    {
+        switch (SETTING_HANDLER->get_player_mode())
+        {
+        case LOCAL:
+        case MYSITE:
+        {
+            //            QString file_type = media.fileName().section('.', 0, -1);
+            QString file_name = media.fileName().section('.', 0, -2);
+            ui->btn_music_name->setText(file_name);
+            //            ui->label_sound_name->setText(file_name);
+        }
+        break;
+        case ONLINE:
+        {
+            OnlineMusicButton* btn = static_cast<OnlineMusicButton*> (btn_list_.at(now_music_index_));
+            MusicInfo& info = btn->get_info();
+            ui->btn_music_name->setText(info.name_);
+        }
+        break;
+        }
+        SETTING_HANDLER->set_last_music(media);
+    });
 #else
 	// todo 不知道用哪个
 	//connect(player_, &QMediaPlayer::mediaChanged, this, [this](const QMediaContent& media)
 	//connect(player_, &QMediaPlayer::currentMediaChanged, this, [this](const QMediaContent& media)
 #endif
-//    {
-//        switch (SETTING_HANDLER->get_player_mode())
-//        {
-//        case LOCAL:
-//        case MYSITE:
-//        {
-////            QString file_type = media.fileName().section('.', 0, -1);
-//            QString file_name = media.fileName().section('.', 0, -2);
-//            ui->btn_music_name->setText(file_name);
-////            ui->label_sound_name->setText(file_name);
-//        }
-//            break;
-//        case ONLINE:
-//        {
-//            OnlineMusicButton* btn = static_cast<OnlineMusicButton*> (btn_list_.at(now_music_index_));
-//            MusicInfo& info = btn->get_info();
-//            ui->btn_music_name->setText(info.name_);
-//        }
-//            break;
-//        }
-//        SETTING_HANDLER->set_last_music(media);
-//    });
+    
 	auto slotMetaDataChanged = [this]()
 	{
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
@@ -306,8 +317,11 @@ void Widget::set_listener()
 //        QString genre = GET_META_DATA(QMediaMetaData::Genre).toString();  // 流派
 //        QStringList contributing_artist = GET_META_DATA(QMediaMetaData::ContributingArtist).toStringList();  // 去重 贡献艺术家
 
-		//QSet<QString> singer_set(author_list.begin(), author_list.end());
-		QSet<QString> singer_set = author_list.toSet();
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        QSet<QString> singer_set(author_list.begin(), author_list.end());
+#else
+        QSet<QString> singer_set = author_list.toSet();
+#endif
 		QString temp = "";
 		for (const QString& singer : singer_set)
 		{
@@ -908,16 +922,24 @@ void Widget::keyPressEvent(QKeyEvent *event)
             SETTING_HANDLER->set_volume(SETTING_HANDLER->get_volume() + 0.05f);
         else
             SETTING_HANDLER->set_volume(1.0f);
-        //audio_op_->setVolume(SETTING_HANDLER->get_volume());
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        audio_op_->setVolume(SETTING_HANDLER->get_volume());
+#else
         player_->setVolume(SETTING_HANDLER->get_volume());
+#include <QMediaPlaylist>
+#endif
         break;
     case Qt::Key_Down:
         if (SETTING_HANDLER->get_volume() > 0.05f)
             SETTING_HANDLER->set_volume(SETTING_HANDLER->get_volume() - 0.05f);
         else
             SETTING_HANDLER->set_volume(0.0f);
-        //audio_op_->setVolume(SETTING_HANDLER->get_volume());
-		player_->setVolume(SETTING_HANDLER->get_volume());
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        audio_op_->setVolume(SETTING_HANDLER->get_volume());
+#else
+        player_->setVolume(SETTING_HANDLER->get_volume());
+#include <QMediaPlaylist>
+#endif
         break;
     case Qt::Key_F:
         if (pressed_ctrl_)  // 按了ctrl + f弹出搜索框
@@ -1156,8 +1178,12 @@ void Widget::on_btn_down_clicked()
         SETTING_HANDLER->set_volume(SETTING_HANDLER->get_volume() - 0.05f);
     else
         SETTING_HANDLER->set_volume(0.0f);
-    //audio_op_->setVolume(SETTING_HANDLER->get_volume());
-	player_->setVolume(SETTING_HANDLER->get_volume());
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    audio_op_->setVolume(SETTING_HANDLER->get_volume());
+#else
+    player_->setVolume(SETTING_HANDLER->get_volume());
+#include <QMediaPlaylist>
+#endif
 }
 
 // 音量加
@@ -1167,8 +1193,12 @@ void Widget::on_btn_up_clicked()
         SETTING_HANDLER->set_volume(SETTING_HANDLER->get_volume() + 0.05f);
     else
         SETTING_HANDLER->set_volume(1.0f);
-    //audio_op_->setVolume(SETTING_HANDLER->get_volume());
-	player_->setVolume(SETTING_HANDLER->get_volume());
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    audio_op_->setVolume(SETTING_HANDLER->get_volume());
+#else
+    player_->setVolume(SETTING_HANDLER->get_volume());
+#include <QMediaPlaylist>
+#endif
 }
 
 // 模式切换按钮
