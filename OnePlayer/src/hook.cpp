@@ -1,5 +1,6 @@
-#include "hook.h"
 #include <QDebug>
+#ifdef Q_OS_WIN
+#include "hook.h"
 
 static HHOOK keyHook = nullptr;
 static Hook* hook = nullptr;
@@ -48,3 +49,5 @@ void Hook::sendSignal(DWORD key)
 {
 	emit sendKeyType(key);
 }
+
+#endif  // Q_OS_WIN

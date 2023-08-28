@@ -17,11 +17,15 @@
    <string>OnePlayer</string>
   </property>
   <property name="windowIcon">
-   <iconset>
+   <iconset resource="../res/res.qrc">
     <normaloff>:/icon.ico</normaloff>:/icon.ico</iconset>
   </property>
   <property name="styleSheet">
-   <string notr="true">#widget_radius1 {
+   <string notr="true">#widget_top {
+	background-color: transparent;
+}
+
+#widget_radius1 {
 	background: radial-gradient(circle at bottom right, transparent 0px, transparent 40px, blue 40px);
 }
 
@@ -1514,6 +1518,19 @@ QLabel {
      </size>
     </property>
    </widget>
+  </widget>
+  <widget class="QWidget" name="widget_top" native="true">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>880</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="cursor">
+    <cursorShape>OpenHandCursor</cursorShape>
+   </property>
   </widget>
  </widget>
  <customwidgets>

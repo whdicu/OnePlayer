@@ -1,7 +1,10 @@
+#include <QObject>
+
+#ifdef Q_OS_WIN
 #ifndef HOOK_H
 #define HOOK_H
 #include <windows.h>
-#include <QObject>
+
 class Hook :public QObject
 {
 	Q_OBJECT
@@ -20,3 +23,4 @@ signals:
 };
 
 #endif // HOOK_H
+#endif // Q_OS_WIN

@@ -30,17 +30,17 @@
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 #include <QRandomGenerator64>
+#define GET_PLAY_STATE player_->playbackState()
+#define SET_VOLUME(v) audio_op_->setVolume((v));
+const static QStringList TYPE_LIST = { "mp3", "flac", "wav", "ogg", "acc", "m4a" };
 #else
 #include <QMediaPlaylist>
-#endif
-
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-#define GET_PLAY_STATE player_->playbackState()
-#else
 #define GET_PLAY_STATE player_->state()
+#define SET_VOLUME(v) player_->setVolume((v) * 100);
+const static QStringList TYPE_LIST = { "mp3", "flac", "wav", "ogg", "acc" };  // 5.9.4无法播放flac m4a
 #endif
 
-const static QStringList TYPE_LIST = {"mp3", "flac", "wav", "ogg", "acc", "m4a"};
+
 const static QString IP = "47.113.231.74";
 const static int PORT = 9002;
 const static int TIME250 = 250;
@@ -116,13 +116,10 @@ Widget::Widget(const QString& filepath, QWidget *parent)
     set_listener();
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    audio_op_->setVolume(SETTING_HANDLER->get_volume());
     player_->setAudioOutput(audio_op_);
-#else
-    player_->setVolume(SETTING_HANDLER->get_volume());
 #endif
-
-    
+	SET_VOLUME(SETTING_HANDLER->get_volume());
+	qDebug() << "\n\n\n\nxxx:" << SETTING_HANDLER->get_volume();
 	
     if (filepath.isEmpty())  // 没有指定打开的歌曲则打开默认文件夹
     {
@@ -922,22 +919,14 @@ void Widget::keyPressEvent(QKeyEvent *event)
             SETTING_HANDLER->set_volume(SETTING_HANDLER->get_volume() + 0.05f);
         else
             SETTING_HANDLER->set_volume(1.0f);
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-        audio_op_->setVolume(SETTING_HANDLER->get_volume());
-#else
-        player_->setVolume(SETTING_HANDLER->get_volume());
-#endif
+		SET_VOLUME(SETTING_HANDLER->get_volume());
         break;
     case Qt::Key_Down:
         if (SETTING_HANDLER->get_volume() > 0.05f)
             SETTING_HANDLER->set_volume(SETTING_HANDLER->get_volume() - 0.05f);
         else
             SETTING_HANDLER->set_volume(0.0f);
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-        audio_op_->setVolume(SETTING_HANDLER->get_volume());
-#else
-        player_->setVolume(SETTING_HANDLER->get_volume());
-#endif
+		SET_VOLUME(SETTING_HANDLER->get_volume());
         break;
     case Qt::Key_F:
         if (pressed_ctrl_)  // 按了ctrl + f弹出搜索框
@@ -1176,11 +1165,7 @@ void Widget::on_btn_down_clicked()
         SETTING_HANDLER->set_volume(SETTING_HANDLER->get_volume() - 0.05f);
     else
         SETTING_HANDLER->set_volume(0.0f);
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    audio_op_->setVolume(SETTING_HANDLER->get_volume());
-#else
-    player_->setVolume(SETTING_HANDLER->get_volume());
-#endif
+	SET_VOLUME(SETTING_HANDLER->get_volume());
 }
 
 // 音量加
@@ -1190,11 +1175,7 @@ void Widget::on_btn_up_clicked()
         SETTING_HANDLER->set_volume(SETTING_HANDLER->get_volume() + 0.05f);
     else
         SETTING_HANDLER->set_volume(1.0f);
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    audio_op_->setVolume(SETTING_HANDLER->get_volume());
-#else
-    player_->setVolume(SETTING_HANDLER->get_volume());
-#endif
+	SET_VOLUME(SETTING_HANDLER->get_volume());
 }
 
 // 模式切换按钮
