@@ -298,55 +298,8 @@ void Widget::set_listener()
 	//connect(player_, &QMediaPlayer::mediaChanged, this, [this](const QMediaContent& media)
 	//connect(player_, &QMediaPlayer::currentMediaChanged, this, [this](const QMediaContent& media)
 #endif
-    
-	auto slotMetaDataChanged = [this]()
-	{
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-#define GET_META_DATA player_->metaData().value
-#else
-#define GET_META_DATA player_->metaData
-#endif
-		QString title = GET_META_DATA(QMediaMetaData::Title).toString();
-		QStringList author_list = GET_META_DATA(QMediaMetaData::Author).toStringList();  // 去重
-		QImage thumbnail_image = GET_META_DATA(QMediaMetaData::ThumbnailImage).value<QImage>();  // 缩略图
-		QString album_title = GET_META_DATA(QMediaMetaData::AlbumTitle).toString();  // 专辑标题
-		QStringList album_artist = GET_META_DATA(QMediaMetaData::AlbumArtist).toStringList();  // 去重 专辑艺术家
-//        QString genre = GET_META_DATA(QMediaMetaData::Genre).toString();  // 流派
-//        QStringList contributing_artist = GET_META_DATA(QMediaMetaData::ContributingArtist).toStringList();  // 去重 贡献艺术家
 
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-        QSet<QString> singer_set(author_list.begin(), author_list.end());
-#else
-        QSet<QString> singer_set = author_list.toSet();
-#endif
-		QString temp = "";
-		for (const QString& singer : singer_set)
-		{
-			temp.append(singer).append(' ');
-		}
-		QString singers = temp.trimmed();
-
-		refreshImageWidget(thumbnail_image, title, singers, album_title);
-
-		//        qDebug() << "Comment" << meta_data.value(QMediaMetaData::Comment);
-		//        qDebug() << "Description" << meta_data.value(QMediaMetaData::Description);
-		//        qDebug() << "Date" << meta_data.value(QMediaMetaData::Date);
-		//        qDebug() << "Language" << meta_data.value(QMediaMetaData::Language);
-		//        qDebug() << "Publisher" << meta_data.value(QMediaMetaData::Publisher);
-		//        qDebug() << "Copyright" << meta_data.value(QMediaMetaData::Copyright);
-		//        qDebug() << "Duration" << meta_data.value(QMediaMetaData::Duration);
-		//        qDebug() << "MediaType" << meta_data.value(QMediaMetaData::MediaType);
-		//        qDebug() << "FileFormat" << meta_data.value(QMediaMetaData::FileFormat);
-		//        qDebug() << "AudioBitRate" << meta_data.value(QMediaMetaData::AudioBitRate);
-		//        qDebug() << "AudioCodec" << meta_data.value(QMediaMetaData::AudioCodec);
-		//        qDebug() << "TrackNumber" << meta_data.value(QMediaMetaData::TrackNumber);
-		//        qDebug() << "Composer" << meta_data.value(QMediaMetaData::Composer);
-		//        qDebug() << "LeadPerformer" << meta_data.value(QMediaMetaData::LeadPerformer);
-		//        qDebug() << "CoverArtImage" << meta_data.value(QMediaMetaData::CoverArtImage);
-		//        qDebug() << "Orientation" << meta_data.value(QMediaMetaData::Orientation);
-		//        qDebug() << "Resolution" << meta_data.value(QMediaMetaData::Resolution);
-	};
-    connect(player_, SIGNAL(QMediaPlayer::metaDataChanged()), this, SLOT(slotMetaDataChanged));
+    connect(player_, SIGNAL(metaDataChanged()), this, SLOT(slotMetaDataChanged()));
 
     // 一些没用的事件
 	connect(player_, &QMediaPlayer::seekableChanged, this, [](bool)
@@ -1386,6 +1339,59 @@ void Widget::on_btn_search_clicked()
     {
         add_online_music(info);
     }
+}
+
+void Widget::slotMetaDataChanged()
+{
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#define GET_META_DATA player_->metaData().value
+#else
+#define GET_META_DATA player_->metaData
+#endif
+
+    QString title = GET_META_DATA(QMediaMetaData::Title).toString();
+    QStringList author_list = GET_META_DATA(QMediaMetaData::Author).toStringList();  // 去重
+    QImage thumbnail_image = GET_META_DATA(QMediaMetaData::ThumbnailImage).value<QImage>();  // 缩略图
+    QImage cover_art_image = GET_META_DATA(QMediaMetaData::CoverArtImage).value<QImage>();  // 封面艺术图
+    QString album_title = GET_META_DATA(QMediaMetaData::AlbumTitle).toString();  // 专辑标题
+    QStringList album_artist = GET_META_DATA(QMediaMetaData::AlbumArtist).toStringList();  // 去重 专辑艺术家
+    //        QString genre = GET_META_DATA(QMediaMetaData::Genre).toString();  // 流派
+    //        QStringList contributing_artist = GET_META_DATA(QMediaMetaData::ContributingArtist).toStringList();  // 去重 贡献艺术家
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QSet<QString> singer_set(author_list.begin(), author_list.end());
+#else
+    QSet<QString> singer_set = author_list.toSet();
+#endif
+    QString temp = "";
+    for (const QString& singer : singer_set)
+    {
+        temp.append(singer).append(' ');
+    }
+    QString singers = temp.trimmed();
+
+    if (thumbnail_image.isNull())
+        refreshImageWidget(cover_art_image, title, singers, album_title);
+    else
+        refreshImageWidget(thumbnail_image, title, singers, album_title);
+
+    //        qDebug() << "Comment" << meta_data.value(QMediaMetaData::Comment);
+    //        qDebug() << "Description" << meta_data.value(QMediaMetaData::Description);
+    //        qDebug() << "Date" << meta_data.value(QMediaMetaData::Date);
+    //        qDebug() << "Language" << meta_data.value(QMediaMetaData::Language);
+    //        qDebug() << "Publisher" << meta_data.value(QMediaMetaData::Publisher);
+    //        qDebug() << "Copyright" << meta_data.value(QMediaMetaData::Copyright);
+    //        qDebug() << "Duration" << meta_data.value(QMediaMetaData::Duration);
+    //        qDebug() << "MediaType" << meta_data.value(QMediaMetaData::MediaType);
+    //        qDebug() << "FileFormat" << meta_data.value(QMediaMetaData::FileFormat);
+    //        qDebug() << "AudioBitRate" << meta_data.value(QMediaMetaData::AudioBitRate);
+    //        qDebug() << "AudioCodec" << meta_data.value(QMediaMetaData::AudioCodec);
+    //        qDebug() << "TrackNumber" << meta_data.value(QMediaMetaData::TrackNumber);
+    //        qDebug() << "Composer" << meta_data.value(QMediaMetaData::Composer);
+    //        qDebug() << "LeadPerformer" << meta_data.value(QMediaMetaData::LeadPerformer);
+    //        qDebug() << "CoverArtImage" << meta_data.value(QMediaMetaData::CoverArtImage);
+    //        qDebug() << "Orientation" << meta_data.value(QMediaMetaData::Orientation);
+    //        qDebug() << "Resolution" << meta_data.value(QMediaMetaData::Resolution);
 }
 
 void Widget::play_music(DSizeType musicIndex)

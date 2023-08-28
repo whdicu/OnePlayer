@@ -54,6 +54,8 @@ private slots:
     void on_btn_right_clicked();
     void on_btn_search_clicked();
 
+    void slotMetaDataChanged();
+
 private:
     void play_music(DSizeType musicIndex);
     void set_listener();
