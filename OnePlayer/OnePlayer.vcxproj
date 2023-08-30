@@ -46,7 +46,12 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>./HD;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./HD;.\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>.\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="QtSettings">
@@ -103,6 +108,7 @@
     <ClCompile Include="src\onlinehandler.cpp" />
     <ClCompile Include="src\onlinemusicbutton.cpp" />
     <ClCompile Include="src\settinghandler.cpp" />
+    <ClCompile Include="src\settingtabwidget.cpp" />
     <ClCompile Include="src\widget.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -122,6 +128,7 @@
     <QtUic Include="src\morewidget.ui" />
     <QtUic Include="src\musicbutton.ui" />
     <QtUic Include="src\onlinemusicbutton.ui" />
+    <QtUic Include="src\settingtabwidget.ui" />
     <QtUic Include="src\widget.ui" />
   </ItemGroup>
   <ItemGroup>
@@ -135,6 +142,7 @@
     <ClInclude Include="HD\DType.h" />
     <ClInclude Include="src\onlinehandler.h" />
     <ClInclude Include="src\settinghandler.h" />
+    <QtMoc Include="src\settingtabwidget.h" />
     <QtMoc Include="src\widget.h" />
     <QtMoc Include="src\onlinemusicbutton.h" />
   </ItemGroup>

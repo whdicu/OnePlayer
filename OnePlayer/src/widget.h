@@ -26,8 +26,8 @@ class Widget : public QWidget
     Q_OBJECT
 
 public:
-    Widget(const QString& filepath="", QWidget *parent=nullptr);
-    ~Widget();
+	Widget(const QString& filepath = "", QWidget *parent = nullptr);
+	~Widget();
     void animateShow();
     void animateHide(bool closeAfterFinshed=false);
 
@@ -43,22 +43,24 @@ private slots:
     void on_btn_more_clicked();
     void on_btn_min_clicked();
     void on_btn_music_name_clicked();
-    void on_btn_open_dir_clicked();
-    void on_btn_change_dir_clicked();
-    void on_btn_open_dir_download_clicked();
-    void on_btn_change_dir_download_clicked();
-    void on_btn_local_clicked();
-    void on_btn_mysite_clicked();
-    void on_btn_online_clicked();
     void on_btn_left_clicked();
     void on_btn_right_clicked();
     void on_btn_search_clicked();
+
+	void slot_btn_open_dir_clicked();
+	void slot_btn_change_dir_clicked();
+	void slot_btn_open_dir_download_clicked();
+	void slot_btn_change_dir_download_clicked();
+	void slot_btn_local_clicked();
+	void slot_btn_mysite_clicked();
+	void slot_btn_online_clicked();
 
     void slotMetaDataChanged();
 
 private:
     void play_music(DSizeType musicIndex);
     void set_listener();
+    void set_setting_tab_listener();
     void load_music_list(QStringList& list);
     void next_music();
     void previous_music();

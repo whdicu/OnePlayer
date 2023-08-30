@@ -104,8 +104,10 @@ Widget::Widget(const QString& filepath, QWidget *parent)
     ui->stacked_widget->setCurrentIndex(2);
 
     ui->find_widget->hide();
-    ui->label_dir->setText(SETTING_HANDLER->get_music_dir());
-    ui->label_dir_download->setText(SETTING_HANDLER->get_download_dir());
+	ui->setting_tab_widget->setMusicDir(SETTING_HANDLER->get_music_dir());
+	ui->setting_tab_widget->setDownloadDir(SETTING_HANDLER->get_download_dir());
+    //ui->label_dir->setText(SETTING_HANDLER->get_music_dir());
+    //ui->label_dir_download->setText(SETTING_HANDLER->get_download_dir());
 
     // 圆角遮罩
     QWidget* ww = new QWidget(ui->music);
@@ -114,6 +116,7 @@ Widget::Widget(const QString& filepath, QWidget *parent)
     ww->setStyleSheet("background-color: transparent; border: 10px solid white; border-radius: 30px;");
 
     set_listener();
+	set_setting_tab_listener();
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     player_->setAudioOutput(audio_op_);
@@ -579,7 +582,7 @@ void Widget::add_online_music(const MusicInfo& music)
         if (SETTING_HANDLER->get_download_dir().isEmpty())
         {
             QMessageBox::warning(this, tr("警告你"), tr("请先选择下载歌曲保存目录"));
-            on_btn_change_dir_download_clicked();
+            slot_btn_change_dir_download_clicked();
             if (SETTING_HANDLER->get_download_dir().isEmpty())
             {
                 QMessageBox::warning(this, tr("警告你"), tr("你选择的目录为空"));
@@ -1217,13 +1220,13 @@ void Widget::on_btn_music_name_clicked()
     }
 }
 
-void Widget::on_btn_open_dir_clicked()
+void Widget::slot_btn_open_dir_clicked()
 {
     QDesktopServices::openUrl(QUrl::fromLocalFile(SETTING_HANDLER->get_music_dir()));
 }
 
 // 更改初始目录按钮
-void Widget::on_btn_change_dir_clicked()
+void Widget::slot_btn_change_dir_clicked()
 {
     QString str_dir = QFileDialog::getExistingDirectory(this, "选择音乐目录", SETTING_HANDLER->get_music_dir());
     if (str_dir.isEmpty())
@@ -1231,7 +1234,8 @@ void Widget::on_btn_change_dir_clicked()
 
     clear_button(ui->music_layout);
 
-    ui->label_dir->setText(str_dir);
+	ui->setting_tab_widget->setMusicDir(str_dir);
+    //ui->label_dir->setText(str_dir);
     SETTING_HANDLER->set_music_dir(str_dir);
 
     QDir dir(SETTING_HANDLER->get_music_dir());
@@ -1269,34 +1273,35 @@ void Widget::on_btn_change_dir_clicked()
     ui->btn_more->setIcon(QIcon(":/svgs/more.svg"));
 }
 
-void Widget::on_btn_open_dir_download_clicked()
+void Widget::slot_btn_open_dir_download_clicked()
 {
     QDesktopServices::openUrl(QUrl::fromLocalFile(SETTING_HANDLER->get_download_dir()));
 }
 
-void Widget::on_btn_change_dir_download_clicked()
+void Widget::slot_btn_change_dir_download_clicked()
 {
     QString str_dir = QFileDialog::getExistingDirectory(this, "选择下载歌曲保存目录", SETTING_HANDLER->get_download_dir());
     if (str_dir.isEmpty())
         return;
 
-    ui->label_dir_download->setText(str_dir);
+	ui->setting_tab_widget->setDownloadDir(str_dir);
+    //ui->label_dir_download->setText(str_dir);
     SETTING_HANDLER->set_download_dir(str_dir);
 }
 
-void Widget::on_btn_local_clicked()
+void Widget::slot_btn_local_clicked()
 {
     SETTING_HANDLER->set_player_mode(LOCAL);
     init_local();
 }
 
-void Widget::on_btn_mysite_clicked()
+void Widget::slot_btn_mysite_clicked()
 {
     SETTING_HANDLER->set_player_mode(MYSITE);
     init_mysite();
 }
 
-void Widget::on_btn_online_clicked()
+void Widget::slot_btn_online_clicked()
 {
     SETTING_HANDLER->set_player_mode(ONLINE);
     init_online();
@@ -1481,4 +1486,15 @@ void Widget::play_music(DSizeType musicIndex)
 ////            }
 //        break;
 //    }
+}
+
+void Widget::set_setting_tab_listener()
+{
+	connect(ui->setting_tab_widget, &SettingTabWidget::sig_btn_open_dir_clicked, this, &Widget::slot_btn_open_dir_clicked);
+	connect(ui->setting_tab_widget, &SettingTabWidget::sig_btn_change_dir_clicked, this, &Widget::slot_btn_change_dir_clicked);
+	connect(ui->setting_tab_widget, &SettingTabWidget::sig_btn_open_dir_download_clicked, this, &Widget::slot_btn_open_dir_download_clicked);
+	connect(ui->setting_tab_widget, &SettingTabWidget::sig_btn_change_dir_download_clicked, this, &Widget::slot_btn_change_dir_download_clicked);
+	connect(ui->setting_tab_widget, &SettingTabWidget::sig_btn_local_clicked, this, &Widget::slot_btn_local_clicked);
+	connect(ui->setting_tab_widget, &SettingTabWidget::sig_btn_mysite_clicked, this, &Widget::slot_btn_mysite_clicked);
+	connect(ui->setting_tab_widget, &SettingTabWidget::sig_btn_online_clicked, this, &Widget::slot_btn_online_clicked);
 }
