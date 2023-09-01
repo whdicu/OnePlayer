@@ -46,7 +46,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>./HD;.\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(QTDIR)\include;./HD;.\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -86,7 +86,7 @@
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -105,6 +105,7 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\morewidget.cpp" />
     <ClCompile Include="src\musicbutton.cpp" />
+    <ClCompile Include="src\neteasehandler.cpp" />
     <ClCompile Include="src\onlinehandler.cpp" />
     <ClCompile Include="src\onlinemusicbutton.cpp" />
     <ClCompile Include="src\settinghandler.cpp" />
@@ -139,7 +140,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="HD\DList.hpp" />
+    <ClInclude Include="HD\DSharedPointer.hpp" />
     <ClInclude Include="HD\DType.h" />
+    <QtMoc Include="src\neteasehandler.h" />
     <ClInclude Include="src\onlinehandler.h" />
     <ClInclude Include="src\settinghandler.h" />
     <QtMoc Include="src\settingtabwidget.h" />

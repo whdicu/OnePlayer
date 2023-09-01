@@ -2,6 +2,7 @@
 #include "ui_widget.h"
 
 #include "musicbutton.h"
+#include "neteasehandler.h"
 #include "onlinemusicbutton.h"
 #include <QAudioOutput>
 #include <QCollator>
@@ -117,6 +118,8 @@ Widget::Widget(const QString& filepath, QWidget *parent)
 
     set_listener();
 	set_setting_tab_listener();
+
+	NeteaseHandler::getInatance();
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     player_->setAudioOutput(audio_op_);
@@ -258,14 +261,14 @@ void Widget::set_listener()
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     connect(player_, &QMediaPlayer::errorOccurred, this, [this](QMediaPlayer::Error err, const QString& err_str)
 	{
-		//qDebug() << err << "\n" << err_str << "\n";
-		//QMessageBox::critical(this, "发生了意想不到的事情", "详情：" + err_str + "\n文件：" + player_->source().fileName());
+		qDebug() << err << "\n" << err_str << "\n";
+		QMessageBox::critical(this, "发生了意想不到的事情", "详情：" + err_str + "\n文件：" + player_->source().fileName());
 	});
 #else
 	auto slotError = [this](QMediaPlayer::Error err)
 	{
-		//qDebug() << err << "\n" << err_str << "\n";
-		//QMessageBox::critical(this, "发生了意想不到的事情", "详情：" + err_str + "\n文件：" + player_->source().fileName());
+		qDebug() << err << "\n" << player_->errorString() << "\n";
+		QMessageBox::critical(this, "发生了意想不到的事情", "详情：" + player_->errorString() + "\n文件："/* + player_->source().fileName()*/);
 	};
 	connect(player_, SIGNAL(error(QMediaPlayer::Error error)), this, SLOT(slotError));
 #endif
@@ -1354,9 +1357,12 @@ void Widget::slotMetaDataChanged()
 #define GET_META_DATA player_->metaData
 #endif
 
+	qDebug() << GET_META_DATA(QMediaMetaData::MediaType).toString();
+	qDebug() << GET_META_DATA(QMediaMetaData::AudioCodec).toInt();
+
     QString title = GET_META_DATA(QMediaMetaData::Title).toString();
     QStringList author_list = GET_META_DATA(QMediaMetaData::Author).toStringList();  // 去重
-    QImage thumbnail_image = GET_META_DATA(QMediaMetaData::ThumbnailImage).value<QImage>();  // 缩略图
+	QImage thumbnail_image = GET_META_DATA(QMediaMetaData::ThumbnailImage).value<QImage>();  // 缩略图
     QImage cover_art_image = GET_META_DATA(QMediaMetaData::CoverArtImage).value<QImage>();  // 封面艺术图
     QString album_title = GET_META_DATA(QMediaMetaData::AlbumTitle).toString();  // 专辑标题
     QStringList album_artist = GET_META_DATA(QMediaMetaData::AlbumArtist).toStringList();  // 去重 专辑艺术家
