@@ -106,6 +106,7 @@
     <ClCompile Include="src\morewidget.cpp" />
     <ClCompile Include="src\musicbutton.cpp" />
     <ClCompile Include="src\neteasehandler.cpp" />
+    <ClCompile Include="src\neteasewidget.cpp" />
     <ClCompile Include="src\onlinehandler.cpp" />
     <ClCompile Include="src\onlinemusicbutton.cpp" />
     <ClCompile Include="src\settinghandler.cpp" />
@@ -128,6 +129,7 @@
     <QtUic Include="src\lyricswidget.ui" />
     <QtUic Include="src\morewidget.ui" />
     <QtUic Include="src\musicbutton.ui" />
+    <QtUic Include="src\neteasewidget.ui" />
     <QtUic Include="src\onlinemusicbutton.ui" />
     <QtUic Include="src\settingtabwidget.ui" />
     <QtUic Include="src\widget.ui" />
@@ -143,6 +145,7 @@
     <ClInclude Include="HD\DSharedPointer.hpp" />
     <ClInclude Include="HD\DType.h" />
     <QtMoc Include="src\neteasehandler.h" />
+    <QtMoc Include="src\neteasewidget.h" />
     <ClInclude Include="src\onlinehandler.h" />
     <ClInclude Include="src\settinghandler.h" />
     <QtMoc Include="src\settingtabwidget.h" />

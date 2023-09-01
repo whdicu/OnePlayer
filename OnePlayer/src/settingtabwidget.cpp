@@ -1,20 +1,10 @@
 #include "settingtabwidget.h"
+#include <QComboBox>
 #include <QMap>
 #include <QPushButton>
 
-enum TAB_BUTTON_TYPE
-{
-	BASE_BTN,
-	THEME_BTN
-};
 
-const static QMap<TAB_BUTTON_TYPE, QString> csmap_tabButtonTypeStr = 
-{
-	{BASE_BTN, "ª˘¥°…Ë÷√"},
-	{THEME_BTN, "÷˜Ã‚…Ë÷√"}
-};
-
-const static QString CHECHED_BTN_STYLE = "border: none; background-color: #b6d1c8; border-top-left-radius: 20px; border-top-right-radius: 20px;";
+const static QString CHECHED_BTN_STYLE = "border: none; background-color: rgba(182, 209, 200, 0.75); border-top-left-radius: 20px; border-top-right-radius: 20px;";
 
 
 SettingTabWidget::SettingTabWidget(QWidget *parent)
@@ -22,7 +12,7 @@ SettingTabWidget::SettingTabWidget(QWidget *parent)
 {
 	ui.setupUi(this);
 
-	// ≥ı ºªØTabButton
+	// ÂàùÂßãÂåñTabButton
 	int i = 0;
 	for (auto it = csmap_tabButtonTypeStr.begin(); it != csmap_tabButtonTypeStr.end(); ++it, ++i)
 	{
@@ -44,13 +34,24 @@ SettingTabWidget::SettingTabWidget(QWidget *parent)
 	ui.stacked_widget->setCurrentIndex(0);
 	btn_list_.at(0)->setStyleSheet(CHECHED_BTN_STYLE);
 
+	// ÂàùÂßãÂåñÊí≠ÊîæÂô®Ê®°Âºè‰∏ãÊãâÊ°Ü
+	for (auto it = csmap_playerModeStr.begin(); it != csmap_playerModeStr.end(); ++it)
+	{
+		ui.cmb_mode->addItem(it.value(), it.key());
+	}
+	int index = ui.cmb_mode->findData(SettingHandler::getInstance()->get_player_mode());
+	ui.cmb_mode->setCurrentIndex(index);
+
+	//ui.btn_open_dir->setIcon(QIcon(":/svgs/goto.svg"));
+	//ui.btn_open_dir_download->setIcon(QIcon(":/svgs/goto.svg"));
+	ui.btn_change_dir->setIcon(QIcon(":/svgs/folder.svg"));
+	ui.btn_change_dir_download->setIcon(QIcon(":/svgs/folder.svg"));
+
 	connect(ui.btn_open_dir, &QPushButton::clicked, this, &SettingTabWidget::sig_btn_open_dir_clicked);
 	connect(ui.btn_change_dir, &QPushButton::clicked, this, &SettingTabWidget::sig_btn_change_dir_clicked);
 	connect(ui.btn_open_dir_download, &QPushButton::clicked, this, &SettingTabWidget::sig_btn_open_dir_download_clicked);
 	connect(ui.btn_change_dir_download, &QPushButton::clicked, this, &SettingTabWidget::sig_btn_change_dir_download_clicked);
-	connect(ui.btn_local, &QPushButton::clicked, this, &SettingTabWidget::sig_btn_local_clicked);
-	connect(ui.btn_mysite, &QPushButton::clicked, this, &SettingTabWidget::sig_btn_mysite_clicked);
-	connect(ui.btn_online, &QPushButton::clicked, this, &SettingTabWidget::sig_btn_online_clicked);
+	connect(ui.cmb_mode, &QComboBox::currentIndexChanged, this, &SettingTabWidget::sig_cmb_mode_currentIndexChanged);
 }
 
 SettingTabWidget::~SettingTabWidget()
@@ -59,10 +60,14 @@ SettingTabWidget::~SettingTabWidget()
 
 void SettingTabWidget::setMusicDir(const QString& dir)
 {
-	ui.label_dir->setText(dir);
+	ui.btn_open_dir->setText(dir);
 }
 
 void SettingTabWidget::setDownloadDir(const QString& dir)
 {
-	ui.label_dir_download->setText(dir);
+	ui.btn_open_dir_download->setText(dir);
 }
+
+// Â±èËîΩÈº†Ê†áÊªöÂä®
+void QComboBox::wheelEvent(QWheelEvent* e) {}
+void QAbstractSpinBox::wheelEvent(QWheelEvent* e) {}

@@ -1,4 +1,4 @@
-#ifndef SETTINGHANDLER_H
+﻿#ifndef SETTINGHANDLER_H
 #define SETTINGHANDLER_H
 
 #include <QFile>
@@ -8,7 +8,8 @@ enum PLAYER_MODE
 {
     LOCAL,
     MYSITE,
-    ONLINE
+    ONLINE,
+    NETEASE
 };
 
 class SettingHandler

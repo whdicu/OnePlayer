@@ -47,7 +47,8 @@ QLabel {
 
 #music,
 #setting,
-#p {
+#p,
+#page_netease {
 	background-color: white;
 	border: 1px solid #5c5c66;
 	border-top-left-radius: 40px;
@@ -207,7 +208,7 @@ QLabel {
     <number>1</number>
    </property>
    <property name="currentIndex">
-    <number>1</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="music">
     <widget class="QStackedWidget" name="stacked_info">
@@ -225,7 +226,7 @@ QLabel {
       </font>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="page_music_info">
       <widget class="ImageWidget" name="widget_music_mask" native="true">
@@ -841,6 +842,28 @@ QLabel {
      </property>
     </widget>
    </widget>
+   <widget class="QWidget" name="page_netease">
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <property name="spacing">
+      <number>0</number>
+     </property>
+     <property name="leftMargin">
+      <number>0</number>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="NeteaseWidget" name="widget_netease" native="true"/>
+     </item>
+    </layout>
+   </widget>
   </widget>
   <widget class="QWidget" name="widget_btn" native="true">
    <property name="geometry">
@@ -1329,6 +1352,12 @@ QLabel {
    <class>SettingTabWidget</class>
    <extends>QWidget</extends>
    <header location="global">settingtabwidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>NeteaseWidget</class>
+   <extends>QWidget</extends>
+   <header>neteasewidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

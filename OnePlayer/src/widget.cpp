@@ -140,6 +140,9 @@ Widget::Widget(const QString& filepath, QWidget *parent)
         case ONLINE:
             init_online();
             break;
+        case NETEASE:
+            init_netease();
+            break;
         }
     }
     else
@@ -720,6 +723,18 @@ void Widget::init_online()
     draw_image(QImage(), true);
 }
 
+void Widget::init_netease()
+{
+    clear_button(ui->music_layout_online);
+    player_->stop();
+    //ui->stacked_info->setCurrentIndex(1);
+
+    ui->btn_more->setIcon(QIcon(":/svgs/more.svg"));
+    ui->stacked_widget->setCurrentIndex(3);
+    //ui->stacked_music_btn->setCurrentIndex(3);
+    //draw_image(QImage(), true);
+}
+
 void Widget::draw_image(QImage image, bool online)
 {
     QLabel* label = nullptr;
@@ -1292,22 +1307,25 @@ void Widget::slot_btn_change_dir_download_clicked()
     SETTING_HANDLER->set_download_dir(str_dir);
 }
 
-void Widget::slot_btn_local_clicked()
+void Widget::slot_cmb_mode_currentIndexChanged(int index)
 {
-    SETTING_HANDLER->set_player_mode(LOCAL);
-    init_local();
-}
-
-void Widget::slot_btn_mysite_clicked()
-{
-    SETTING_HANDLER->set_player_mode(MYSITE);
-    init_mysite();
-}
-
-void Widget::slot_btn_online_clicked()
-{
-    SETTING_HANDLER->set_player_mode(ONLINE);
-    init_online();
+    PLAYER_MODE newMode = static_cast<PLAYER_MODE>(index);
+    switch (newMode)
+    {
+    case LOCAL:
+        init_local();
+        break;
+    case MYSITE:
+        init_mysite();
+        break;
+    case ONLINE:
+        init_online();
+        break;
+    case NETEASE:
+        init_netease();
+        break;
+    }
+    SETTING_HANDLER->set_player_mode(newMode);
 }
 
 // 查找框内上一个按钮
@@ -1500,7 +1518,5 @@ void Widget::set_setting_tab_listener()
 	connect(ui->setting_tab_widget, &SettingTabWidget::sig_btn_change_dir_clicked, this, &Widget::slot_btn_change_dir_clicked);
 	connect(ui->setting_tab_widget, &SettingTabWidget::sig_btn_open_dir_download_clicked, this, &Widget::slot_btn_open_dir_download_clicked);
 	connect(ui->setting_tab_widget, &SettingTabWidget::sig_btn_change_dir_download_clicked, this, &Widget::slot_btn_change_dir_download_clicked);
-	connect(ui->setting_tab_widget, &SettingTabWidget::sig_btn_local_clicked, this, &Widget::slot_btn_local_clicked);
-	connect(ui->setting_tab_widget, &SettingTabWidget::sig_btn_mysite_clicked, this, &Widget::slot_btn_mysite_clicked);
-	connect(ui->setting_tab_widget, &SettingTabWidget::sig_btn_online_clicked, this, &Widget::slot_btn_online_clicked);
+	connect(ui->setting_tab_widget, &SettingTabWidget::sig_cmb_mode_currentIndexChanged, this, &Widget::slot_cmb_mode_currentIndexChanged);
 }

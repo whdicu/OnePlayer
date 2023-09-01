@@ -18,5 +18,7 @@
         <file>svgs/shutdown.svg</file>
         <file>icon.ico</file>
         <file>images/music.png</file>
+        <file>svgs/folder.svg</file>
+        <file>svgs/goto.svg</file>
     </qresource>
 </RCC>

@@ -51,9 +51,7 @@ private slots:
 	void slot_btn_change_dir_clicked();
 	void slot_btn_open_dir_download_clicked();
 	void slot_btn_change_dir_download_clicked();
-	void slot_btn_local_clicked();
-	void slot_btn_mysite_clicked();
-	void slot_btn_online_clicked();
+    void slot_cmb_mode_currentIndexChanged(int index);
 
     void slotMetaDataChanged();
 
@@ -70,6 +68,7 @@ private:
     void init_local();
     void init_mysite();
     void init_online();
+    void init_netease();
     void draw_image(QImage image, bool online = false);
     void dragEnterEvent(QDragEnterEvent *);
     void dropEvent(QDropEvent *);
