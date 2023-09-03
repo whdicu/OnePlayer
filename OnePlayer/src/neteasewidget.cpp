@@ -1,7 +1,35 @@
-#include "neteasewidget.h"
+ï»¿#include "neteasewidget.h"
+#include "imagewidget.h"
+#include "neteasehandler.h"
+#include <QLineEdit>
+#include <QMessageBox>
 #include <QPainter>
 #include <QPainterPath>
 #include <QPixmap>
+#include <QRegularExpression>
+
+
+void drawImage(QLabel* canterLabel, ImageWidget* bgMask, QImage img=QImage())
+{
+    const static QImage default_image(":/images/music.png");
+
+    QPixmap pixmap = QPixmap::fromImage(img.isNull() ? default_image : img);
+
+    QPixmap logoPixmap(canterLabel->size());
+    logoPixmap.fill(Qt::transparent);
+    QPainter painter(&logoPixmap);
+    painter.setRenderHints(QPainter::Antialiasing);
+    painter.setRenderHints(QPainter::SmoothPixmapTransform);
+    QPainterPath path;  // ç»˜åˆ¶è·¯å¾„
+    //ç»˜åˆ¶åœ†è§’çŸ©å½¢ï¼Œå…¶ä¸­æœ€åä¸¤ä¸ªå‚æ•°å€¼çš„èŒƒå›´ä¸ºï¼ˆ0-99ï¼‰ï¼Œå°±æ˜¯åœ†è§’çš„pxå€¼
+    path.addRoundedRect(0, 0, canterLabel->width(), canterLabel->height(), 10, 10);
+    painter.setClipPath(path);
+    painter.drawPixmap(0, 0, canterLabel->width(), canterLabel->height()
+        , pixmap.scaled(logoPixmap.size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+
+    canterLabel->setPixmap(logoPixmap);
+    bgMask->setPixmap(pixmap);
+}
 
 
 NeteaseWidget::NeteaseWidget(QWidget* parent)
@@ -9,22 +37,61 @@ NeteaseWidget::NeteaseWidget(QWidget* parent)
 {
 	ui.setupUi(this);
 
-    QPixmap pixmap(":/images/music.png");
-    QPixmap resultPixmap(ui.label_image->size());
-    resultPixmap.fill(Qt::transparent);
-    QPainter painter(&resultPixmap);
-    painter.setRenderHints(QPainter::Antialiasing);
-    painter.setRenderHints(QPainter::SmoothPixmapTransform);
-    QPainterPath path;  // »æÖÆÂ·¾¶
-    //»æÖÆÔ²½Ç¾ØĞÎ£¬ÆäÖĞ×îºóÁ½¸ö²ÎÊıÖµµÄ·¶Î§Îª£¨0-99£©£¬¾ÍÊÇÔ²½ÇµÄpxÖµ
-    path.addRoundedRect(0, 0, ui.label_image->width(), ui.label_image->height(), 10, 10);
-    painter.setClipPath(path);
-    painter.drawPixmap(0, 0, ui.label_image->width(), ui.label_image->height()
-        , pixmap.scaled(resultPixmap.size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+    // åœ†è§’é®ç½©
+    QWidget* ww = new QWidget(this);
+    ww->move(ui.stackedWidget->x()-10, ui.stackedWidget->y() - 10);
+    ww->resize(ui.stackedWidget->width() + 20, ui.stackedWidget->height() + 20);
+    ww->setStyleSheet("background-color: transparent; border: 10px solid white; border-radius: 30px;");
+    ww->stackUnder(ui.stackedWidget);
 
-    ui.label_image->setPixmap(resultPixmap);
+    drawImage(ui.label_image, ui.image_widget_mask);
+
+    connect(ui.btn_login, &QPushButton::clicked, this, &NeteaseWidget::slotLogin);
+    connect(ui.edit_phone_email, &QLineEdit::returnPressed, this, &NeteaseWidget::slotLogin);
+    connect(ui.edit_password, &QLineEdit::returnPressed, this, &NeteaseWidget::slotLogin);
 }
 
 NeteaseWidget::~NeteaseWidget()
 {
+}
+
+void NeteaseWidget::on_btn_sign_up_clicked()
+{
+}
+
+void NeteaseWidget::slotLogin()
+{
+    QString phoneOrEmail = ui.edit_phone_email->text();
+    QString password = ui.edit_password->text();
+
+    if (phoneOrEmail.contains('@'))
+    {
+        QRegularExpression regex("^\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\\b$");
+        QRegularExpressionMatch match = regex.match(phoneOrEmail);
+
+        if (!match.hasMatch())
+        {
+            QMessageBox::warning(this, tr("é‚®ç®±é”™è¯¯"), tr("è¯·è¾“å…¥æ­£ç¡®çš„é‚®ç®±"));
+            return;
+        }
+
+        if (NeteaseHandler::getInatance()->loginEmail(phoneOrEmail, password))
+        {
+            // ç™»é™†æˆåŠŸ
+        }
+    }
+    else
+    {
+        unsigned long long i = phoneOrEmail.toULongLong();
+        /*if (i < 10000000000ul || i > 19999999999ul)
+        {
+            QMessageBox::warning(this, tr("æ‰‹æœºå·é”™è¯¯"), tr("è¯·è¾“å…¥æ­£ç¡®çš„æ‰‹æœºå·"));
+            return;
+        }*/
+        
+        if (NeteaseHandler::getInatance()->loginPhone(phoneOrEmail, password))
+        {
+            // ç™»é™†æˆåŠŸ
+        }
+    }
 }

@@ -12,7 +12,10 @@ public:
 	static NeteaseHandler* getInatance();
 
 	// 手机号登录
-	void loginPhone(const QString& phone, const QString& password);
+	bool loginPhone(const QString& phone, const QString& password);
+
+	// 邮箱登录
+	bool loginEmail(const QString& email, const QString& password);
 
 
 private:
@@ -20,9 +23,9 @@ private:
 	~NeteaseHandler();
 
 	// 阻塞式POST，服务器返回结果后函数才会返回
-	DSharedPointer<QJsonObject> execPost(const QString& url);
+	DSharedPointer<QJsonObject> execPost(const QString& url, const QString& content);
 
-	void dealJsonObject(DSharedPointer<QJsonObject> obj);
+	void printJsonObject(const QJsonObject& obj, int space=0);
 
 
 	QNetworkAccessManager* networkManager_;

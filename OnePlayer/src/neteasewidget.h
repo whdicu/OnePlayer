@@ -10,6 +10,12 @@ public:
 	NeteaseWidget(QWidget* parent = nullptr);
 	~NeteaseWidget();
 
+private slots:
+	void on_btn_sign_up_clicked();
+
+	// µÇÂ¼
+	void slotLogin();
+
 private:
 
 	Ui::NeteaseWidget ui;
