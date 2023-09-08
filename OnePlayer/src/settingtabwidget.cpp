@@ -51,7 +51,12 @@ SettingTabWidget::SettingTabWidget(QWidget *parent)
 	connect(ui.btn_change_dir, &QPushButton::clicked, this, &SettingTabWidget::sig_btn_change_dir_clicked);
 	connect(ui.btn_open_dir_download, &QPushButton::clicked, this, &SettingTabWidget::sig_btn_open_dir_download_clicked);
 	connect(ui.btn_change_dir_download, &QPushButton::clicked, this, &SettingTabWidget::sig_btn_change_dir_download_clicked);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 	connect(ui.cmb_mode, &QComboBox::currentIndexChanged, this, &SettingTabWidget::sig_cmb_mode_currentIndexChanged);
+#else
+	auto func = [this](int index) { emit sig_cmb_mode_currentIndexChanged(index); };
+	connect(ui.cmb_mode, SIGNAL(currentIndexChanged(int)), this, SLOT(func));
+#endif
 }
 
 SettingTabWidget::~SettingTabWidget()

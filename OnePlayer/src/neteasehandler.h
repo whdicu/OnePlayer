@@ -1,6 +1,7 @@
 #pragma once
 #pragma execution_character_set("utf-8")
 #include <QObject>
+#include <QProcess>
 #include <QNetworkAccessManager>
 #include "DSharedPointer.hpp"
 
@@ -9,7 +10,8 @@ class NeteaseHandler : public QObject
 	Q_OBJECT
 
 public:
-	static NeteaseHandler* getInatance();
+	static NeteaseHandler* getInstance();
+	void deleteThis();
 
 	// 手机号登录
 	bool loginPhone(const QString& phone, const QString& password);
@@ -22,11 +24,16 @@ private:
 	NeteaseHandler(QObject *parent=nullptr);
 	~NeteaseHandler();
 
+	// 启动网易云API的exe程序
+	void startApiExe();
+	void stopApiExe();
+
+
 	// 阻塞式POST，服务器返回结果后函数才会返回
 	DSharedPointer<QJsonObject> execPost(const QString& url, const QString& content);
 
 	void printJsonObject(const QJsonObject& obj, int space=0);
 
-
+	QProcess* apiProcess_;
 	QNetworkAccessManager* networkManager_;
 };

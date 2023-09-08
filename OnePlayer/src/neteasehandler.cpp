@@ -5,16 +5,22 @@
 #include <QJsonParseError>
 #include <QMessageBox>
 #include <QNetworkReply>
+#include "windows.h"
 
 
 const static QString FIRST_URL = "http://127.0.0.1:3000";
 
 static NeteaseHandler* netease_handler = nullptr;
-NeteaseHandler* NeteaseHandler::getInatance()
+NeteaseHandler* NeteaseHandler::getInstance()
 {
 	if (nullptr == netease_handler)
 		netease_handler = new NeteaseHandler;
 	return netease_handler;
+}
+
+void NeteaseHandler::deleteThis()
+{
+	stopApiExe();
 }
 
 bool NeteaseHandler::loginPhone(const QString& phone, const QString& password)
@@ -108,14 +114,31 @@ DSharedPointer<QJsonObject> NeteaseHandler::execPost(const QString& url, const Q
 
 NeteaseHandler::NeteaseHandler(QObject *parent)
 	: QObject(parent)
+	, apiProcess_(new QProcess(this))
 	, networkManager_(new QNetworkAccessManager(this))
 {
 	//loginPhone("15557539750", "Whd2001129");
-	
+	startApiExe();
 }
 
 NeteaseHandler::~NeteaseHandler()
 {
+	deleteThis();
+}
+
+void NeteaseHandler::startApiExe()
+{
+	//apiThread_->start();
+	apiProcess_->start("NeteaseCloudMusicApi-win.exe");
+	//if (!ret)
+	//{
+	//	QMessageBox::warning(nullptr, tr("警告"), tr("启动网易云API程序失败"));
+	//}
+}
+
+void NeteaseHandler::stopApiExe()
+{
+	apiProcess_->kill();
 }
 
 void NeteaseHandler::printJsonObject(const QJsonObject& obj, int space)

@@ -119,7 +119,7 @@ Widget::Widget(const QString& filepath, QWidget *parent)
     set_listener();
 	set_setting_tab_listener();
 
-	NeteaseHandler::getInatance();
+	NeteaseHandler::getInstance();
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     player_->setAudioOutput(audio_op_);
@@ -1074,6 +1074,7 @@ void Widget::animateHide(bool closeAfterFinshed)
 Widget::~Widget()
 {
     delete ui;
+	NeteaseHandler::getInstance()->deleteThis();
     hook_->unInstallHook();
 }
 
