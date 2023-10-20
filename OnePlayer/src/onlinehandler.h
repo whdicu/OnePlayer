@@ -1,7 +1,7 @@
 #ifndef ONLINEHANDLER_H
 #define ONLINEHANDLER_H
 
-#include "DList.hpp"
+#include "HDBase/DList.hpp"
 #include <QImage>
 #include <QList>
 #include <QString>

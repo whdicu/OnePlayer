@@ -1,7 +1,7 @@
 #ifndef WIDGET_H
 #define WIDGET_H
 #pragma execution_character_set("utf-8")
-#include "DList.hpp"
+#include "HDBase/DList.hpp"
 #include "hook.h"
 #include "basemusicbutton.h"
 #include "onlinehandler.h"

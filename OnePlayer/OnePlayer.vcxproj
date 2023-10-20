@@ -46,7 +46,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(QTDIR)\include;./HD;.\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(QTDIR)\include;D:\coder\C++\OneDer\src;.\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -141,9 +141,6 @@
     <QtMoc Include="src\musicbutton.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="HD\DList.hpp" />
-    <ClInclude Include="HD\DSharedPointer.hpp" />
-    <ClInclude Include="HD\DType.h" />
     <QtMoc Include="src\neteasehandler.h" />
     <QtMoc Include="src\neteasewidget.h" />
     <ClInclude Include="src\onlinehandler.h" />

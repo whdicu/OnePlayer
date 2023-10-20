@@ -22,9 +22,6 @@
       <Extensions>qrc;*</Extensions>
       <ParseFiles>false</ParseFiles>
     </Filter>
-    <Filter Include="HD">
-      <UniqueIdentifier>{7219c1ad-fd5e-42e3-88d5-c30db9494193}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="src\basemusicbutton.h">
@@ -137,15 +134,6 @@
     </ClInclude>
     <ClInclude Include="src\settinghandler.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="HD\DList.hpp">
-      <Filter>HD</Filter>
-    </ClInclude>
-    <ClInclude Include="HD\DType.h">
-      <Filter>HD</Filter>
-    </ClInclude>
-    <ClInclude Include="HD\DSharedPointer.hpp">
-      <Filter>HD</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

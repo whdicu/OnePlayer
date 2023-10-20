@@ -3,7 +3,7 @@
 #include <QObject>
 #include <QProcess>
 #include <QNetworkAccessManager>
-#include "DSharedPointer.hpp"
+#include "HDMemory/DSharedPointer.hpp"
 
 class NeteaseHandler : public QObject
 {
