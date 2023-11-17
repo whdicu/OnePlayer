@@ -20,5 +20,6 @@
         <file>images/music.png</file>
         <file>svgs/folder.svg</file>
         <file>svgs/goto.svg</file>
+        <file>svgs/close.svg</file>
     </qresource>
 </RCC>
