@@ -1,6 +1,13 @@
 #include "settinghandler.h"
+#include "HDCore/HD2QT.hpp"
 #include <QApplication>
+#include <QDir>
+#include <QFileInfo>
+#include <QJsonArray>
+#include <QJsonObject>
+#include <QJsonParseError>
 
+// todo 设置改用json
 static SettingHandler* setting_handler = nullptr;
 SettingHandler *SettingHandler::getInstance()
 {
@@ -9,87 +16,208 @@ SettingHandler *SettingHandler::getInstance()
     return setting_handler;
 }
 
-SettingHandler::SettingHandler()
-    : file(QApplication::applicationDirPath() + "/setting.xq")
-    , old_mode_(AGAIN)
-    , music_dir_(QString())
-    , last_music_(QUrl())
-    , volume_(0.5f)
-    , music_position_(0)
-    , player_mode_(LOCAL)
-    , download_dir_(QString())
+void SettingHandler::addPlayList(const QString& name, const DList<QString>& list)
 {
-    init_setting();
+    QString uniqueName = checkPlayListName(name);
+    setting_.playListMap.insert(uniqueName, list);
+    writeAll();
 }
 
-QMap<QString, QStringList> SettingHandler::read_all()
+DList<QString> SettingHandler::getNowPlayList()
 {
-    QMap<QString, QStringList> ret;
-    if (! file.exists())
+    if (setting_.playListName.isEmpty())
+        setting_.playListName = setting_.playListMap.begin().key();
+
+    return getPlayList(setting_.playListName);
+}
+
+QString SettingHandler::nextMusicPath()
+{
+    ++setting_.musicIndex;
+    if (setting_.musicIndex >= setting_.playListMap.value(setting_.playListName).size())
+        setting_.musicIndex = 0;
+
+    return nowMusicPath();
+}
+
+QString SettingHandler::nowMusicPath()
+{
+    if (setting_.playListName.isEmpty())
+        setting_.playListName = setting_.playListMap.begin().key();
+
+    if (setting_.musicIndex < 0 ||
+        setting_.musicIndex >= setting_.playListMap.value(setting_.playListName).size())
+        return QString();
+
+    return setting_.playListMap.value(setting_.playListName).at(setting_.musicIndex);
+}
+
+QString SettingHandler::previousMusicPath()
+{
+    --setting_.musicIndex;
+    if (setting_.musicIndex < 0)
+        setting_.musicIndex = setting_.playListMap.value(setting_.playListName).size() - 1;
+
+    return nowMusicPath();
+}
+
+SettingHandler::SettingHandler()
+    : setting_()
+{
+    readAll();
+}
+
+QString SettingHandler::checkPlayListName(const QString& name)
+{
+    if (setting_.playListMap.contains(name))
+        return checkPlayListName(name + "_新");
+    return name;
+}
+
+void SettingHandler::readAll()
+{
+    QString strFile = QCoreApplication::applicationDirPath();
+    QString filePath = "/config/Setting.json";
+    strFile += filePath;
+
+    QFile file(strFile);
+    if (!file.exists())
     {
-        file.open(QIODevice::WriteOnly);
+        qWarning() << filePath << "not exist";
+        bool ret = file.open(QIODevice::WriteOnly);
+        if (!ret)
+        {
+            qWarning() << filePath << "create failed";
+            return;
+        }
         file.close();
     }
 
-    auto ok = file.open(QIODevice::ReadOnly);
-    QString word = "";
-    if (ok)
-        word = file.readAll();
-
-    file.close();
-    auto setting_list = word.split('\n');
-    for (const auto &str: setting_list)
+    bool ok = file.open(QIODevice::ReadOnly | QIODevice::Text);
+    if (!ok)
     {
-        auto one = str.split(',');
-
-        if (one.size() > 1)
-            ret.insert(one.at(0), one.mid(1));
+        qWarning() << "File" << filePath << "open failed";
+        return;
     }
-    return ret;
-}
 
-void SettingHandler::write_all()
-{
-    file.open(QIODevice::WriteOnly);
-    file.write(("music_dir," + music_dir_ + "\n").toUtf8());
-    file.write(("old_mode," + QString::number(old_mode_) + "\n").toUtf8());
-    file.write(("last_music," + last_music_.path() + "\n").toUtf8());
-    file.write(("volume," + QString::number(volume_) + "\n").toUtf8());
-    file.write(("music_position," + QString::number(music_position_) + "\n").toUtf8());
-    file.write(("player_mode," + QString::number(player_mode_) + "\n").toUtf8());
-    file.write(("download_dir," + download_dir_ + "\n").toUtf8());
+    QByteArray data = file.readAll();
     file.close();
+
+    if (0 == data.size())
+    {
+        qWarning() << "File" << filePath << "is empty";
+        return;
+    }
+
+    QJsonParseError parseError;
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &parseError);
+    if (QJsonParseError::NoError != parseError.error)
+    {
+        qWarning() << "File" << filePath << "analyze failed";
+        return;
+    }
+
+    QJsonObject obj = jsonDoc.object();
+
+    setting_.playMode = (PLAY_MODE)obj["playMode"].toInt();
+    setting_.musicDir = obj["musicDir"].toString();
+    setting_.lastMusic = obj["lastMusic"].toString();
+    setting_.volume = obj["volume"].toDouble();
+    setting_.playListName = obj["playListName"].toString();
+    setting_.musicIndex = obj["musicIndex"].toInteger();
+    setting_.musicPosition = obj["musicPosition"].toInteger();
+    setting_.playerMode = (PLAYER_MODE)obj["playerMode"].toInt();
+    setting_.downloadDir = obj["downloadDir"].toString();
+
+    // 读取播放列表
+    setting_.playListMap.clear();
+    QJsonObject playListObject = obj["playList"].toObject();
+    QStringList playList = playListObject.keys();
+    for (const QString& listName : playList)
+    {
+        DList<QString> oneList;
+        QJsonArray musicArray = playListObject[listName].toArray();
+        for (const QJsonValue& musicUrl : musicArray)
+        {
+            oneList.pushBack(musicUrl.toString());
+        }
+        setting_.playListMap.insert(listName, oneList);
+    }
 }
 
-void SettingHandler::init_setting()
+void SettingHandler::writeAll()
 {
-    auto setting_map = read_all();
+    QString strFile = QCoreApplication::applicationDirPath();
+    strFile += "/config/Setting.json";
 
-    auto v1 = setting_map.value("music_dir", {});
-    if (! v1.empty())
-        set_music_dir(*v1.begin());
+    QJsonObject wholeObject;
 
-    auto v2 = setting_map.value("old_mode", {});
-    if (! v2.empty())
-        set_old_mode(static_cast<PLAY_MODE> (v2.begin()->toInt()));
+    // 写入工作台类型
+    wholeObject.insert("playMode", setting_.playMode);
+    wholeObject.insert("musicDir", setting_.musicDir);
+    wholeObject.insert("lastMusic", setting_.lastMusic.toString());
+    wholeObject.insert("volume", setting_.volume);
+    wholeObject.insert("playListName", setting_.playListName);
+    wholeObject.insert("musicIndex", setting_.musicIndex);
+    wholeObject.insert("musicPosition", setting_.musicPosition);
+    wholeObject.insert("playerMode", setting_.playerMode);
+    wholeObject.insert("downloadDir", setting_.downloadDir);
+    
+    QJsonObject playListObj;
+    for (auto it = setting_.playListMap.cbegin(); it != setting_.playListMap.cend(); ++it)
+    {
+        playListObj.insert(it.key(), QJsonArray::fromStringList(HD2QT::DList2QList(*it)));
+    }
+    wholeObject.insert("playList", playListObj);
 
-    auto v3 = setting_map.value("last_music", {});
-    if (! v3.empty())
-        set_last_music(QUrl::fromLocalFile(*v3.begin()));
+    // 如果路径中有不存在的文件夹则创建
+    QFileInfo fileInfo(strFile);
+    QDir().mkpath(fileInfo.absolutePath());
 
-    auto v4 = setting_map.value("volume", {});
-    if (! v4.empty())
-        set_volume(v4.begin()->toFloat());
-
-    auto v5 = setting_map.value("music_position", {});
-    if (! v5.isEmpty())
-        set_music_position(v5.begin()->toInt());
-
-    auto v6 = setting_map.value("player_mode", {});
-    if (! v6.isEmpty())
-        set_player_mode((PLAYER_MODE)v6.begin()->toInt());
-
-    auto v7 = setting_map.value("download_dir", {});
-    if (! v7.isEmpty())
-        set_download_dir(*v7.begin());
+    QJsonDocument doc(wholeObject);
+    QByteArray data = doc.toJson();
+    QFile file(strFile);
+    bool ok = file.open(QIODevice::WriteOnly);
+    if (ok)
+    {
+        file.write(data);
+        file.close();
+    }
+    else
+    {
+        qWarning() << "File" << strFile << "open failed!";
+    }
 }
+
+//void SettingHandler::init_setting()
+//{
+//    auto setting_map = readAll();
+//
+//    auto v1 = setting_map.value("music_dir", {});
+//    if (! v1.empty())
+//        set_music_dir(*v1.begin());
+//
+//    auto v2 = setting_map.value("old_mode", {});
+//    if (! v2.empty())
+//        set_old_mode(static_cast<PLAY_MODE> (v2.begin()->toInt()));
+//
+//    auto v3 = setting_map.value("last_music", {});
+//    if (! v3.empty())
+//        set_last_music(QUrl::fromLocalFile(*v3.begin()));
+//
+//    auto v4 = setting_map.value("volume", {});
+//    if (! v4.empty())
+//        set_volume(v4.begin()->toFloat());
+//
+//    auto v5 = setting_map.value("music_position", {});
+//    if (! v5.isEmpty())
+//        set_music_position(v5.begin()->toInt());
+//
+//    auto v6 = setting_map.value("player_mode", {});
+//    if (! v6.isEmpty())
+//        set_player_mode((PLAYER_MODE)v6.begin()->toInt());
+//
+//    auto v7 = setting_map.value("download_dir", {});
+//    if (! v7.isEmpty())
+//        set_download_dir(*v7.begin());
+//}

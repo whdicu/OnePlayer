@@ -14,11 +14,12 @@
     <ProjectGuid>{EDECB4BD-5A02-4D72-9923-AC7CC22F33EA}</ProjectGuid>
     <Keyword>QtVS_v303</Keyword>
     <QtMsBuild Condition="'$(QtMsBuild)'=='' OR !Exists('$(QtMsBuild)\qt.targets')">$(MSBuildProjectDirectory)\QtMsBuild</QtMsBuild>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -46,8 +47,13 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(QTDIR)\include;D:\coder\C++\OneDer\src;.\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(QTDIR)\include;D:\coder\C++\OneDer\src;.\src;..\OpenCV\include;..\FFmpeg\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>CV_IGNORE_DEBUG_BUILD_GUARD</PreprocessorDefinitions>
     </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>..\OpenCV\lib;..\FFmpeg\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opencv_world455.lib;avcodec.lib;avdevice.lib;avfilter.lib;avformat.lib;avutil.lib;postproc.lib;swresample.lib;swscale.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -55,15 +61,14 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="QtSettings">
-    <QtInstall>qt5.9.4-msvc2017-x64</QtInstall>
-    <QtModules>
-    </QtModules>
+    <QtInstall>qt-6.5.1-msvc</QtInstall>
+    <QtModules>core;gui;widgets</QtModules>
     <QtBuildConfig>debug</QtBuildConfig>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="QtSettings">
     <QtModules>concurrent;core;gui;multimedia;network;widgets</QtModules>
     <QtBuildConfig>release</QtBuildConfig>
-    <QtInstall>qt-6.5.1-msvc</QtInstall>
+    <QtInstall>qt-6.6.0-msvc</QtInstall>
   </PropertyGroup>
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.props')">
     <Import Project="$(QtMsBuild)\qt.props" />
@@ -100,15 +105,21 @@
   <ItemGroup>
     <ClCompile Include="src\dmenu.cpp" />
     <ClCompile Include="src\hook.cpp" />
-    <ClCompile Include="src\imagewidget.cpp" />
+    <ClCompile Include="src\ImageHandler.cpp" />
     <ClCompile Include="src\lyricswidget.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\morewidget.cpp" />
+    <ClCompile Include="src\MultiBtnWidget.cpp" />
     <ClCompile Include="src\musicbutton.cpp" />
+    <ClCompile Include="src\MusicInfoWidget.cpp" />
     <ClCompile Include="src\neteasehandler.cpp" />
     <ClCompile Include="src\neteasewidget.cpp" />
     <ClCompile Include="src\onlinehandler.cpp" />
     <ClCompile Include="src\onlinemusicbutton.cpp" />
+    <ClCompile Include="src\PlayerBase.cpp" />
+    <ClCompile Include="src\PlayerFFmpeg.cpp" />
+    <ClCompile Include="src\PlayerQt.cpp" />
+    <ClCompile Include="src\SearchEdit.cpp" />
     <ClCompile Include="src\settinghandler.cpp" />
     <ClCompile Include="src\settingtabwidget.cpp" />
     <ClCompile Include="src\widget.cpp" />
@@ -120,17 +131,17 @@
     <QtMoc Include="src\hook.h" />
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="src\imagewidget.h" />
-  </ItemGroup>
-  <ItemGroup>
     <QtMoc Include="src\lyricswidget.h" />
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="src\lyricswidget.ui" />
     <QtUic Include="src\morewidget.ui" />
+    <QtUic Include="src\MultiBtnWidget.ui" />
     <QtUic Include="src\musicbutton.ui" />
+    <QtUic Include="src\MusicInfoWidget.ui" />
     <QtUic Include="src\neteasewidget.ui" />
     <QtUic Include="src\onlinemusicbutton.ui" />
+    <QtUic Include="src\SearchEdit.ui" />
     <QtUic Include="src\settingtabwidget.ui" />
     <QtUic Include="src\widget.ui" />
   </ItemGroup>
@@ -143,7 +154,15 @@
   <ItemGroup>
     <QtMoc Include="src\neteasehandler.h" />
     <QtMoc Include="src\neteasewidget.h" />
+    <QtMoc Include="src\MusicInfoWidget.h" />
+    <ClInclude Include="src\ImageHandler.h" />
+    <QtMoc Include="src\MultiBtnWidget.h" />
+    <ClInclude Include="src\OnePlayerStruct.h" />
     <ClInclude Include="src\onlinehandler.h" />
+    <QtMoc Include="src\SearchEdit.h" />
+    <QtMoc Include="src\PlayerQt.h" />
+    <QtMoc Include="src\PlayerBase.h" />
+    <QtMoc Include="src\PlayerFFmpeg.h" />
     <ClInclude Include="src\settinghandler.h" />
     <QtMoc Include="src\settingtabwidget.h" />
     <QtMoc Include="src\widget.h" />

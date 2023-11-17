@@ -39,7 +39,7 @@ SettingTabWidget::SettingTabWidget(QWidget *parent)
 	{
 		ui.cmb_mode->addItem(it.value(), it.key());
 	}
-	int index = ui.cmb_mode->findData(SettingHandler::getInstance()->get_player_mode());
+	int index = ui.cmb_mode->findData(SETTING_HANDLER->getStruct().playerMode);
 	ui.cmb_mode->setCurrentIndex(index);
 
 	//ui.btn_open_dir->setIcon(QIcon(":/svgs/goto.svg"));

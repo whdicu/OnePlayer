@@ -110,22 +110,6 @@
       <bool>false</bool>
      </property>
     </widget>
-    <widget class="ImageWidget" name="image_widget_mask" native="true">
-     <property name="geometry">
-      <rect>
-       <x>0</x>
-       <y>0</y>
-       <width>360</width>
-       <height>411</height>
-      </rect>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>360</width>
-       <height>0</height>
-      </size>
-     </property>
-    </widget>
     <widget class="QWidget" name="widget_1" native="true">
      <property name="geometry">
       <rect>
@@ -280,23 +264,11 @@
       </item>
      </layout>
     </widget>
-    <zorder>image_widget_mask</zorder>
-    <zorder>label_image</zorder>
-    <zorder>widget_1</zorder>
-    <zorder>widget_2</zorder>
    </widget>
    <widget class="QWidget" name="page_2"/>
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <customwidgets>
-  <customwidget>
-   <class>ImageWidget</class>
-   <extends>QWidget</extends>
-   <header location="global">imagewidget.h</header>
-   <container>1</container>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections/>
 </ui>
