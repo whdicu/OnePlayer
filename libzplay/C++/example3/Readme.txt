@@ -1,1 +1,0 @@
-Project for Dev-Cpp and MinGW compiler.
