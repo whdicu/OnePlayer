@@ -85,7 +85,6 @@ private:
 
     Ui::Widget *ui;
     Hook* hook_;
-//    PLAY_MODE play_mode;
     bool movingProgress_;
     PlayerBase* player_;
 

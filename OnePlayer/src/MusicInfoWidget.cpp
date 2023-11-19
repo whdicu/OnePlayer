@@ -13,7 +13,7 @@ MusicInfoWidget::MusicInfoWidget(QWidget *parent)
 	ui.setupUi(this);
     opacityEffect_ = new QGraphicsOpacityEffect(this);
     animation_ = new QPropertyAnimation(opacityEffect_, "opacity");
-    animation_->setDuration(MORE_BTN_WIDGET_ANIMATION_TIME);
+    animation_->setDuration(MUSIC_INFO_WIDGET_ANIMATION_TIME);
     animation_->setEasingCurve(QEasingCurve::InOutQuad);
     setGraphicsEffect(opacityEffect_);
 }

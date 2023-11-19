@@ -1022,7 +1022,7 @@ void Widget::animateShow()
     if (nullptr == animation)
     {
         animation = new QPropertyAnimation(this, "geometry");
-        animation->setDuration(TIME250);
+        animation->setDuration(MAIN_WIDGET_ANIMATION_TIME);
         animation->setEasingCurve(QEasingCurve::InOutQuad);
     }
     animation->setStartValue(QRect(startx, starty, 0, 0));
@@ -1040,7 +1040,7 @@ void Widget::animateHide(bool closeAfterFinshed)
     int h = height();
 
     QPropertyAnimation* animation = new QPropertyAnimation(this, "geometry");
-    animation->setDuration(TIME250);
+    animation->setDuration(MAIN_WIDGET_ANIMATION_TIME);
     animation->setEasingCurve(QEasingCurve::InOutQuad);
     if (closeAfterFinshed)
         connect(animation, &QPropertyAnimation::finished, this, &QWidget::close);
@@ -1164,7 +1164,8 @@ void Widget::on_btn_mode_clicked()
 //        random_index_list_.clear();
 //        random_index_list_.pushBack(now_music_index_);
 //        random_index_ = 0;
-//        SETTING_HANDLER->getStruct().playMode = RANDOM;
+        SETTING_HANDLER->getStruct().playMode = RANDOM;
+        SETTING_HANDLER->clearRandomPlayList();
 //#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 //        player_->setLoops(1);
 //#else
@@ -1175,7 +1176,7 @@ void Widget::on_btn_mode_clicked()
     }
     case RANDOM:
     {
-//        SETTING_HANDLER->getStruct().playMode = AGAIN;
+        SETTING_HANDLER->getStruct().playMode = AGAIN;
 //#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 //        player_->setLoops(1);
 //#else

@@ -19,6 +19,11 @@ const static QStringList TYPE_LIST = { "mp3", "flac", "wav", "ogg", "acc" };  //
 const static QString IP = "47.113.231.74";
 const static int PORT = 9002;
 
+// 主界面显示隐藏的过渡动画时间
+const static int MAIN_WIDGET_ANIMATION_TIME = 250;
+
+// 右侧按钮框的过渡动画Widget
 const static int MORE_BTN_WIDGET_ANIMATION_TIME = 250;
-const static int TIME250 = 250;
-const static int TIME350 = 350;
+
+// 左侧图片widget的过渡动画时间
+const static int MUSIC_INFO_WIDGET_ANIMATION_TIME = 150;

@@ -125,7 +125,6 @@ void SettingHandler::readAll()
 
     setting_.playMode = (PLAY_MODE)obj["playMode"].toInt();
     setting_.musicDir = obj["musicDir"].toString();
-    setting_.lastMusic = obj["lastMusic"].toString();
     setting_.volume = obj["volume"].toDouble();
     setting_.playListName = obj["playListName"].toString();
     setting_.musicIndex = obj["musicIndex"].toInteger();
@@ -135,20 +134,6 @@ void SettingHandler::readAll()
 
     // 读取播放列表
     readPlayList();
-
-    //setting_.playListMap.clear();
-    //QJsonObject playListObject = obj["playList"].toObject();
-    //QStringList playList = playListObject.keys();
-    //for (const QString& listName : playList)
-    //{
-    //    DList<QString> oneList;
-    //    QJsonArray musicArray = playListObject[listName].toArray();
-    //    for (const QJsonValue& musicUrl : musicArray)
-    //    {
-    //        oneList.pushBack(musicUrl.toString());
-    //    }
-    //    setting_.playListMap.insert(listName, oneList);
-    //}
 }
 
 void SettingHandler::writeAll()
@@ -161,7 +146,6 @@ void SettingHandler::writeAll()
     // 写入工作台类型
     wholeObject.insert("playMode", setting_.playMode);
     wholeObject.insert("musicDir", setting_.musicDir);
-    wholeObject.insert("lastMusic", setting_.lastMusic.toString());
     wholeObject.insert("volume", setting_.volume);
     wholeObject.insert("playListName", setting_.playListName);
     wholeObject.insert("musicIndex", setting_.musicIndex);
@@ -170,12 +154,6 @@ void SettingHandler::writeAll()
     wholeObject.insert("downloadDir", setting_.downloadDir);
     
     writePlayList();
-    //QJsonObject playListObj;
-    //for (auto it = setting_.playListMap.cbegin(); it != setting_.playListMap.cend(); ++it)
-    //{
-    //    playListObj.insert(it.key(), QJsonArray::fromStringList(HD2QT::DList2QList(*it)));
-    //}
-    //wholeObject.insert("playList", playListObj);
 
     // 如果路径中有不存在的文件夹则创建
     QFileInfo fileInfo(strFile);
