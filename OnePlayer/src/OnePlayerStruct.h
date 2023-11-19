@@ -19,6 +19,19 @@ const static QStringList TYPE_LIST = { "mp3", "flac", "wav", "ogg", "acc" };  //
 const static QString IP = "47.113.231.74";
 const static int PORT = 9002;
 
+// 主界面大小
+const static int MAIN_WIDGET_WIDTH = 920;
+const static int MAIN_WIDGET_HEIGHT = 525;
+
+// 右侧按钮框的位置大小
+const static int MORE_BTN_WIDGET_X = 420;
+const static int MORE_BTN_WIDGET_Y = 0;
+const static int MORE_BTN_WIDGET_WIDTH = 40;
+const static int MORE_BTN_WIDGET_HEIGHT = 405;
+
+// 音乐按钮控件大小
+const static int STACKED_MUSIC_BTN_WIDTH = 400;
+
 // 主界面显示隐藏的过渡动画时间
 const static int MAIN_WIDGET_ANIMATION_TIME = 250;
 

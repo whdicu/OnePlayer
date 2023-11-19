@@ -15,6 +15,8 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class Widget; }
 QT_END_NAMESPACE
 
+class QPropertyAnimation;
+
 class Widget : public QWidget
 {
     Q_OBJECT
@@ -23,7 +25,7 @@ public:
 	Widget(const QString& filepath = "", QWidget *parent = nullptr);
 	~Widget();
     void animateShow();
-    void animateHide(bool closeAfterFinshed=false);
+    void animateHide();
 
 private slots:
     void slot_key_pressed(DWORD key);
@@ -70,7 +72,9 @@ private:
     // stacked_music_btn
     void animationStackedMusicBtnSmall();
     void animationStackedMusicBtnBig();
-    int stackedMusicBtnWidth_ = -1;
+
+    QPropertyAnimation* animation_;
+    QPropertyAnimation* stackedMusicBtnAnimation_;
     
 private:
     void dragEnterEvent(QDragEnterEvent *);
@@ -94,10 +98,14 @@ private:
 //    DList<DSizeType> find_index_list;
 //    DList<DSizeType> random_index_list_;  // 随机播放时保存音乐顺序下标的列表
 //    DSizeType random_index_;  // 随机播放时的列表下表
-//
+    
+    // 拖动窗口时记录按下的xy，播放动画时用来记录隐藏前的xy
     int pressX_;
     int pressY_;
     bool pressedCtrl_;
     bool thisIsMoveWindow_;
+
+    bool isShowAnimation_;  // 时播放的主界面显示动画还是隐藏动画
+    bool shutdownBtnClicked_;
 };
 #endif // WIDGET_H

@@ -53,6 +53,8 @@ Widget::Widget(const QString& filepath, QWidget *parent)
     //, now_music_index_(0)
     , pressedCtrl_(false)
     , thisIsMoveWindow_(false)
+    , isShowAnimation_(true)
+    , shutdownBtnClicked_(false)
 {
     ui->setupUi(this);
     setWindowFlags(Qt::FramelessWindowHint);
@@ -63,6 +65,29 @@ Widget::Widget(const QString& filepath, QWidget *parent)
 
     PlayerBase* pp = new PlayerFFmpeg(this);
 
+    // 动画创建
+    animation_ = new QPropertyAnimation(this, "geometry");
+    animation_->setDuration(MAIN_WIDGET_ANIMATION_TIME);
+    animation_->setEasingCurve(QEasingCurve::InOutQuad);
+    connect(animation_, &QPropertyAnimation::finished, this, [this]()
+    {
+        if (!isShowAnimation_)
+        {
+            if (shutdownBtnClicked_)
+                close();
+            else
+            {
+                resize(MAIN_WIDGET_WIDTH, MAIN_WIDGET_HEIGHT);
+                move(pressX_, pressY_);
+                show();
+                setWindowState(Qt::WindowMinimized);
+            }
+        }
+    });
+
+    stackedMusicBtnAnimation_ = new QPropertyAnimation(ui->stacked_music_btn, "geometry");
+    stackedMusicBtnAnimation_->setDuration(MORE_BTN_WIDGET_ANIMATION_TIME);
+    stackedMusicBtnAnimation_->setEasingCurve(QEasingCurve::InOutQuad);
 
 //    ui->stacked_widget->setCurrentIndex(2);
 //
@@ -780,15 +805,9 @@ void Widget::animationStackedMusicBtnSmall()
     int nowWidth = ui->stacked_music_btn->width();
     int nowHeight = ui->stacked_music_btn->height();
 
-    QPropertyAnimation* animation = new QPropertyAnimation(ui->stacked_music_btn, "geometry");
-    animation->setDuration(MORE_BTN_WIDGET_ANIMATION_TIME);
-    animation->setEasingCurve(QEasingCurve::InOutQuad);
-
-    connect(animation, &QPropertyAnimation::finished, animation, &QPropertyAnimation::deleteLater);
-
-    animation->setStartValue(QRect(nowX, nowY, nowWidth, nowHeight));
-    animation->setEndValue(QRect(nowX, nowY, stackedMusicBtnWidth_, nowHeight));
-    animation->start();
+    stackedMusicBtnAnimation_->setStartValue(QRect(nowX, nowY, nowWidth, nowHeight));
+    stackedMusicBtnAnimation_->setEndValue(QRect(nowX, nowY, STACKED_MUSIC_BTN_WIDTH, nowHeight));
+    stackedMusicBtnAnimation_->start();
     
 }
 
@@ -796,18 +815,12 @@ void Widget::animationStackedMusicBtnBig()
 {
     int oldX = ui->stacked_music_btn->x();
     int oldY = ui->stacked_music_btn->y();
-    stackedMusicBtnWidth_ = ui->stacked_music_btn->width();
+    int oldWidth = ui->stacked_music_btn->width();
     int oldHeight = ui->stacked_music_btn->height();
 
-    QPropertyAnimation* animation = new QPropertyAnimation(ui->stacked_music_btn, "geometry");
-    animation->setDuration(MORE_BTN_WIDGET_ANIMATION_TIME);
-    animation->setEasingCurve(QEasingCurve::InOutQuad);
-
-    connect(animation, &QPropertyAnimation::finished, animation, &QPropertyAnimation::deleteLater);
-
-    animation->setStartValue(QRect(oldX, oldY, stackedMusicBtnWidth_, oldHeight));
-    animation->setEndValue(QRect(oldX, oldY, ui->multi_func_widget->width(), oldHeight));
-    animation->start();
+    stackedMusicBtnAnimation_->setStartValue(QRect(oldX, oldY, oldWidth, oldHeight));
+    stackedMusicBtnAnimation_->setEndValue(QRect(oldX, oldY, ui->multi_func_widget->width(), oldHeight));
+    stackedMusicBtnAnimation_->start();
 }
 
 void Widget::mousePressEvent(QMouseEvent *ev)
@@ -1018,45 +1031,26 @@ void Widget::animateShow()
     int endy = starty - height() / 2;
     if (endy < 20)
         endy = 20;
-    static QPropertyAnimation* animation = nullptr;
-    if (nullptr == animation)
-    {
-        animation = new QPropertyAnimation(this, "geometry");
-        animation->setDuration(MAIN_WIDGET_ANIMATION_TIME);
-        animation->setEasingCurve(QEasingCurve::InOutQuad);
-    }
-    animation->setStartValue(QRect(startx, starty, 0, 0));
-    animation->setEndValue(QRect(endx, endy, width(), height()));
-    animation->start();
+
+    animation_->setStartValue(QRect(startx, starty, 0, 0));
+    animation_->setEndValue(QRect(endx, endy, width(), height()));
+    animation_->start();
+    isShowAnimation_ = true;
 }
 
-void Widget::animateHide(bool closeAfterFinshed)
+void Widget::animateHide()
 {
-    int oldx = x();
-    int oldy = y();
+    pressX_ = x();
+    pressY_ = y();
     int newx = QCursor::pos().x();
     int newy = QCursor::pos().y();
     int w = width();
     int h = height();
 
-    QPropertyAnimation* animation = new QPropertyAnimation(this, "geometry");
-    animation->setDuration(MAIN_WIDGET_ANIMATION_TIME);
-    animation->setEasingCurve(QEasingCurve::InOutQuad);
-    if (closeAfterFinshed)
-        connect(animation, &QPropertyAnimation::finished, this, &QWidget::close);
-    else
-        connect(animation, &QPropertyAnimation::finished, this, [this, animation, w, h, oldx, oldy]()
-        {
-            resize(w, h);
-            move(oldx, oldy);
-            show();
-            animation->deleteLater();
-            setWindowState(Qt::WindowMinimized);
-        });
-
-    animation->setStartValue(QRect(oldx, oldy, w, h));
-    animation->setEndValue(QRect(newx, newy, 0, 0));
-    animation->start();
+    animation_->setStartValue(QRect(pressX_, pressY_, w, h));
+    animation_->setEndValue(QRect(newx, newy, 0, 0));
+    animation_->start();
+    isShowAnimation_ = false;
 }
 
 Widget::~Widget()
@@ -1093,7 +1087,8 @@ void Widget::slot_key_pressed(DWORD key)
 void Widget::on_btn_shutdown_clicked()
 {
     SETTING_HANDLER->save();
-    animateHide(true);
+    shutdownBtnClicked_ = true;
+    animateHide();
 }
 
 // 播放/暂停

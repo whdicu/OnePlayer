@@ -3,6 +3,8 @@
 #include <QWidget>
 #include "ui_MultiBtnWidget.h"
 
+class QPropertyAnimation;
+
 class MultiBtnWidget : public QWidget
 {
 	Q_OBJECT
@@ -16,9 +18,7 @@ public:
 
 private:
 	Ui::MultiBtnWidgetClass ui;
-	int oldX_;
-	int oldY_;
-	int oldWidth_;
-	int oldHeight_;
+
+	QPropertyAnimation* animation_;
 	bool isAnimateHide_;
 };

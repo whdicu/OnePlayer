@@ -5,13 +5,18 @@
 
 MultiBtnWidget::MultiBtnWidget(QWidget *parent)
 	: QWidget(parent)
-    , oldX_(-1)
-    , oldY_(-1)
-    , oldWidth_(-1)
-    , oldHeight_(-1)
     , isAnimateHide_(false)
 {
 	ui.setupUi(this);
+
+    animation_ = new QPropertyAnimation(this, "geometry");
+    animation_->setDuration(MORE_BTN_WIDGET_ANIMATION_TIME);
+    animation_->setEasingCurve(QEasingCurve::InOutQuad);
+    connect(animation_, &QPropertyAnimation::finished, this, [this]()
+    {
+        isAnimateHide_ = !isAnimateHide_;
+        //animation->deleteLater();
+    });
 }
 
 MultiBtnWidget::~MultiBtnWidget()
@@ -19,42 +24,17 @@ MultiBtnWidget::~MultiBtnWidget()
 
 void MultiBtnWidget::animationHide()
 {
-    oldX_ = x();
-    oldY_ = y();
-    oldWidth_ = width();
-    oldHeight_ = height();
-
-    QPropertyAnimation* animation = new QPropertyAnimation(this, "geometry");
-    animation->setDuration(MORE_BTN_WIDGET_ANIMATION_TIME);
-    animation->setEasingCurve(QEasingCurve::InOutQuad);
-
-    connect(animation, &QPropertyAnimation::finished, this, [this, animation]()
-    {
-        isAnimateHide_ = true;
-        animation->deleteLater();
-    });
-
-    animation->setStartValue(QRect(oldX_, oldY_, oldWidth_, oldHeight_));
-    animation->setEndValue(QRect(oldX_ + oldWidth_, oldY_, 0, oldHeight_));
-    animation->start();
+    animation_->setStartValue(QRect(MORE_BTN_WIDGET_X, MORE_BTN_WIDGET_Y
+        , MORE_BTN_WIDGET_WIDTH, MORE_BTN_WIDGET_HEIGHT));
+    animation_->setEndValue(QRect(MORE_BTN_WIDGET_X + MORE_BTN_WIDGET_WIDTH
+        , MORE_BTN_WIDGET_Y, MORE_BTN_WIDGET_WIDTH, MORE_BTN_WIDGET_HEIGHT));
+    animation_->start();
 }
 
 void MultiBtnWidget::animationShow()
 {
-    if (oldWidth_ == -1)
-        return;
-
-    QPropertyAnimation* animation = new QPropertyAnimation(this, "geometry");
-    animation->setDuration(MORE_BTN_WIDGET_ANIMATION_TIME);
-    animation->setEasingCurve(QEasingCurve::InOutQuad);
-
-    connect(animation, &QPropertyAnimation::finished, this, [this, animation]()
-    {
-        isAnimateHide_ = false;
-        animation->deleteLater();
-    });
-
-    animation->setStartValue(QRect(x(), y(), 0, height()));
-    animation->setEndValue(QRect(oldX_, oldY_, oldWidth_, oldHeight_));
-    animation->start();
+    animation_->setStartValue(QRect(x(), y(), 0, height()));
+    animation_->setEndValue(QRect(MORE_BTN_WIDGET_X, MORE_BTN_WIDGET_Y
+        , MORE_BTN_WIDGET_WIDTH, MORE_BTN_WIDGET_HEIGHT));
+    animation_->start();
 }
