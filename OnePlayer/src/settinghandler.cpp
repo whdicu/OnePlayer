@@ -7,7 +7,33 @@
 #include <QJsonObject>
 #include <QJsonParseError>
 
-// todo 设置改用json
+QByteArray readFile(const QString& filePath)
+{
+    QByteArray data;
+    QFile file(filePath);
+    if (!file.exists())
+    {
+        qWarning() << filePath << "not exist";
+        bool ret = file.open(QIODevice::WriteOnly);
+        if (!ret)
+            qWarning() << filePath << "create failed";
+        else
+            file.close();
+        return data;
+    }
+
+    bool ok = file.open(QIODevice::ReadOnly | QIODevice::Text);
+    if (!ok)
+    {
+        qWarning() << "File" << filePath << "open failed";
+        return data;
+    }
+
+    data = file.readAll();
+    file.close();
+    return data;
+}
+
 static SettingHandler* setting_handler = nullptr;
 SettingHandler *SettingHandler::getInstance()
 {
@@ -80,29 +106,7 @@ void SettingHandler::readAll()
     QString filePath = "/config/Setting.json";
     strFile += filePath;
 
-    QFile file(strFile);
-    if (!file.exists())
-    {
-        qWarning() << filePath << "not exist";
-        bool ret = file.open(QIODevice::WriteOnly);
-        if (!ret)
-        {
-            qWarning() << filePath << "create failed";
-            return;
-        }
-        file.close();
-    }
-
-    bool ok = file.open(QIODevice::ReadOnly | QIODevice::Text);
-    if (!ok)
-    {
-        qWarning() << "File" << filePath << "open failed";
-        return;
-    }
-
-    QByteArray data = file.readAll();
-    file.close();
-
+    QByteArray data = readFile(strFile);
     if (0 == data.size())
     {
         qWarning() << "File" << filePath << "is empty";
@@ -130,19 +134,21 @@ void SettingHandler::readAll()
     setting_.downloadDir = obj["downloadDir"].toString();
 
     // 读取播放列表
-    setting_.playListMap.clear();
-    QJsonObject playListObject = obj["playList"].toObject();
-    QStringList playList = playListObject.keys();
-    for (const QString& listName : playList)
-    {
-        DList<QString> oneList;
-        QJsonArray musicArray = playListObject[listName].toArray();
-        for (const QJsonValue& musicUrl : musicArray)
-        {
-            oneList.pushBack(musicUrl.toString());
-        }
-        setting_.playListMap.insert(listName, oneList);
-    }
+    readPlayList();
+
+    //setting_.playListMap.clear();
+    //QJsonObject playListObject = obj["playList"].toObject();
+    //QStringList playList = playListObject.keys();
+    //for (const QString& listName : playList)
+    //{
+    //    DList<QString> oneList;
+    //    QJsonArray musicArray = playListObject[listName].toArray();
+    //    for (const QJsonValue& musicUrl : musicArray)
+    //    {
+    //        oneList.pushBack(musicUrl.toString());
+    //    }
+    //    setting_.playListMap.insert(listName, oneList);
+    //}
 }
 
 void SettingHandler::writeAll()
@@ -163,12 +169,13 @@ void SettingHandler::writeAll()
     wholeObject.insert("playerMode", setting_.playerMode);
     wholeObject.insert("downloadDir", setting_.downloadDir);
     
-    QJsonObject playListObj;
-    for (auto it = setting_.playListMap.cbegin(); it != setting_.playListMap.cend(); ++it)
-    {
-        playListObj.insert(it.key(), QJsonArray::fromStringList(HD2QT::DList2QList(*it)));
-    }
-    wholeObject.insert("playList", playListObj);
+    writePlayList();
+    //QJsonObject playListObj;
+    //for (auto it = setting_.playListMap.cbegin(); it != setting_.playListMap.cend(); ++it)
+    //{
+    //    playListObj.insert(it.key(), QJsonArray::fromStringList(HD2QT::DList2QList(*it)));
+    //}
+    //wholeObject.insert("playList", playListObj);
 
     // 如果路径中有不存在的文件夹则创建
     QFileInfo fileInfo(strFile);
@@ -187,6 +194,78 @@ void SettingHandler::writeAll()
     {
         qWarning() << "File" << strFile << "open failed!";
     }
+}
+
+void SettingHandler::readPlayList()
+{
+    setting_.playListMap.clear();
+    QString basePath = QCoreApplication::applicationDirPath();
+    basePath += "/config/play_lists/";
+
+    QDir directory(basePath);
+    if (!directory.exists())
+    {
+        QFileInfo fileInfo(basePath);
+        directory.mkpath(fileInfo.absolutePath());
+    }
+
+    directory.setFilter(QDir::Files | QDir::NoDotAndDotDot); // 只过滤文件，不包括"."和".."
+    directory.setNameFilters({"*.oned"});
+    QStringList fileList = directory.entryList();
+    for (const QString& fileName : fileList)
+    {
+        QString str = readFile(basePath + fileName).trimmed();
+        if (str.isEmpty())
+        {
+            //QFile().remove(basePath + fileName);
+            qWarning() << "File is empty! File:" << (basePath + fileName);
+            continue;
+        }
+        QStringList strList = str.split('\n');
+        QString playListName = fileName.mid(0, fileName.indexOf('.'));
+        setting_.playListMap.insert(playListName, HD2QT::QList2DList(strList));
+    }
+    
+    //QJsonObject playListObject = obj["playList"].toObject();
+    //QStringList playList = playListObject.keys();
+    //for (const QString& listName : playList)
+    //{
+    //    DList<QString> oneList;
+    //    QJsonArray musicArray = playListObject[listName].toArray();
+    //    for (const QJsonValue& musicUrl : musicArray)
+    //    {
+    //        oneList.pushBack(musicUrl.toString());
+    //    }
+    //    setting_.playListMap.insert(listName, oneList);
+    //}
+}
+
+void SettingHandler::writePlayList()
+{
+    QString basePath = QCoreApplication::applicationDirPath();
+    basePath += "/config/play_lists/%1.oned";
+
+    for (auto it = setting_.playListMap.cbegin(); it != setting_.playListMap.cend(); ++it)
+    {
+        // 如果路径中有不存在的文件夹则创建
+        QString strFile = basePath.arg(it.key());
+        QFileInfo fileInfo(strFile);
+        QDir().mkpath(fileInfo.absolutePath());
+
+        QFile file(strFile);
+        bool ok = file.open(QIODevice::WriteOnly);
+        if (ok)
+        {
+            for (const QString& path : it.value())
+                file.write(path.toUtf8() + '\n');
+            file.close();
+        }
+        else
+        {
+            qWarning() << "File" << strFile << "open failed!";
+        }
+    }
+    
 }
 
 //void SettingHandler::init_setting()

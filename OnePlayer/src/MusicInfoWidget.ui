@@ -30,7 +30,8 @@
 {
 	border: 1px solid red;
 	border-radius: 20px;
-}</string>
+}
+</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="spacing">

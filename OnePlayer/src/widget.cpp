@@ -82,13 +82,7 @@ Widget::Widget(const QString& filepath, QWidget *parent)
 //	set_setting_tab_listener();
 //
 //	NeteaseHandler::getInstance();
-//
-//#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-//    player_->setAudioOutput(audio_op_);
-//#endif
-//	SET_VOLUME(SETTING_HANDLER->get_volume());
-//	qDebug() << "\n\n\n\nxxx:" << SETTING_HANDLER->get_volume();
-//	
+
     if (filepath.isEmpty())  // 没有指定打开的歌曲则打开默认文件夹
     {
         switch (SETTING_HANDLER->getStruct().playerMode)
@@ -119,7 +113,6 @@ Widget::Widget(const QString& filepath, QWidget *parent)
 //        add_music(url);
 //        now_music_index_ = 0;
 //        play_music(0);
-//        draw_image(QImage());
     }
 
 //    play_mode = SETTING_HANDLER->get_old_mode();
@@ -157,8 +150,8 @@ Widget::Widget(const QString& filepath, QWidget *parent)
 //    }
 
     // 初始化界面
-    //ui->music_info_widget->drawImage(QImage(":/images/music.png"));
-    ui->music_info_widget->drawImage(QImage("C:/Users/WHDon/Desktop/aaa.jpg"));
+    ui->music_info_widget->drawImage(QImage(":/images/music.png"));
+    //ui->music_info_widget->drawImage(QImage("C:/Users/WHDon/Desktop/aaa.jpg"));
     //ui->music_info_widget->drawImage(QImage("C:/Users/WHDon/Desktop/bbb.png"));
     //ui->music_info_widget->drawImage(QImage("C:/Users/WHDon/Desktop/ccc.png"));
 }
@@ -724,7 +717,6 @@ void Widget::addMusicBtn(const QUrl& url)
 //    ui->btn_more->setIcon(QIcon(":/svgs/more.svg"));
 //    ui->stacked_widget->setCurrentIndex(3);
 //    //ui->stacked_music_btn->setCurrentIndex(3);
-//    //draw_image(QImage(), true);
 //}
 
 void Widget::dragEnterEvent(QDragEnterEvent *event)
@@ -943,7 +935,7 @@ void Widget::keyReleaseEvent(QKeyEvent *event)
 //    btn_list_.clear();
 //}
 
-void Widget::refreshImageWidget(const QImage& image, const QString& title, const QString& singers, const QString& album_title)
+void Widget::refreshImageWidget(const QString& title, const QString& singers, const QString& album_title)
 {
 //    static QMutex mutex;
 //    static QPropertyAnimation* animationHide = nullptr;
@@ -1131,7 +1123,7 @@ void Widget::on_btn_next_clicked()
 void Widget::on_btn_down_clicked()
 {
     if (SETTING_HANDLER->getStruct().volume > 0.05f)
-        SETTING_HANDLER->getStruct().volume -= - 0.05f;
+        SETTING_HANDLER->getStruct().volume -= 0.05f;
     else
         SETTING_HANDLER->getStruct().volume = 0.0f;
     player_->setVolume(SETTING_HANDLER->getStruct().volume);
@@ -1147,48 +1139,54 @@ void Widget::on_btn_up_clicked()
     player_->setVolume(SETTING_HANDLER->getStruct().volume);
 }
 
-//// 模式切换按钮
-//void Widget::on_btn_mode_clicked()
-//{
-//    if (play_mode == AGAIN)
-//    {
-//        play_mode = ONE_AGAIN;
+// 模式切换按钮
+void Widget::on_btn_mode_clicked()
+{
+    switch (SETTING_HANDLER->getStruct().playMode)
+    {
+    case AGAIN:
+    {
+        SETTING_HANDLER->getStruct().playMode = ONE_AGAIN;
 //#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-//		player_->setLoops(-1);
+//        player_->setLoops(-1);
 //#else
-//		player_->setPlaybackRate(QMediaPlaylist::CurrentItemInLoop);
+//        player_->setPlaybackRate(QMediaPlaylist::CurrentItemInLoop);
 //#endif
-//        ui->btn_mode->setIcon(QIcon(":/svgs/one_again.svg"));
-//    }
-//    else if (play_mode == ONE_AGAIN)
-//    {
+        ui->btn_mode->setIcon(QIcon(":/svgs/one_again.svg"));
+        break;
+    }
+    case ONE_AGAIN:
+    {
 //        random_index_list_.clear();
 //        random_index_list_.pushBack(now_music_index_);
 //        random_index_ = 0;
-//        play_mode = RANDOM;
+//        SETTING_HANDLER->getStruct().playMode = RANDOM;
 //#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-//		player_->setLoops(1);
+//        player_->setLoops(1);
 //#else
-//		player_->setPlaybackRate(QMediaPlaylist::CurrentItemOnce);
+//        player_->setPlaybackRate(QMediaPlaylist::CurrentItemOnce);
 //#endif
-//        ui->btn_mode->setIcon(QIcon(":/svgs/random.svg"));
-//    }
-//    else
-//    {
-//        play_mode = AGAIN;
+        ui->btn_mode->setIcon(QIcon(":/svgs/random.svg"));
+        break;
+    }
+    case RANDOM:
+    {
+//        SETTING_HANDLER->getStruct().playMode = AGAIN;
 //#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-//		player_->setLoops(1);
+//        player_->setLoops(1);
 //#else
-//		player_->setPlaybackRate(QMediaPlaylist::CurrentItemOnce);
+//        player_->setPlaybackRate(QMediaPlaylist::CurrentItemOnce);
 //#endif
-//        ui->btn_mode->setIcon(QIcon(":/svgs/again.svg"));
-//    }
-//    SETTING_HANDLER->set_old_mode(play_mode);
-//}
-//
+        ui->btn_mode->setIcon(QIcon(":/svgs/again.svg"));
+        break;
+    }
+    }
+}
+
 // 更多按钮
 void Widget::on_btn_more_clicked()
 {
+    // todo (实在不行的话)右侧按钮条可以用代码创建，播放完hide动画就delete，要显示了再重新创建
     if (ui->multi_btn_widget->isAnimateHide())
     {
         animationStackedMusicBtnSmall();
@@ -1375,7 +1373,7 @@ void Widget::on_btn_min_clicked()
 
 void Widget::slotMetaDataChanged(const MusicMetaData& metaData)
 {
-    refreshImageWidget(metaData.image, metaData.title, metaData.singers, metaData.albumTitle);
+    refreshImageWidget(metaData.title, metaData.singers, metaData.albumTitle);
 }
 
 //void Widget::play_music(DSizeType musicIndex)
@@ -1403,7 +1401,6 @@ void Widget::slotMetaDataChanged(const MusicMetaData& metaData)
 //
 //        ui->label_sound_name_online->setText(QString("%1  %2").arg(info.name_).arg(info.singer_));
 //        ui->lyrics_widget->set_lyrics(info.lyrics_);
-//        draw_image(image, true);
 //    }
 //
 //    qDebug() << "播放->" << btn->get_url();

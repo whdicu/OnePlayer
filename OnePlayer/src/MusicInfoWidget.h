@@ -16,5 +16,9 @@ public:
 	void setAlbumName(const QString& name) { ui.label_album->setText(name); }
 
 private:
+	void animationHide();
+	void animationShow();
+
 	Ui::MusicInfoWidgetClass ui;
+	QLabel* mask_;
 };

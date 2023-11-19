@@ -101,10 +101,10 @@ void PlayerQt::slotMetaDataChanged()
 
 	metaData.title = GET_META_DATA(QMediaMetaData::Title).toString();
 	QStringList authorList = GET_META_DATA(QMediaMetaData::Author).toStringList();  // »•÷ÿ
-	QImage thumbnailImage = GET_META_DATA(QMediaMetaData::ThumbnailImage).value<QImage>();
-	qDebug() << thumbnailImage.width() << thumbnailImage.height();
-	QImage coverArtImage = GET_META_DATA(QMediaMetaData::CoverArtImage).value<QImage>();
-	qDebug() << coverArtImage.width() << coverArtImage.height();
+	//QImage thumbnailImage = GET_META_DATA(QMediaMetaData::ThumbnailImage).value<QImage>();
+	//qDebug() << thumbnailImage.width() << thumbnailImage.height();
+	//QImage coverArtImage = GET_META_DATA(QMediaMetaData::CoverArtImage).value<QImage>();
+	//qDebug() << coverArtImage.width() << coverArtImage.height();
 	metaData.albumTitle = GET_META_DATA(QMediaMetaData::AlbumTitle).toString();
 	//metaData.albumArtist = GET_META_DATA(QMediaMetaData::AlbumArtist).toStringList();
 	//        QString genre = GET_META_DATA(QMediaMetaData::Genre).toString();  // ¡˜≈…
@@ -122,12 +122,12 @@ void PlayerQt::slotMetaDataChanged()
 	}
 	metaData.singers = temp.trimmed();
 
-	if (thumbnailImage.isNull())
-		metaData.image = coverArtImage;
-		//refreshImageWidget(cover_art_image, title, singers, album_title);
-	else
-		metaData.image = thumbnailImage;
-		//refreshImageWidget(thumbnail_image, title, singers, album_title);
+	//if (thumbnailImage.isNull())
+	//	metaData.image = coverArtImage;
+	//	//refreshImageWidget(cover_art_image, title, singers, album_title);
+	//else
+	//	metaData.image = thumbnailImage;
+	//	//refreshImageWidget(thumbnail_image, title, singers, album_title);
 
 
 	//        qDebug() << "Comment" << meta_data.value(QMediaMetaData::Comment);

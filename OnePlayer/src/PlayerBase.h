@@ -6,7 +6,6 @@ struct MusicMetaData
 {
 	QString title;  // 标题
 	QString singers;  // 作家们
-	QImage image;  // 缩略图
 	QString albumTitle;  // 专辑标题
 };
 

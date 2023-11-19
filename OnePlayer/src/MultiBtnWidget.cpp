@@ -1,6 +1,7 @@
 #include "MultiBtnWidget.h"
-#include <QPropertyAnimation>
 #include "OnePlayerStruct.h"
+#include <QPropertyAnimation>
+
 
 MultiBtnWidget::MultiBtnWidget(QWidget *parent)
 	: QWidget(parent)

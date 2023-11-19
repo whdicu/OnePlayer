@@ -73,6 +73,9 @@ private:
     void readAll();
     void writeAll();
 
+    void readPlayList();
+    void writePlayList();
+
     SettingStruct setting_;
 };
 
