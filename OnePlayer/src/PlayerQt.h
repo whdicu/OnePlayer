@@ -13,7 +13,6 @@ public:
 	~PlayerQt();
 
 	virtual bool playOrPause();
-	virtual void stop();
 	virtual void playNext();
 	virtual void playPrevious();
 	virtual void setVolume(float vol);
@@ -25,7 +24,7 @@ private slots:
 	void slotMetaDataChanged();
 
 private:
-
+	void play(const QString& musicPath);
 
 	QMediaPlayer* player_;
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)

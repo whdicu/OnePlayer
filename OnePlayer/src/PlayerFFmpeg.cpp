@@ -38,6 +38,7 @@ QImage PlayerFFmpeg::getMusicImage(const QString& musicPath)
 		{
 			AVPacket pkt = fmt_ctx->streams[i]->attached_pic;
 			ret = QImage::fromData((uchar*)pkt.data, pkt.size);
+			break;
 		}
 	}
 

@@ -16,7 +16,6 @@ public:
 	PlayerBase(QObject* parent = nullptr);
 	// 调用后，处于正在播放状态返回true
 	virtual bool playOrPause() = 0;
-	virtual void stop() = 0;
 	virtual void playNext() = 0;
     virtual void playPrevious() = 0;
 	virtual void setVolume(float vol) = 0;
@@ -31,5 +30,6 @@ signals:
 	void metaDataChanged(const MusicMetaData& metaData);
 
 	void mediaAtEnd();
+	void beginPlay();
 };
 

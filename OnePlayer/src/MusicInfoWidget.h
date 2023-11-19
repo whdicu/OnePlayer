@@ -3,6 +3,9 @@
 #include <QWidget>
 #include "ui_MusicInfoWidget.h"
 
+class QGraphicsOpacityEffect;
+class QPropertyAnimation;
+
 class MusicInfoWidget : public QWidget
 {
 	Q_OBJECT
@@ -14,11 +17,12 @@ public:
 	void setMusicName(const QString& name) { ui.label_sound_name->setText(name); }
 	void setSingerName(const QString& name) { ui.label_singer->setText(name); }
 	void setAlbumName(const QString& name) { ui.label_album->setText(name); }
+	void animationHide();
 
 private:
-	void animationHide();
 	void animationShow();
 
 	Ui::MusicInfoWidgetClass ui;
-	QLabel* mask_;
+	QGraphicsOpacityEffect* opacityEffect_;
+	QPropertyAnimation* animation_;
 };

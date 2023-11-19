@@ -228,6 +228,9 @@ void Widget::setListener()
 //        }
 //    });
 
+    // 开始放歌时，播放图片Widget的隐藏动画
+    connect(player_, &PlayerBase::beginPlay, ui->music_info_widget, &MusicInfoWidget::animationHide);
+
 //    // 音乐播放状态改变事件
 //#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 //    connect(player_, &QMediaPlayer::playbackStateChanged, this, [this](QMediaPlayer::PlaybackState state)
@@ -273,6 +276,7 @@ void Widget::setListener()
     {
         QImage image = PlayerFFmpeg::getMusicImage(media.toString());
         ui->music_info_widget->drawImage(image);
+
         //switch (SETTING_HANDLER->get_player_mode())
         //{
         //case LOCAL:
@@ -1108,15 +1112,15 @@ void Widget::on_btn_play_clicked()
 // 上一首
 void Widget::on_btn_previoud_clicked()
 {
-    player_->playPrevious();
     ui->btn_play->setIcon(QIcon(":/svgs/pause.svg"));
+    player_->playPrevious();
 }
 
 // 下一首
 void Widget::on_btn_next_clicked()
 {
-    player_->playNext();
     ui->btn_play->setIcon(QIcon(":/svgs/pause.svg"));
+    player_->playNext();
 }
 
 // 音量减

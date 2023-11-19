@@ -57,23 +57,16 @@ bool PlayerQt::playOrPause()
 	}
 }
 
-void PlayerQt::stop()
-{
-	player_->stop();
-}
-
 void PlayerQt::playNext()
 {
 	QString musicPath = SETTING_HANDLER->nextMusicPath();
-	player_->setSource(musicPath);
-	player_->play();
+	play(musicPath);
 }
 
 void PlayerQt::playPrevious()
 {
 	QString musicPath = SETTING_HANDLER->previousMusicPath();
-	player_->setSource(musicPath);
-	player_->play();
+	play(musicPath);
 }
 
 void PlayerQt::setVolume(float vol)
@@ -84,6 +77,13 @@ void PlayerQt::setVolume(float vol)
 void PlayerQt::setPosition(qint64 pos)
 {
 	player_->setPosition(pos);
+}
+
+void PlayerQt::play(const QString& musicPath)
+{
+	emit beginPlay();
+	player_->setSource(musicPath);
+	player_->play();
 }
 
 void PlayerQt::slotMetaDataChanged()

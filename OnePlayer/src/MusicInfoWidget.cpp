@@ -3,16 +3,19 @@
 #include "ImageHandler.h"
 #include "OnePlayerStruct.h"
 #include <QElapsedTimer>
+#include <QGraphicsOpacityEffect>
 #include <QPropertyAnimation>
-
 
 
 MusicInfoWidget::MusicInfoWidget(QWidget *parent)
 	: QWidget(parent)
-    , mask_(new QLabel(this))
 {
 	ui.setupUi(this);
-    QGraphicsEffect* op;
+    opacityEffect_ = new QGraphicsOpacityEffect(this);
+    animation_ = new QPropertyAnimation(opacityEffect_, "opacity");
+    animation_->setDuration(MORE_BTN_WIDGET_ANIMATION_TIME);
+    animation_->setEasingCurve(QEasingCurve::InOutQuad);
+    setGraphicsEffect(opacityEffect_);
 }
 
 MusicInfoWidget::~MusicInfoWidget()
@@ -22,12 +25,6 @@ MusicInfoWidget::~MusicInfoWidget()
 
 void MusicInfoWidget::drawImage(QImage image)
 {
-    mask_->raise();
-    mask_->move(0, 0);
-    mask_->setFixedSize(ui.stacked_info->size());
-    mask_->show();
-    mask_->setStyleSheet("background-color: red;");
-    animationHide();
     static QImage default_image(":/images/music.png");
     if (image.isNull())
         image = default_image;
@@ -46,36 +43,22 @@ void MusicInfoWidget::drawImage(QImage image)
 
 void MusicInfoWidget::animationHide()
 {
-    QPropertyAnimation* animation = new QPropertyAnimation(mask_, "windowOpacity");
-    animation->setDuration(MORE_BTN_WIDGET_ANIMATION_TIME*5);
-    animation->setEasingCurve(QEasingCurve::InOutQuad);
-    QEventLoop loop;
-    connect(animation, &QPropertyAnimation::finished, this, [this, animation, &loop]()
+    static QEventLoop loop;
+    connect(animation_, &QPropertyAnimation::finished, this, []()
     {
         //isAnimateHide_ = true;
-        animation->deleteLater();
         loop.quit();
     });
-
-    animation->setStartValue(0.0);
-    animation->setEndValue(1.0);
-    animation->start();
+    
+    animation_->setStartValue(opacityEffect_->opacity());
+    animation_->setEndValue(0.0);
+    animation_->start();
     loop.exec();
 }
 
 void MusicInfoWidget::animationShow()
 {
-    QPropertyAnimation* animation = new QPropertyAnimation(mask_, "windowOpacity");
-    animation->setDuration(MORE_BTN_WIDGET_ANIMATION_TIME*5);
-    animation->setEasingCurve(QEasingCurve::InOutQuad);
-
-    connect(animation, &QPropertyAnimation::finished, this, [this, animation]()
-    {
-        //isAnimateHide_ = true;
-        animation->deleteLater();
-    });
-
-    animation->setStartValue(1.0);
-    animation->setEndValue(0.0);
-    animation->start();
+    animation_->setStartValue(opacityEffect_->opacity());
+    animation_->setEndValue(1.0);
+    animation_->start();
 }
