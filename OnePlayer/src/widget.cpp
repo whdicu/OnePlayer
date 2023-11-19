@@ -71,17 +71,17 @@ Widget::Widget(const QString& filepath, QWidget *parent)
     animation_->setEasingCurve(QEasingCurve::InOutQuad);
     connect(animation_, &QPropertyAnimation::finished, this, [this]()
     {
-        if (!isShowAnimation_)
+        if (isShowAnimation_)
+            return;
+
+        if (shutdownBtnClicked_)
+            close();
+        else
         {
-            if (shutdownBtnClicked_)
-                close();
-            else
-            {
-                resize(MAIN_WIDGET_WIDTH, MAIN_WIDGET_HEIGHT);
-                move(pressX_, pressY_);
-                show();
-                setWindowState(Qt::WindowMinimized);
-            }
+            resize(MAIN_WIDGET_WIDTH, MAIN_WIDGET_HEIGHT);
+            move(pressX_, pressY_); 
+            show();
+            setWindowState(Qt::WindowMinimized);
         }
     });
 
@@ -96,16 +96,10 @@ Widget::Widget(const QString& filepath, QWidget *parent)
 //	ui->setting_tab_widget->setDownloadDir(SETTING_HANDLER->get_download_dir());
 //    //ui->label_dir->setText(SETTING_HANDLER->get_music_dir());
 //    //ui->label_dir_download->setText(SETTING_HANDLER->get_download_dir());
-//
-//    // 圆角遮罩
-//    QWidget* ww = new QWidget(ui->music);
-//    ww->move(10, 10);
-//    ww->resize(ui->stacked_info->width() + 20, ui->stacked_info->height() + 20);
-//    ww->setStyleSheet("background-color: transparent; border: 10px solid white; border-radius: 30px;");
-//
+
     setListener();
 //	set_setting_tab_listener();
-//
+
 //	NeteaseHandler::getInstance();
 
     if (filepath.isEmpty())  // 没有指定打开的歌曲则打开默认文件夹
@@ -176,9 +170,6 @@ Widget::Widget(const QString& filepath, QWidget *parent)
 
     // 初始化界面
     ui->music_info_widget->drawImage(QImage(":/images/music.png"));
-    //ui->music_info_widget->drawImage(QImage("C:/Users/WHDon/Desktop/aaa.jpg"));
-    //ui->music_info_widget->drawImage(QImage("C:/Users/WHDon/Desktop/bbb.png"));
-    //ui->music_info_widget->drawImage(QImage("C:/Users/WHDon/Desktop/ccc.png"));
 }
 
 void Widget::slotPositionChanged(qint64 pos)
@@ -902,14 +893,14 @@ void Widget::keyPressEvent(QKeyEvent *event)
             //if (ui->multi_btn_widget->isAnimateHide())
                 //ui->multi_btn_widget->hide();
 
-            if (ui->find_widget->isHidden())
+            if (ui->find_widget->isAnimateHide())
             {
-                ui->find_widget->show();
+                ui->find_widget->animationShow();
                 ui->find_widget->setEditFocus();
             }
             else
             {
-                ui->find_widget->hide();
+                ui->find_widget->animationHide();
                 ui->find_widget->setEditText("");
             }
         }

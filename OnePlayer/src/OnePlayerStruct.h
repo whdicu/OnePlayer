@@ -40,3 +40,6 @@ const static int MORE_BTN_WIDGET_ANIMATION_TIME = 250;
 
 // 左侧图片widget的过渡动画时间
 const static int MUSIC_INFO_WIDGET_ANIMATION_TIME = 150;
+
+// 搜索框过渡动画时间
+const static int SEARCH_EDIT_ANIMATION_TIME = 250;

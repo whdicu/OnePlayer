@@ -24,16 +24,15 @@ MultiBtnWidget::~MultiBtnWidget()
 
 void MultiBtnWidget::animationHide()
 {
-    animation_->setStartValue(QRect(MORE_BTN_WIDGET_X, MORE_BTN_WIDGET_Y
-        , MORE_BTN_WIDGET_WIDTH, MORE_BTN_WIDGET_HEIGHT));
+    animation_->setStartValue(QRect(x(), y(), width(), height()));
     animation_->setEndValue(QRect(MORE_BTN_WIDGET_X + MORE_BTN_WIDGET_WIDTH
-        , MORE_BTN_WIDGET_Y, MORE_BTN_WIDGET_WIDTH, MORE_BTN_WIDGET_HEIGHT));
+        , MORE_BTN_WIDGET_Y, 0, MORE_BTN_WIDGET_HEIGHT));
     animation_->start();
 }
 
 void MultiBtnWidget::animationShow()
 {
-    animation_->setStartValue(QRect(x(), y(), 0, height()));
+    animation_->setStartValue(QRect(x(), y(), width(), height()));
     animation_->setEndValue(QRect(MORE_BTN_WIDGET_X, MORE_BTN_WIDGET_Y
         , MORE_BTN_WIDGET_WIDTH, MORE_BTN_WIDGET_HEIGHT));
     animation_->start();
