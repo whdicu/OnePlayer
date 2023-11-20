@@ -28,7 +28,6 @@ public:
     void animateHide();
 
 private slots:
-    void slot_key_pressed(DWORD key);
     void on_btn_shutdown_clicked();
     void on_btn_play_clicked();
     void on_btn_previoud_clicked();
@@ -49,6 +48,7 @@ private slots:
 //	void slot_btn_change_dir_download_clicked();
 //    void slot_cmb_mode_currentIndexChanged(int index);
 
+    void slotKeyPressed(DWORD key);
     void slotPositionChanged(qint64 pos);
     void slotMetaDataChanged(const MusicMetaData& metaData);
 

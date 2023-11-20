@@ -61,7 +61,7 @@ Widget::Widget(const QString& filepath, QWidget *parent)
     setAttribute(Qt::WA_TranslucentBackground);
     setAcceptDrops(true);
     hook_->installHook();
-    connect(hook_, &Hook::sendKeyType, this, &Widget::slot_key_pressed);
+    connect(hook_, &Hook::sendKeyType, this, &Widget::slotKeyPressed);
 
     PlayerBase* pp = new PlayerFFmpeg(this);
 
@@ -171,6 +171,26 @@ Widget::Widget(const QString& filepath, QWidget *parent)
     // 初始化界面
     ui->music_info_widget->drawImage(QImage(":/images/music.png"));
 }
+
+void Widget::slotKeyPressed(DWORD key)
+{
+    switch (key)
+    {
+    case 179ul:
+        on_btn_play_clicked();
+        break;
+    case 176ul:
+        on_btn_next_clicked();
+        break;
+    case 177ul:
+        on_btn_previoud_clicked();
+        break;
+    case 178ul:
+        //player_->stop();
+        break;
+    }
+}
+
 
 void Widget::slotPositionChanged(qint64 pos)
 {
@@ -1059,29 +1079,6 @@ Widget::~Widget()
     delete ui;
 	NeteaseHandler::getInstance()->deleteThis();
     hook_->unInstallHook();
-}
-
-void Widget::slot_key_pressed(DWORD key)
-{
-    /*auto state = GET_PLAY_STATE;
-    switch (key)
-    {
-    case 179ul:
-        if (QMediaPlayer::StoppedState == state || QMediaPlayer::PausedState == state)
-            player_->play();
-        else if (QMediaPlayer::PlayingState == state)
-            player_->pause();
-        break;
-    case 176ul:
-        next_music();
-        break;
-    case 177ul:
-        previous_music();
-        break;
-    case 178ul:
-        player_->stop();
-        break;
-    }*/
 }
 
 // 关闭
