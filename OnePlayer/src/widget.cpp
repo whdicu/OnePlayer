@@ -245,7 +245,11 @@ void Widget::setListener()
 //    });
 
     // 开始放歌时，播放图片Widget的隐藏动画
-    connect(player_, &PlayerBase::beginPlay, ui->music_info_widget, &MusicInfoWidget::animationHide);
+    connect(player_, &PlayerBase::beginPlay, this, [this]()
+    {
+        ui->btn_play->setIcon(QIcon(":/svgs/pause.svg"));
+        ui->music_info_widget->animationHide();
+    });
 
 //    // 音乐播放状态改变事件
 //#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
@@ -289,7 +293,12 @@ void Widget::setListener()
     // 先sourceChanged，再metaDataChanged
     connect(player_, &PlayerBase::sourceChanged, this, [this](const QUrl& media)
     {
-        QImage image = PlayerFFmpeg::getMusicImage(media.toLocalFile());
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        QString musicPath = media.toString();
+#else
+        QString musicPath = media.toLocalFile();
+#endif
+        QImage image = PlayerFFmpeg::getMusicImage(musicPath);
         ui->music_info_widget->drawImage(image);
 
         //switch (SETTING_HANDLER->get_player_mode())
@@ -434,9 +443,12 @@ void Widget::refreshMusicBtns()
     }
 
     DList<QString> playList = SETTING_HANDLER->getNowPlayList();
+    qint64 index = 0;
     for (const QString& musicPath : playList)
     {
-        addMusicBtn(musicPath);
+        BaseMusicButton* btn = addMusicBtn(musicPath);
+        btn->setMusicIndex(index);
+        ++index;
     }
 //    if (list.size() > 0)
 //    {
@@ -545,12 +557,15 @@ void Widget::refreshMusicBtns()
 //    play_music(newMusicIndex);
 //}
 
-void Widget::addMusicBtn(const QUrl& url)
+BaseMusicButton* Widget::addMusicBtn(const QUrl& url)
 {
     MusicButton* btn = new MusicButton(url, this);
     btn->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(btn, &MusicButton::clicked, this, [this, btn]()
+    connect(btn, &MusicButton::clicked, this, [this](qint64 index)
     {
+        SETTING_HANDLER->getStruct().musicIndex = index;
+        player_->playCurrentIndex();
+
         //DSizeType newMusicIndex = btn_list_.indexOf(btn);
         //play_music(newMusicIndex);
 
@@ -566,6 +581,7 @@ void Widget::addMusicBtn(const QUrl& url)
         menu->show(btn);
     });
     ui->music_layout->addWidget(btn);
+    return btn;
 }
 
 //void Widget::add_online_music(const MusicInfo& music)

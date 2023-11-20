@@ -59,7 +59,7 @@ private:
     void refreshMusicBtns();
 //    void next_music();
 //    void previous_music();
-    void addMusicBtn(const QUrl& url);
+    BaseMusicButton* addMusicBtn(const QUrl& url);
 //    void add_online_music(const MusicInfo& music);
 //    void find_music(const QString& word);
 //    void init_local();

@@ -13,9 +13,14 @@ public:
     virtual QString get_filename() const = 0;
     virtual void setNormalStyle() = 0;
     virtual void setPlayingStyle() = 0;
+    qint64 getMusicIndex() { return musicIndex_; }
+    void setMusicIndex(qint64 index) { musicIndex_ = index; }
 
 signals:
-    void clicked();
+    void clicked(qint64 index);
+
+protected:
+    qint64 musicIndex_;
 };
 
 #endif // BASEMUSICBUTTON_H

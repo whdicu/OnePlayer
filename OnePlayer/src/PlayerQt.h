@@ -19,13 +19,12 @@ public:
 	virtual void setPosition(qint64 pos);
 	virtual qint64 getPosition() { return player_->position(); }
 	virtual qint64 getDuration() { return player_->duration(); }
+	void playCurrentIndex();
 
 private slots:
 	void slotMetaDataChanged();
 
 private:
-	void play(const QString& musicPath);
-
 	QMediaPlayer* player_;
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 	QAudioOutput* audioOutput_;

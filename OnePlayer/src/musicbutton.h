@@ -25,7 +25,7 @@ public:
     virtual void setPlayingStyle() {setStyleSheet(PLAYING_STYLE);};
 
 private slots:
-    void on_btn_name_clicked() {emit clicked();}
+    void on_btn_name_clicked() { emit clicked(musicIndex_); }
 
 private:
     Ui::MusicButton *ui;

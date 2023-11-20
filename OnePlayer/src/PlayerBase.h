@@ -22,6 +22,7 @@ public:
 	virtual void setPosition(qint64 pos) = 0;
 	virtual qint64 getPosition() = 0;
 	virtual qint64 getDuration() = 0;  // “Ù¿÷◊‹≥§∂»
+	virtual void playCurrentIndex() = 0;
 
 signals:
 	void durationChanged(qint64 position);

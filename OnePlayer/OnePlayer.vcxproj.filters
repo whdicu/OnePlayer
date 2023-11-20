@@ -30,9 +30,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="src\basemusicbutton.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
     <QtMoc Include="src\dmenu.h">
       <Filter>Header Files</Filter>
     </QtMoc>
@@ -80,6 +77,9 @@
     </QtMoc>
     <QtMoc Include="src\PlayerFFmpeg.h">
       <Filter>Source Files\players</Filter>
+    </QtMoc>
+    <QtMoc Include="src\basemusicbutton.h">
+      <Filter>Source Files\widgets</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>

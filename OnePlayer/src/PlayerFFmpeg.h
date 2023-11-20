@@ -19,6 +19,7 @@ public:
 	virtual void setPosition(qint64 pos);
 	virtual qint64 getPosition() { return 0; }
 	virtual qint64 getDuration() { return 0; }
+	void playCurrentIndex() {}
 
 private slots:
 	void slotMetaDataChanged();

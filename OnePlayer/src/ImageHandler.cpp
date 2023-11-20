@@ -14,7 +14,7 @@ QPixmap ImageHandler::cutImage(const QImage& image, int width, int height, int r
 		time.start();
 		//cv::GaussianBlur(QImageToCvMat(image), blurredMat, cv::Size(101, 101), 18);  // 31 8
 		//cv::blur(QImageToCvMat(image), blurredMat, cv::Size(31, 31));
-		cv::stackBlur(QImageToCvMat(image), blurredMat, cv::Size(61, 61));
+		cv::stackBlur(QImageToCvMat(image), blurredMat, cv::Size(91, 91));
 		qDebug() << "GaussianBlur:" << time.elapsed();
 	}
 	else
@@ -35,7 +35,7 @@ QPixmap ImageHandler::cutImage(const QImage& image, int width, int height, int r
 		scale = static_cast<double>(height) / blurredMat.rows;
 	}
 	cv::Mat resizedImage;
-	cv::resize(blurredMat, resizedImage, cv::Size(), scale, scale);
+	cv::resize(blurredMat, resizedImage, cv::Size(), scale, scale, cv::INTER_AREA);
 
 	// 裁剪到与label相同大小
 	cv::Rect roi((resizedImage.cols - width) / 2, (resizedImage.rows - height) / 2, width, height);

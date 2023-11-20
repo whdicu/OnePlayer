@@ -30,7 +30,7 @@ struct SettingStruct
     QString                         musicDir;
     float                           volume;
     QString                         playListName;
-    qint64                          musicIndex;
+    DSizeType                       musicIndex;
     qint64                          musicPosition;
     PLAYER_MODE                     playerMode;
     QString                         downloadDir;
@@ -49,9 +49,9 @@ public:
     DList<QString> getNowPlayList();
     void clearRandomPlayList() { randomIndexList_.clear(); }
 
-    QString nextMusicPath();
+    DSizeType nextMusicIndex();
     QString nowMusicPath();
-    QString previousMusicPath();
+    DSizeType previousMusicIndex();
 
     void save() { writeAll(); }
 

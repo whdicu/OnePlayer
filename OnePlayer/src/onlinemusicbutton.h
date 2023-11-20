@@ -27,8 +27,8 @@ public:
     MusicInfo& get_info() {return music_info_;}
 
 private slots:
-    void on_btn_name_clicked() {emit clicked();}
-    void on_btn_singer_clicked() {emit clicked();}
+    void on_btn_name_clicked() {emit clicked(-1);}
+    void on_btn_singer_clicked() {emit clicked(-1);}
     void on_btn_download_clicked() {emit download_clicked();}
 
 signals:

@@ -52,13 +52,14 @@ PlayerQt::~PlayerQt()
 
 bool PlayerQt::playOrPause()
 {
-	
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 	if (!player_->hasAudio())
 #else
 	if (player_->media().isNull())
 #endif
-		play(SETTING_HANDLER->nowMusicPath());
+	{
+		playCurrentIndex();
+	}
 
 	if (QMediaPlayer::PlayingState == GET_PLAY_STATE)
 	{
@@ -74,14 +75,14 @@ bool PlayerQt::playOrPause()
 
 void PlayerQt::playNext()
 {
-	QString musicPath = SETTING_HANDLER->nextMusicPath();
-	play(musicPath);
+	SETTING_HANDLER->nextMusicIndex();
+	playCurrentIndex();
 }
 
 void PlayerQt::playPrevious()
 {
-	QString musicPath = SETTING_HANDLER->previousMusicPath();
-	play(musicPath);
+	SETTING_HANDLER->previousMusicIndex();
+	playCurrentIndex();
 }
 
 void PlayerQt::setVolume(float vol)
@@ -94,11 +95,11 @@ void PlayerQt::setPosition(qint64 pos)
 	player_->setPosition(pos);
 }
 
-void PlayerQt::play(const QString& musicPath)
+void PlayerQt::playCurrentIndex()
 {
 	emit beginPlay();
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-	player_->setSource(musicPath);
+	player_->setSource(SETTING_HANDLER->nowMusicPath());
 #else
 	player_->setMedia(QUrl::fromLocalFile(SETTING_HANDLER->nowMusicPath()));
 #endif

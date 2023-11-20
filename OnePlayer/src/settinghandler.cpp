@@ -35,7 +35,7 @@ QByteArray readFile(const QString& filePath)
 }
 
 static SettingHandler* setting_handler = nullptr;
-SettingHandler *SettingHandler::getInstance()
+SettingHandler* SettingHandler::getInstance()
 {
     if (nullptr == setting_handler)
         setting_handler = new SettingHandler();
@@ -59,13 +59,13 @@ DList<QString> SettingHandler::getNowPlayList()
     return getPlayList(setting_.playListName);
 }
 
-QString SettingHandler::nextMusicPath()
+DSizeType SettingHandler::nextMusicIndex()
 {
     ++setting_.musicIndex;
     if (setting_.musicIndex >= setting_.playListMap.value(setting_.playListName).size())
         setting_.musicIndex = 0;
 
-    return nowMusicPath();
+    return setting_.musicIndex;
 }
 
 QString SettingHandler::nowMusicPath()
@@ -76,20 +76,17 @@ QString SettingHandler::nowMusicPath()
 		setting_.playListName = setting_.playListMap.begin().key();
 	}
 
-    if (setting_.musicIndex < 0 ||
-        setting_.musicIndex >= setting_.playListMap.value(setting_.playListName).size())
+    if (setting_.musicIndex >= setting_.playListMap.value(setting_.playListName).size())
         return QString();
 
     return setting_.playListMap.value(setting_.playListName).at(setting_.musicIndex);
 }
 
-QString SettingHandler::previousMusicPath()
+DSizeType SettingHandler::previousMusicIndex()
 {
-    --setting_.musicIndex;
-    if (setting_.musicIndex < 0)
-        setting_.musicIndex = setting_.playListMap.value(setting_.playListName).size() - 1;
-
-    return nowMusicPath();
+    if (setting_.musicIndex == 0)
+        setting_.musicIndex = setting_.playListMap.value(setting_.playListName).size();
+    return --setting_.musicIndex;
 }
 
 SettingHandler::SettingHandler()
@@ -133,10 +130,10 @@ void SettingHandler::readAll()
     setting_.volume = obj["volume"].toDouble();
     setting_.playListName = obj["playListName"].toString();
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    setting_.musicIndex = obj["musicIndex"].toInteger();
+    setting_.musicIndex = obj["musicIndex"].toVariant().toULongLong();
     setting_.musicPosition = obj["musicPosition"].toInteger();
 #else
-	setting_.musicIndex = obj["musicIndex"].toVariant().toLongLong();
+	setting_.musicIndex = obj["musicIndex"].toVariant().toULongLong();
 	setting_.musicPosition = obj["musicPosition"].toVariant().toLongLong();
 #endif
     setting_.playerMode = (PLAYER_MODE)obj["playerMode"].toInt();
@@ -157,7 +154,7 @@ void SettingHandler::writeAll()
     wholeObject.insert("musicDir", setting_.musicDir);
     wholeObject.insert("volume", setting_.volume);
     wholeObject.insert("playListName", setting_.playListName);
-    wholeObject.insert("musicIndex", setting_.musicIndex);
+    wholeObject.insert("musicIndex", (qint64)setting_.musicIndex);
     wholeObject.insert("musicPosition", setting_.musicPosition);
     wholeObject.insert("playerMode", setting_.playerMode);
     wholeObject.insert("downloadDir", setting_.downloadDir);
@@ -254,36 +251,3 @@ void SettingHandler::writePlayList()
     }
     
 }
-
-//void SettingHandler::init_setting()
-//{
-//    auto setting_map = readAll();
-//
-//    auto v1 = setting_map.value("music_dir", {});
-//    if (! v1.empty())
-//        set_music_dir(*v1.begin());
-//
-//    auto v2 = setting_map.value("old_mode", {});
-//    if (! v2.empty())
-//        set_old_mode(static_cast<PLAY_MODE> (v2.begin()->toInt()));
-//
-//    auto v3 = setting_map.value("last_music", {});
-//    if (! v3.empty())
-//        set_last_music(QUrl::fromLocalFile(*v3.begin()));
-//
-//    auto v4 = setting_map.value("volume", {});
-//    if (! v4.empty())
-//        set_volume(v4.begin()->toFloat());
-//
-//    auto v5 = setting_map.value("music_position", {});
-//    if (! v5.isEmpty())
-//        set_music_position(v5.begin()->toInt());
-//
-//    auto v6 = setting_map.value("player_mode", {});
-//    if (! v6.isEmpty())
-//        set_player_mode((PLAYER_MODE)v6.begin()->toInt());
-//
-//    auto v7 = setting_map.value("download_dir", {});
-//    if (! v7.isEmpty())
-//        set_download_dir(*v7.begin());
-//}
