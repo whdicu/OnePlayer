@@ -17,6 +17,7 @@
 
 #include <opencv2/core/cvdef.h>     // GAPI_EXPORTS
 #include <opencv2/gapi/gkernel.hpp> // GKernelPackage
+#include <opencv2/gapi/infer.hpp>   // Generic
 
 namespace cv {
 namespace gapi {
@@ -67,6 +68,16 @@ struct ParamDesc {
     std::vector<bool> normalize; //!< Vector of bool values that enabled or disabled normalize of input data.
 
     std::vector<std::string> names_to_remap; //!< Names of output layers that will be processed in PostProc function.
+
+    bool is_generic;
+
+    // TODO: Needs to modify the rest of ParamDesc accordingly to support
+    // both generic and non-generic options without duplication
+    // (as it was done for the OV IE backend)
+    // These values are pushed into the respective vector<> fields above
+    // when the generic infer parameters are unpacked (see GONNXBackendImpl::unpackKernel)
+    std::unordered_map<std::string, std::pair<cv::Scalar, cv::Scalar> > generic_mstd;
+    std::unordered_map<std::string, bool> generic_norm;
 };
 } // namespace detail
 
@@ -103,6 +114,7 @@ public:
         desc.model_path = model;
         desc.num_in  = std::tuple_size<typename Net::InArgs>::value;
         desc.num_out = std::tuple_size<typename Net::OutArgs>::value;
+        desc.is_generic = false;
     };
 
     /** @brief Specifies sequence of network input layers names for inference.
@@ -126,7 +138,7 @@ public:
 
      The function is used to associate data of graph outputs with output layers of
     network topology. If a network has only one output layer, there is no need to call it
-    as the layer is associated with ouput automatically but this doesn't prevent
+    as the layer is associated with output automatically but this doesn't prevent
     you from doing it yourself. Count of names has to match to number of network
     outputs or you can set your own output but for this case you have to
     additionally use @ref cfgPostProc function.
@@ -275,6 +287,45 @@ public:
 
 protected:
     detail::ParamDesc desc;
+};
+
+/*
+* @brief This structure provides functions for generic network type that
+* fill inference parameters.
+* @see struct Generic
+*/
+template<>
+class Params<cv::gapi::Generic> {
+public:
+    /** @brief Class constructor.
+
+    Constructs Params based on input information and sets default values for other
+    inference description parameters.
+
+    @param tag string tag of the network for which these parameters are intended.
+    @param model_path path to model file (.onnx file).
+    */
+    Params(const std::string& tag, const std::string& model_path)
+        : desc{model_path, 0u, 0u, {}, {}, {}, {}, {}, {}, {}, {}, {}, true, {}, {} }, m_tag(tag) {}
+
+    void cfgMeanStdDev(const std::string &layer,
+                       const cv::Scalar &m,
+                       const cv::Scalar &s) {
+        desc.generic_mstd[layer] = std::make_pair(m, s);
+    }
+
+    void cfgNormalize(const std::string &layer, bool flag) {
+        desc.generic_norm[layer] = flag;
+    }
+
+    // BEGIN(G-API's network parametrization API)
+    GBackend      backend() const { return cv::gapi::onnx::backend(); }
+    std::string   tag()     const { return m_tag; }
+    cv::util::any params()  const { return { desc }; }
+    // END(G-API's network parametrization API)
+protected:
+    detail::ParamDesc desc;
+    std::string m_tag;
 };
 
 } // namespace onnx
