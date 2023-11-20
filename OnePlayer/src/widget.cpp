@@ -315,9 +315,6 @@ void Widget::setListener()
         //SETTING_HANDLER->set_last_music(media);
     });
 #else
-	// todo 不知道用哪个
-	//connect(player_, &QMediaPlayer::mediaChanged, this, [this](const QMediaContent& media)
-	//connect(player_, &QMediaPlayer::currentMediaChanged, this, [this](const QMediaContent& media)
 #endif
 
     connect(player_, &PlayerQt::metaDataChanged, this, &Widget::slotMetaDataChanged);

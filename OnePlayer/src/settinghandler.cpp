@@ -88,7 +88,7 @@ QString SettingHandler::previousMusicPath()
 }
 
 SettingHandler::SettingHandler()
-    : setting_()
+    : setting_(SettingStruct())
 {
     readAll();
 }
@@ -127,8 +127,13 @@ void SettingHandler::readAll()
     setting_.musicDir = obj["musicDir"].toString();
     setting_.volume = obj["volume"].toDouble();
     setting_.playListName = obj["playListName"].toString();
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     setting_.musicIndex = obj["musicIndex"].toInteger();
     setting_.musicPosition = obj["musicPosition"].toInteger();
+#else
+	setting_.musicIndex = obj["musicIndex"].toVariant().toLongLong();
+	setting_.musicPosition = obj["musicPosition"].toVariant().toLongLong();
+#endif
     setting_.playerMode = (PLAYER_MODE)obj["playerMode"].toInt();
     setting_.downloadDir = obj["downloadDir"].toString();
 
@@ -143,7 +148,6 @@ void SettingHandler::writeAll()
 
     QJsonObject wholeObject;
 
-    // 写入工作台类型
     wholeObject.insert("playMode", setting_.playMode);
     wholeObject.insert("musicDir", setting_.musicDir);
     wholeObject.insert("volume", setting_.volume);

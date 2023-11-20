@@ -1,4 +1,5 @@
 #include "lyricswidget.h"
+#include <QDebug>
 #include "ui_lyricswidget.h"
 
 LyricsWidget::LyricsWidget(QWidget *parent)

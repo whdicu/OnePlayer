@@ -1,5 +1,6 @@
 #include "PlayerFFmpeg.h"
 //#include "OnePlayerStruct.h"
+#include <QDebug>
 #include "settinghandler.h"
 
 extern "C"

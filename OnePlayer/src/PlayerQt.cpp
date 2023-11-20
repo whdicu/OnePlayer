@@ -1,5 +1,6 @@
 #include "PlayerQt.h"
 #include "OnePlayerStruct.h"
+#include <QDebug>
 #include <QMediaMetaData>
 #include "settinghandler.h"
 
@@ -18,7 +19,23 @@ PlayerQt::PlayerQt(QObject* parent)
 
 	connect(player_, &QMediaPlayer::durationChanged, this, &PlayerQt::durationChanged);
 	connect(player_, &QMediaPlayer::positionChanged, this, &PlayerQt::positionChanged);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 	connect(player_, &QMediaPlayer::sourceChanged, this, &PlayerQt::sourceChanged);
+#else
+	// todo 不知道用哪个
+	connect(player_, &QMediaPlayer::mediaChanged, this, [this](const QMediaContent& media)
+	{
+		qDebug() << media.canonicalUrl();
+		//qDebug() << media.playlist();
+		//qDebug() << media.resources();
+	});
+	connect(player_, &QMediaPlayer::currentMediaChanged, this, [this](const QMediaContent& media)
+	{
+		qDebug() << media.canonicalUrl();
+		//qDebug() << media.playlist();
+		//qDebug() << media.resources();
+	});
+#endif
 	connect(player_, &QMediaPlayer::mediaStatusChanged, this, [this](QMediaPlayer::MediaStatus status)
 	{
 		switch (status)
@@ -40,10 +57,13 @@ PlayerQt::~PlayerQt()
 
 bool PlayerQt::playOrPause()
 {
+	
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 	if (!player_->hasAudio())
-	{
-		player_->setSource(SETTING_HANDLER->nowMusicPath());
-	}
+#else
+	if (player_->media().isNull())
+#endif
+		play(SETTING_HANDLER->nowMusicPath());
 
 	if (QMediaPlayer::PlayingState == GET_PLAY_STATE)
 	{
@@ -82,7 +102,11 @@ void PlayerQt::setPosition(qint64 pos)
 void PlayerQt::play(const QString& musicPath)
 {
 	emit beginPlay();
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 	player_->setSource(musicPath);
+#else
+	player_->setMedia(QUrl::fromLocalFile(SETTING_HANDLER->nowMusicPath()));
+#endif
 	player_->play();
 }
 
@@ -95,7 +119,6 @@ void PlayerQt::slotMetaDataChanged()
 #else
 #define GET_META_DATA player_->metaData
 #endif
-	auto ss = player_->metaData();
 	qDebug() << GET_META_DATA(QMediaMetaData::MediaType).toString();
 	qDebug() << GET_META_DATA(QMediaMetaData::AudioCodec).toInt();
 

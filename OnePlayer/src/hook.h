@@ -1,9 +1,9 @@
-#include <QObject>
-
+#define Q_OS_WIN
 #ifdef Q_OS_WIN
 #ifndef HOOK_H
 #define HOOK_H
-#include <windows.h>
+#include <QObject>
+#include "windows.h"
 
 class Hook :public QObject
 {

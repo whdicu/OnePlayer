@@ -1,7 +1,7 @@
-#include <QDebug>
+#define Q_OS_WIN
 #ifdef Q_OS_WIN
 #include "hook.h"
-
+#include <QDebug>
 static HHOOK keyHook = nullptr;
 static Hook* hook = nullptr;
 

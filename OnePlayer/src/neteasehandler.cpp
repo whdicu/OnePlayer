@@ -1,5 +1,6 @@
 ﻿#include "neteasehandler.h"
 #include <QCryptographicHash>
+#include <QDebug>
 #include <QEventLoop>
 #include <QJsonObject>
 #include <QJsonParseError>

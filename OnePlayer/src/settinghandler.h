@@ -2,6 +2,7 @@
 #define SETTINGHANDLER_H
 
 #include <QFile>
+#include <QString>
 #include "widget.h"
 
 enum PLAYER_MODE
@@ -21,6 +22,10 @@ enum PLAY_MODE
 
 struct SettingStruct
 {
+	SettingStruct() : playMode(AGAIN), musicDir(QString()), volume(0.0f)
+		, playListName(QString("Null")), musicIndex(0), musicPosition(0), playerMode(LOCAL)
+		, downloadDir(QString()), playListMap(QMap<QString, DList<QString>>()) {}
+
     PLAY_MODE                       playMode;
     QString                         musicDir;
     float                           volume;
