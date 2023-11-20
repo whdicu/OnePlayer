@@ -287,10 +287,9 @@ void Widget::setListener()
 	
 
     // 先sourceChanged，再metaDataChanged
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     connect(player_, &PlayerBase::sourceChanged, this, [this](const QUrl& media)
     {
-        QImage image = PlayerFFmpeg::getMusicImage(media.toString());
+        QImage image = PlayerFFmpeg::getMusicImage(media.toLocalFile());
         ui->music_info_widget->drawImage(image);
 
         //switch (SETTING_HANDLER->get_player_mode())
@@ -314,8 +313,6 @@ void Widget::setListener()
         //}
         //SETTING_HANDLER->set_last_music(media);
     });
-#else
-#endif
 
     connect(player_, &PlayerQt::metaDataChanged, this, &Widget::slotMetaDataChanged);
 

@@ -51,9 +51,11 @@ void SettingHandler::addPlayList(const QString& name, const DList<QString>& list
 
 DList<QString> SettingHandler::getNowPlayList()
 {
-    if (setting_.playListName.isEmpty())
-        setting_.playListName = setting_.playListMap.begin().key();
-
+	if ((setting_.playListName.isEmpty() || setting_.playListName == "新播放列表")
+		&& !setting_.playListMap.isEmpty())
+	{
+		setting_.playListName = setting_.playListMap.begin().key();
+	}
     return getPlayList(setting_.playListName);
 }
 
@@ -68,8 +70,11 @@ QString SettingHandler::nextMusicPath()
 
 QString SettingHandler::nowMusicPath()
 {
-    if (setting_.playListName.isEmpty())
-        setting_.playListName = setting_.playListMap.begin().key();
+	if ((setting_.playListName.isEmpty() || setting_.playListName == "新播放列表")
+		&& !setting_.playListMap.isEmpty())
+	{
+		setting_.playListName = setting_.playListMap.begin().key();
+	}
 
     if (setting_.musicIndex < 0 ||
         setting_.musicIndex >= setting_.playListMap.value(setting_.playListName).size())

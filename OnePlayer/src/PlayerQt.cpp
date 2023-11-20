@@ -22,18 +22,13 @@ PlayerQt::PlayerQt(QObject* parent)
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 	connect(player_, &QMediaPlayer::sourceChanged, this, &PlayerQt::sourceChanged);
 #else
-	// todo 不知道用哪个
 	connect(player_, &QMediaPlayer::mediaChanged, this, [this](const QMediaContent& media)
 	{
-		qDebug() << media.canonicalUrl();
-		//qDebug() << media.playlist();
-		//qDebug() << media.resources();
-	});
-	connect(player_, &QMediaPlayer::currentMediaChanged, this, [this](const QMediaContent& media)
-	{
-		qDebug() << media.canonicalUrl();
-		//qDebug() << media.playlist();
-		//qDebug() << media.resources();
+		//qDebug() << media.canonicalUrl().fileName();
+		//qDebug() << media.canonicalUrl().path();
+		//qDebug() << media.canonicalUrl().toString();
+		//qDebug() << media.canonicalUrl().toLocalFile();
+		emit sourceChanged(media.canonicalUrl());
 	});
 #endif
 	connect(player_, &QMediaPlayer::mediaStatusChanged, this, [this](QMediaPlayer::MediaStatus status)

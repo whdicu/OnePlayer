@@ -18,6 +18,7 @@ QImage PlayerFFmpeg::getMusicImage(const QString& musicPath)
 	if (avformat_open_input(&fmt_ctx, musicPath.toUtf8(), nullptr, nullptr))
 	{
 		qDebug() << "Fail to open file";
+		return ret;
 	}
 
 	//读取metadata中所有的tag
