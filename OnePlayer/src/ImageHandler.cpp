@@ -12,7 +12,9 @@ QPixmap ImageHandler::cutImage(const QImage& image, int width, int height, int r
 	{
 		QElapsedTimer time;
 		time.start();
-		cv::GaussianBlur(QImageToCvMat(image), blurredMat, cv::Size(101, 101), 18);  // 31 8
+		//cv::GaussianBlur(QImageToCvMat(image), blurredMat, cv::Size(101, 101), 18);  // 31 8
+		//cv::blur(QImageToCvMat(image), blurredMat, cv::Size(31, 31));
+		cv::stackBlur(QImageToCvMat(image), blurredMat, cv::Size(51, 51));
 		qDebug() << "GaussianBlur:" << time.elapsed();
 	}
 	else
