@@ -19,7 +19,7 @@ public:
 	virtual void setPosition(qint64 pos);
 	virtual qint64 getPosition() { return player_->position(); }
 	virtual qint64 getDuration() { return player_->duration(); }
-	void playCurrentIndex();
+	virtual void playCurrentIndex();
 	virtual void setLoop(bool loop);
 
 private slots:

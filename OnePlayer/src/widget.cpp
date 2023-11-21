@@ -63,8 +63,6 @@ Widget::Widget(const QString& filepath, QWidget *parent)
     hook_->installHook();
     connect(hook_, &Hook::sendKeyType, this, &Widget::slotKeyPressed);
 
-    PlayerBase* pp = new PlayerFFmpeg(this);
-
     // 动画创建
     animation_ = new QPropertyAnimation(this, "geometry");
     animation_->setDuration(MAIN_WIDGET_ANIMATION_TIME);

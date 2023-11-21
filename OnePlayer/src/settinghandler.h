@@ -47,7 +47,7 @@ public:
 
     // 获取当前歌单下的歌曲，随机播放时 不是 返回随机播放歌曲列表
     DList<QString> getNowPlayList();
-	void clearRandomPlayList() { randomIndex_ = 0; randomIndexList_.clear(); }
+    void clearRandomPlayList();
 
     DSizeType nextMusicIndex();
     QString nowMusicPath();

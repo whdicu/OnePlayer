@@ -6,6 +6,8 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QJsonParseError>
+#include <QRandomGenerator64>
+
 
 QByteArray readFile(const QString& filePath)
 {
@@ -59,6 +61,13 @@ DList<QString> SettingHandler::getNowPlayList()
     return getPlayList(setting_.playListName);
 }
 
+void SettingHandler::clearRandomPlayList()
+{
+    randomIndex_ = 0;
+    randomIndexList_.clear();
+    randomIndexList_.pushBack(setting_.musicIndex);
+}
+
 DSizeType SettingHandler::nextMusicIndex()
 {
 	switch (setting_.playMode)
@@ -69,7 +78,11 @@ DSizeType SettingHandler::nextMusicIndex()
 		if (randomIndex_ >= randomIndexList_.size())
 		{
 			randomIndex_ = randomIndexList_.size();
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            DSizeType newIndex = QRandomGenerator64::global()->bounded(0ull, getNowPlayList().size());
+#else
 			DSizeType newIndex = qrand() % getNowPlayList().size();
+#endif
 			randomIndexList_.pushBack(newIndex);
 		}
 		setting_.musicIndex = randomIndexList_.at(randomIndex_);
@@ -111,7 +124,11 @@ DSizeType SettingHandler::previousMusicIndex()
 		if (randomIndex_ >= randomIndexList_.size())
 		{
 			randomIndex_ = 0;
-			DSizeType newIndex = qrand() % getNowPlayList().size();
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            DSizeType newIndex = QRandomGenerator64::global()->bounded(0ull, getNowPlayList().size());
+#else
+            DSizeType newIndex = qrand() % getNowPlayList().size();
+#endif
 			randomIndexList_.pushFront(newIndex);
 		}
 		setting_.musicIndex = randomIndexList_.at(randomIndex_);

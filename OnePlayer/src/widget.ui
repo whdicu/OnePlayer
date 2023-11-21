@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>920</width>
-    <height>525</height>
+    <height>520</height>
    </rect>
   </property>
   <property name="cursor">
@@ -173,19 +173,19 @@ QLabel {
      <x>0</x>
      <y>0</y>
      <width>920</width>
-     <height>445</height>
+     <height>440</height>
     </rect>
    </property>
    <property name="minimumSize">
     <size>
      <width>920</width>
-     <height>445</height>
+     <height>440</height>
     </size>
    </property>
    <property name="maximumSize">
     <size>
      <width>920</width>
-     <height>445</height>
+     <height>440</height>
     </size>
    </property>
    <property name="font">
@@ -257,19 +257,19 @@ QLabel {
           <x>0</x>
           <y>0</y>
           <width>400</width>
-          <height>405</height>
+          <height>400</height>
          </rect>
         </property>
         <property name="minimumSize">
          <size>
           <width>0</width>
-          <height>405</height>
+          <height>400</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
           <width>16777215</width>
-          <height>405</height>
+          <height>400</height>
          </size>
         </property>
         <property name="font">
@@ -404,12 +404,12 @@ QLabel {
                    <x>0</x>
                    <y>0</y>
                    <width>400</width>
-                   <height>360</height>
+                   <height>355</height>
                   </rect>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_3">
                   <property name="spacing">
-                   <number>7</number>
+                   <number>0</number>
                   </property>
                   <property name="leftMargin">
                    <number>0</number>
@@ -582,19 +582,19 @@ QLabel {
           <x>420</x>
           <y>0</y>
           <width>40</width>
-          <height>405</height>
+          <height>400</height>
          </rect>
         </property>
         <property name="minimumSize">
          <size>
           <width>40</width>
-          <height>405</height>
+          <height>400</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
           <width>40</width>
-          <height>405</height>
+          <height>400</height>
          </size>
         </property>
        </widget>
@@ -641,7 +641,7 @@ QLabel {
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>445</y>
+     <y>440</y>
      <width>920</width>
      <height>80</height>
     </rect>
