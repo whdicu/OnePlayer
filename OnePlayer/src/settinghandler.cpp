@@ -61,9 +61,28 @@ DList<QString> SettingHandler::getNowPlayList()
 
 DSizeType SettingHandler::nextMusicIndex()
 {
-    ++setting_.musicIndex;
-    if (setting_.musicIndex >= setting_.playListMap.value(setting_.playListName).size())
-        setting_.musicIndex = 0;
+	switch (setting_.playMode)
+	{
+	case RANDOM:
+	{
+		++randomIndex_;
+		if (randomIndex_ >= randomIndexList_.size())
+		{
+			randomIndex_ = randomIndexList_.size();
+			DSizeType newIndex = qrand() % getNowPlayList().size();
+			randomIndexList_.pushBack(newIndex);
+		}
+		setting_.musicIndex = randomIndexList_.at(randomIndex_);
+		break;
+	}
+	default:
+	{
+		++setting_.musicIndex;
+		if (setting_.musicIndex >= setting_.playListMap.value(setting_.playListName).size())
+			setting_.musicIndex = 0;
+		break;
+	}
+	}
 
     return setting_.musicIndex;
 }
@@ -84,9 +103,30 @@ QString SettingHandler::nowMusicPath()
 
 DSizeType SettingHandler::previousMusicIndex()
 {
-    if (setting_.musicIndex == 0)
-        setting_.musicIndex = setting_.playListMap.value(setting_.playListName).size();
-    return --setting_.musicIndex;
+	switch (setting_.playMode)
+	{
+	case RANDOM:
+	{
+		--randomIndex_;
+		if (randomIndex_ >= randomIndexList_.size())
+		{
+			randomIndex_ = 0;
+			DSizeType newIndex = qrand() % getNowPlayList().size();
+			randomIndexList_.pushFront(newIndex);
+		}
+		setting_.musicIndex = randomIndexList_.at(randomIndex_);
+		break;
+	}
+	default:
+	{
+		if (setting_.musicIndex == 0)
+			setting_.musicIndex = setting_.playListMap.value(setting_.playListName).size();
+		--setting_.musicIndex;
+		break;
+	}
+	}
+    
+    return setting_.musicIndex;
 }
 
 SettingHandler::SettingHandler()
