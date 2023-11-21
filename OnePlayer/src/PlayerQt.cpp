@@ -106,6 +106,15 @@ void PlayerQt::playCurrentIndex()
 	player_->play();
 }
 
+void PlayerQt::setLoop(bool loop)
+{
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+	player_->setLoops(loop ? -1 : 1);
+#else
+	player_->setPlaybackRate(loop ? QMediaPlaylist::CurrentItemInLoop : QMediaPlaylist::CurrentItemOnce);
+#endif
+}
+
 void PlayerQt::slotMetaDataChanged()
 {
 	MusicMetaData metaData;
