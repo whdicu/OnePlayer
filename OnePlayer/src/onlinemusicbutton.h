@@ -2,16 +2,13 @@
 #define ONLINEMUSICBUTTON_H
 
 #include "basemusicbutton.h"
+#include "OnePlayerStruct.h"
 #include "onlinehandler.h"
 #include <QWidget>
 
 namespace Ui {
 class OnlineMusicButton;
 }
-
-static const QString ONLINE_NORMAL_STYLE = "QPushButton {color: #5c5c66;background-color: rgba(182, 209, 200, 0.25);border-radius: 0px;} #btn_name{text-align : left;padding-left: 10px;border-top-left-radius: 15px;border-bottom-left-radius: 15px;}#btn_singer{text-align : left;}#btn_download{color: #1473e6;border-top-right-radius: 15px;border-bottom-right-radius: 15px;}";
-static const QString ONLINE_PLAYING_STYLE = "QPushButton {color: #5c5c66;background-color: rgb(182, 209, 200);border-radius: 0px;} #btn_name{text-align : left;padding-left: 10px;border-top-left-radius: 15px;border-bottom-left-radius: 15px;}#btn_singer{text-align : left;}#btn_download{color: #1473e6;border-top-right-radius: 15px;border-bottom-right-radius: 15px;}";
-static const QString ONLINE_HOVER_STYLE = "QPushButton {color: #5c5c66;background-color: rgba(182, 209, 200, 0.5);border-radius: 0px;} #btn_name{text-align : left;padding-left: 10px;border-top-left-radius: 15px;border-bottom-left-radius: 15px;}#btn_singer{text-align : left;}#btn_download{color: #1473e6;border-top-right-radius: 15px;border-bottom-right-radius: 15px;}";
 
 class OnlineMusicButton : public BaseMusicButton
 {

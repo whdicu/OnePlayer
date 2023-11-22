@@ -1,4 +1,5 @@
 #pragma once
+#include "HDBase/DList.hpp"
 #include <QImage>
 #include <QString>
 
@@ -32,7 +33,10 @@ const static int MORE_BTN_WIDGET_HEIGHT = 400;
 
 // 音乐按钮控件大小
 const static int STACKED_MUSIC_BTN_WIDTH = 400;
+const static int STACKED_MUSIC_BTN_HEIGHT = 355;
 
+
+/****************************** 时间 ******************************/
 // 主界面显示隐藏的过渡动画时间
 const static int MAIN_WIDGET_ANIMATION_TIME = 250;
 
@@ -44,6 +48,50 @@ const static int MUSIC_INFO_WIDGET_ANIMATION_TIME = 150;
 
 // 搜索框过渡动画时间
 const static int SEARCH_EDIT_ANIMATION_TIME = 200;
+
+
+/****************************** 样式 ******************************/
+// 本地音乐按钮样式
+static const QString LOCAL_NORMAL_STYLE = "QPushButton {color: #5c5c66;background-color: rgba(182, 209, 200, 0.25);border-radius: 15px; padding-left: 10px; padding-right: 10px;} QPushButton:hover {background-color: rgba(182, 209, 200, 0.5);}";
+static const QString LOCAL_PLAYING_STYLE = "QPushButton {color: #5c5c66;background-color: rgb(182, 209, 200);border-radius: 15px; padding-left: 10px; padding-right: 10px;}";
+
+// 在线音乐按钮样式
+static const QString ONLINE_NORMAL_STYLE = "QPushButton {color: #5c5c66;background-color: rgba(182, 209, 200, 0.25);border-radius: 0px;} #btn_name{text-align : left;padding-left: 10px;border-top-left-radius: 15px;border-bottom-left-radius: 15px;}#btn_singer{text-align : left;}#btn_download{color: #1473e6;border-top-right-radius: 15px;border-bottom-right-radius: 15px;}";
+static const QString ONLINE_PLAYING_STYLE = "QPushButton {color: #5c5c66;background-color: rgb(182, 209, 200);border-radius: 0px;} #btn_name{text-align : left;padding-left: 10px;border-top-left-radius: 15px;border-bottom-left-radius: 15px;}#btn_singer{text-align : left;}#btn_download{color: #1473e6;border-top-right-radius: 15px;border-bottom-right-radius: 15px;}";
+static const QString ONLINE_HOVER_STYLE = "QPushButton {color: #5c5c66;background-color: rgba(182, 209, 200, 0.5);border-radius: 0px;} #btn_name{text-align : left;padding-left: 10px;border-top-left-radius: 15px;border-bottom-left-radius: 15px;}#btn_singer{text-align : left;}#btn_download{color: #1473e6;border-top-right-radius: 15px;border-bottom-right-radius: 15px;}";
+
+
+enum PLAYER_MODE
+{
+	LOCAL,
+	MYSITE,
+	ONLINE,
+	NETEASE
+};
+
+enum PLAY_MODE
+{
+	AGAIN,
+	ONE_AGAIN,
+	RANDOM
+};
+
+struct SettingStruct
+{
+	SettingStruct() : playMode(AGAIN), musicDir(QString()), volume(0.0f)
+		, playListName(QString("Null")), musicIndex(0), musicPosition(0), playerMode(LOCAL)
+		, downloadDir(QString()), playListMap(QMap<QString, DList<QUrl>>()) {}
+
+	PLAY_MODE                       playMode;
+	QString                         musicDir;
+	float                           volume;
+	QString                         playListName;
+	DSizeType                       musicIndex;
+	qint64                          musicPosition;
+	PLAYER_MODE                     playerMode;
+	QString                         downloadDir;
+	QMap<QString, DList<QUrl>>   playListMap;
+};
 
 struct MusicInfo
 {

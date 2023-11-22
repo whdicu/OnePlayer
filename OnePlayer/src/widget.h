@@ -55,11 +55,18 @@ private slots:
 // 控件动画
 private:
     // stacked_music_btn
+	QPropertyAnimation* stackedMusicBtnAnimation_;
     void animationStackedMusicBtnSmall();
     void animationStackedMusicBtnBig();
 
+	// stacked_local_btns
+	QPropertyAnimation* stackedLocalBtnsAnimation_;
+	void animationStackedLocalBtnsShort();
+	void animationStackedLocalBtnsLong();
+
     QPropertyAnimation* animation_;
-    QPropertyAnimation* stackedMusicBtnAnimation_;
+    QPropertyAnimation* stackedMusicBtnAnimationSub1_;
+  
     
 private:
     void dragEnterEvent(QDragEnterEvent *);

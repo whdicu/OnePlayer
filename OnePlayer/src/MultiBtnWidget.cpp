@@ -12,11 +12,6 @@ MultiBtnWidget::MultiBtnWidget(QWidget *parent)
     animation_ = new QPropertyAnimation(this, "geometry");
     animation_->setDuration(MORE_BTN_WIDGET_ANIMATION_TIME);
     animation_->setEasingCurve(QEasingCurve::InOutQuad);
-    connect(animation_, &QPropertyAnimation::finished, this, [this]()
-    {
-        isAnimateHide_ = !isAnimateHide_;
-        //animation->deleteLater();
-    });
 }
 
 MultiBtnWidget::~MultiBtnWidget()
@@ -24,6 +19,8 @@ MultiBtnWidget::~MultiBtnWidget()
 
 void MultiBtnWidget::animationHide()
 {
+	isAnimateHide_ = true;
+	animation_->stop();
     animation_->setStartValue(QRect(x(), y(), width(), height()));
     animation_->setEndValue(QRect(MORE_BTN_WIDGET_X + MORE_BTN_WIDGET_WIDTH
         , MORE_BTN_WIDGET_Y, 0, MORE_BTN_WIDGET_HEIGHT));
@@ -32,6 +29,8 @@ void MultiBtnWidget::animationHide()
 
 void MultiBtnWidget::animationShow()
 {
+	isAnimateHide_ = false;
+	animation_->stop();
     animation_->setStartValue(QRect(x(), y(), width(), height()));
     animation_->setEndValue(QRect(MORE_BTN_WIDGET_X, MORE_BTN_WIDGET_Y
         , MORE_BTN_WIDGET_WIDTH, MORE_BTN_WIDGET_HEIGHT));

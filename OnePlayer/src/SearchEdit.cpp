@@ -12,10 +12,6 @@ SearchEdit::SearchEdit(QWidget *parent)
 	animation_ = new QPropertyAnimation(this, "geometry");
 	animation_->setDuration(SEARCH_EDIT_ANIMATION_TIME);
 	animation_->setEasingCurve(QEasingCurve::InOutQuad);
-	connect(animation_, &QPropertyAnimation::finished, this, [this]()
-	{
-		isAnimateHide_ = !isAnimateHide_;
-	});
 }
 
 SearchEdit::~SearchEdit()
@@ -25,6 +21,8 @@ SearchEdit::~SearchEdit()
 
 void SearchEdit::animationHide()
 {
+	isAnimateHide_ = true;
+	animation_->stop();
 	animation_->setStartValue(QRect(x(), y(), width(), height()));
 	animation_->setEndValue(QRect(x(), -height(), width(), height()));
 	animation_->start();
@@ -32,6 +30,8 @@ void SearchEdit::animationHide()
 
 void SearchEdit::animationShow()
 {
+	isAnimateHide_ = false;
+	animation_->stop();
 	animation_->setStartValue(QRect(x(), y(), width(), height()));
 	animation_->setEndValue(QRect(x(), 0, width(), height()));
 	animation_->start();

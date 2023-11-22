@@ -61,7 +61,7 @@ Widget::Widget(const QString& filepath, QWidget *parent)
     setAcceptDrops(true);
     hook_->installHook();
     connect(hook_, &Hook::sendKeyType, this, &Widget::slotKeyPressed);
-
+	
     // 动画创建
     animation_ = new QPropertyAnimation(this, "geometry");
     animation_->setDuration(MAIN_WIDGET_ANIMATION_TIME);
@@ -85,6 +85,14 @@ Widget::Widget(const QString& filepath, QWidget *parent)
     stackedMusicBtnAnimation_ = new QPropertyAnimation(ui->stacked_music_btn, "geometry");
     stackedMusicBtnAnimation_->setDuration(MORE_BTN_WIDGET_ANIMATION_TIME);
     stackedMusicBtnAnimation_->setEasingCurve(QEasingCurve::InOutQuad);
+
+	stackedMusicBtnAnimationSub1_ = new QPropertyAnimation(ui->find_widget, "geometry");
+	stackedMusicBtnAnimationSub1_->setDuration(MORE_BTN_WIDGET_ANIMATION_TIME);
+	stackedMusicBtnAnimationSub1_->setEasingCurve(QEasingCurve::InOutQuad);
+
+	stackedLocalBtnsAnimation_ = new QPropertyAnimation(ui->stacked_local_btns, "geometry");
+	stackedLocalBtnsAnimation_->setDuration(MORE_BTN_WIDGET_ANIMATION_TIME);
+	stackedLocalBtnsAnimation_->setEasingCurve(QEasingCurve::InOutQuad);
 
 //    ui->stacked_widget->setCurrentIndex(2);
 //
@@ -780,8 +788,8 @@ void Widget::dropEvent(QDropEvent *event)
     //if (ui->stacked_widget->currentIndex() == 1)
     //    return;
 
-    QPoint stackedWidgetPoint = ui->stackedWidget->mapTo(this, QPoint(0, 0));
-    QRect rect(stackedWidgetPoint, ui->stackedWidget->size());
+    QPoint stackedWidgetPoint = ui->stacked_local_btns->mapTo(this, QPoint(0, 0));
+    QRect rect(stackedWidgetPoint, ui->stacked_local_btns->size());
     if (!rect.contains(event->pos()))
         return;
 
@@ -822,6 +830,10 @@ void Widget::dropEvent(QDropEvent *event)
 
 void Widget::animationStackedMusicBtnSmall()
 {
+	stackedMusicBtnAnimation_->stop();
+	stackedMusicBtnAnimationSub1_->stop();
+	stackedLocalBtnsAnimation_->stop();
+
     int nowX = ui->stacked_music_btn->x();
     int nowY = ui->stacked_music_btn->y();
     int nowWidth = ui->stacked_music_btn->width();
@@ -830,11 +842,22 @@ void Widget::animationStackedMusicBtnSmall()
     stackedMusicBtnAnimation_->setStartValue(QRect(nowX, nowY, nowWidth, nowHeight));
     stackedMusicBtnAnimation_->setEndValue(QRect(nowX, nowY, STACKED_MUSIC_BTN_WIDTH, nowHeight));
     stackedMusicBtnAnimation_->start();
-    
+
+	stackedMusicBtnAnimationSub1_->setStartValue(QRect(0, ui->find_widget->y(), ui->find_widget->width(), ui->find_widget->height()));
+	stackedMusicBtnAnimationSub1_->setEndValue(QRect(0, ui->find_widget->y(), STACKED_MUSIC_BTN_WIDTH, ui->find_widget->height()));
+	stackedMusicBtnAnimationSub1_->start();
+	
+	stackedLocalBtnsAnimation_->setStartValue(QRect(0, ui->stacked_local_btns->y(), ui->stacked_local_btns->width(), ui->stacked_local_btns->height()));
+	stackedLocalBtnsAnimation_->setEndValue(QRect(0, ui->stacked_local_btns->y(), STACKED_MUSIC_BTN_WIDTH, ui->stacked_local_btns->height()));
+	stackedLocalBtnsAnimation_->start();
 }
 
 void Widget::animationStackedMusicBtnBig()
 {
+	stackedMusicBtnAnimation_->stop();
+	stackedMusicBtnAnimationSub1_->stop();
+	stackedLocalBtnsAnimation_->stop();
+
     int oldX = ui->stacked_music_btn->x();
     int oldY = ui->stacked_music_btn->y();
     int oldWidth = ui->stacked_music_btn->width();
@@ -843,6 +866,42 @@ void Widget::animationStackedMusicBtnBig()
     stackedMusicBtnAnimation_->setStartValue(QRect(oldX, oldY, oldWidth, oldHeight));
     stackedMusicBtnAnimation_->setEndValue(QRect(oldX, oldY, ui->multi_func_widget->width(), oldHeight));
     stackedMusicBtnAnimation_->start();
+
+	stackedMusicBtnAnimationSub1_->setStartValue(QRect(0, ui->find_widget->y(), ui->find_widget->width(), ui->find_widget->height()));
+	stackedMusicBtnAnimationSub1_->setEndValue(QRect(0, ui->find_widget->y(), ui->multi_func_widget->width(), ui->find_widget->height()));
+	stackedMusicBtnAnimationSub1_->start();
+
+	stackedLocalBtnsAnimation_->setStartValue(QRect(0, ui->stacked_local_btns->y(), ui->stacked_local_btns->width(), ui->stacked_local_btns->height()));
+	stackedLocalBtnsAnimation_->setEndValue(QRect(0, ui->stacked_local_btns->y(), ui->multi_func_widget->width(), ui->stacked_local_btns->height()));
+	stackedLocalBtnsAnimation_->start();
+}
+
+void Widget::animationStackedLocalBtnsShort()
+{
+	stackedLocalBtnsAnimation_->stop();
+
+	int oldX = ui->stacked_local_btns->x();
+	int oldY = ui->stacked_local_btns->y();
+	int oldWidth = ui->stacked_local_btns->width();
+	int oldHeight = ui->stacked_local_btns->height();
+
+	stackedLocalBtnsAnimation_->setStartValue(QRect(oldX, oldY, oldWidth, oldHeight));
+	stackedLocalBtnsAnimation_->setEndValue(QRect(oldX, ui->stacked_music_btn->height() - STACKED_MUSIC_BTN_HEIGHT, oldWidth, STACKED_MUSIC_BTN_HEIGHT));
+	stackedLocalBtnsAnimation_->start();
+}
+
+void Widget::animationStackedLocalBtnsLong()
+{
+	stackedLocalBtnsAnimation_->stop();
+
+	int oldX = ui->stacked_local_btns->x();
+	int oldY = ui->stacked_local_btns->y();
+	int oldWidth = ui->stacked_local_btns->width();
+	int oldHeight = ui->stacked_local_btns->height();
+
+	stackedLocalBtnsAnimation_->setStartValue(QRect(oldX, oldY, oldWidth, oldHeight));
+	stackedLocalBtnsAnimation_->setEndValue(QRect(oldX, 0, oldWidth, ui->stacked_music_btn->height()));
+	stackedLocalBtnsAnimation_->start();
 }
 
 void Widget::mousePressEvent(QMouseEvent *ev)
@@ -921,17 +980,16 @@ void Widget::keyPressEvent(QKeyEvent *event)
     case Qt::Key_F:
         if (pressedCtrl_)  // 按了ctrl + f弹出搜索框
         {
-            //if (ui->multi_btn_widget->isAnimateHide())
-                //ui->multi_btn_widget->hide();
-
             if (ui->find_widget->isAnimateHide())
             {
                 ui->find_widget->animationShow();
+				animationStackedLocalBtnsShort();
                 ui->find_widget->setEditFocus();
             }
             else
             {
                 ui->find_widget->animationHide();
+				animationStackedLocalBtnsLong();
                 ui->find_widget->setEditText("");
             }
         }

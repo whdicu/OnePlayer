@@ -1,41 +1,11 @@
 ﻿#ifndef SETTINGHANDLER_H
 #define SETTINGHANDLER_H
 
+#include "OnePlayerStruct.h"
 #include <QFile>
 #include <QString>
 #include "widget.h"
 
-enum PLAYER_MODE
-{
-    LOCAL,
-    MYSITE,
-    ONLINE,
-    NETEASE
-};
-
-enum PLAY_MODE
-{
-    AGAIN,
-    ONE_AGAIN,
-    RANDOM
-};
-
-struct SettingStruct
-{
-	SettingStruct() : playMode(AGAIN), musicDir(QString()), volume(0.0f)
-		, playListName(QString("Null")), musicIndex(0), musicPosition(0), playerMode(LOCAL)
-		, downloadDir(QString()), playListMap(QMap<QString, DList<QUrl>>()) {}
-
-    PLAY_MODE                       playMode;
-    QString                         musicDir;
-    float                           volume;
-    QString                         playListName;
-    DSizeType                       musicIndex;
-    qint64                          musicPosition;
-    PLAYER_MODE                     playerMode;
-    QString                         downloadDir;
-    QMap<QString, DList<QUrl>>   playListMap;
-};
 
 class SettingHandler
 {
