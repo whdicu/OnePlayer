@@ -155,6 +155,7 @@
     <QtMoc Include="src\neteasehandler.h" />
     <QtMoc Include="src\neteasewidget.h" />
     <QtMoc Include="src\MusicInfoWidget.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="src\ImageHandler.h" />
     <QtMoc Include="src\MultiBtnWidget.h" />
     <ClInclude Include="src\OnePlayerStruct.h" />
@@ -170,6 +171,12 @@
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="res\res.qrc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="OnePlayer.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="icon.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

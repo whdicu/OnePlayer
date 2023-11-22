@@ -81,6 +81,9 @@
     <QtMoc Include="src\LocalMusicButton.h">
       <Filter>Source Files\widgets</Filter>
     </QtMoc>
+    <QtMoc Include="src\settinghandler.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\dmenu.cpp">
@@ -180,13 +183,13 @@
     <ClInclude Include="src\onlinehandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\settinghandler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\ImageHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\OnePlayerStruct.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -194,5 +197,15 @@
     <QtRcc Include="res\res.qrc">
       <Filter>Resource Files</Filter>
     </QtRcc>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="OnePlayer.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="icon.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>
