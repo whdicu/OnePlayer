@@ -11,41 +11,49 @@ extern "C"
 #include <libavutil/imgutils.h>
 }
 
-QImage PlayerFFmpeg::getMusicImage(const QString& musicPath)
+MusicInfo PlayerFFmpeg::getMusicInfo(const QString& musicPath)
 {
-	QImage ret = QImage();
-	AVFormatContext* fmt_ctx = nullptr;
-	if (avformat_open_input(&fmt_ctx, musicPath.toUtf8(), nullptr, nullptr))
+	MusicInfo ret = MusicInfo();
+	AVFormatContext* formatContext = nullptr;
+	if (avformat_open_input(&formatContext, musicPath.toUtf8(), nullptr, nullptr))
 	{
 		qDebug() << "Fail to open file";
 		return ret;
 	}
 
 	//读取metadata中所有的tag
-	//while ((tag = av_dict_get(fmt_ctx->metadata, "", tag, AV_DICT_IGNORE_SUFFIX)))
+	AVDictionaryEntry* tag = nullptr;
+	if (tag = av_dict_get(formatContext->metadata, "title", nullptr, AV_DICT_IGNORE_SUFFIX))
+		ret.title = tag->value;
+	if (tag = av_dict_get(formatContext->metadata, "artist", nullptr, AV_DICT_IGNORE_SUFFIX))
+		ret.singers = tag->value;
+	if (tag = av_dict_get(formatContext->metadata, "album", nullptr, AV_DICT_IGNORE_SUFFIX))
+		ret.album = tag->value;
+	//AVDictionaryEntry* tag = nullptr;
+	//while ((tag = av_dict_get(formatContext->metadata, "", tag, AV_DICT_IGNORE_SUFFIX)))
 	//{
 	//	qDebug() << tag->key << tag->value;
 	//}
 
 	// read the format headers
-	//if (fmt_ctx->iformat->read_header(fmt_ctx) < 0)
+	//if (formatContext->iformat->read_header(formatContext) < 0)
 	//{
 	//	qDebug() << "No header format";
 	//	return QImage();
 	//}
 
-	for (int i = 0; i < fmt_ctx->nb_streams; i++)
+	for (int i = 0; i < formatContext->nb_streams; i++)
 	{
-		if (fmt_ctx->streams[i]->disposition & AV_DISPOSITION_ATTACHED_PIC)
+		if (formatContext->streams[i]->disposition & AV_DISPOSITION_ATTACHED_PIC)
 		{
-			AVPacket pkt = fmt_ctx->streams[i]->attached_pic;
-			ret = QImage::fromData((uchar*)pkt.data, pkt.size);
+			AVPacket pkt = formatContext->streams[i]->attached_pic;
+			ret.image = QImage::fromData((uchar*)pkt.data, pkt.size);
 			break;
 		}
 	}
 
-	avformat_close_input(&fmt_ctx);
-	avformat_free_context(fmt_ctx);
+	avformat_close_input(&formatContext);
+	avformat_free_context(formatContext);
 
 	return ret;
 }
@@ -85,11 +93,6 @@ void PlayerFFmpeg::setVolume(float vol)
 }
 
 void PlayerFFmpeg::setPosition(qint64 pos)
-{
-	
-}
-
-void PlayerFFmpeg::slotMetaDataChanged()
 {
 	
 }

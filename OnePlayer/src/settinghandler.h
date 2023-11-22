@@ -24,7 +24,7 @@ struct SettingStruct
 {
 	SettingStruct() : playMode(AGAIN), musicDir(QString()), volume(0.0f)
 		, playListName(QString("Null")), musicIndex(0), musicPosition(0), playerMode(LOCAL)
-		, downloadDir(QString()), playListMap(QMap<QString, DList<QString>>()) {}
+		, downloadDir(QString()), playListMap(QMap<QString, DList<QUrl>>()) {}
 
     PLAY_MODE                       playMode;
     QString                         musicDir;
@@ -34,32 +34,30 @@ struct SettingStruct
     qint64                          musicPosition;
     PLAYER_MODE                     playerMode;
     QString                         downloadDir;
-    QMap<QString, DList<QString>>   playListMap;
+    QMap<QString, DList<QUrl>>   playListMap;
 };
 
 class SettingHandler
 {
 public:
     static SettingHandler* getInstance();
-
     SettingStruct& getStruct() { return setting_; }
-    void addPlayList(const QString& name, const DList<QString>& list);
+	void save() { writeAll(); }
 
-    // 获取当前歌单下的歌曲，随机播放时 不是 返回随机播放歌曲列表
-    DList<QString> getNowPlayList();
+    void addPlayList(const QString& name, const DList<QUrl>& list);
+    // 获取当前歌单下的歌曲，随机播放时 不是 返回随机播放歌曲Index列表
+	const DList<QUrl> currentPlayList();
     void clearRandomPlayList();
 
     DSizeType nextMusicIndex();
-    QString nowMusicPath();
+	QUrl currentMusicUrl();
     DSizeType previousMusicIndex();
-
-    void save() { writeAll(); }
 
 private:
     SettingHandler();
     ~SettingHandler() = default;
 
-    DList<QString> getPlayList(const QString& name) { return setting_.playListMap.value(name); }
+    const DList<QUrl> getPlayList(const QString& name) { return setting_.playListMap.value(name); }
 
     // 检查播放链表的名字，如果有重复则在尾部添加 "_新"
     QString checkPlayListName(const QString& name);

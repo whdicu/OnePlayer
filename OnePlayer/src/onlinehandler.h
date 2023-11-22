@@ -15,9 +15,9 @@ struct Lyric
     QString text;
 };
 
-struct MusicInfo
+struct OnlineMusicInfo
 {
-    MusicInfo(const QString& name = QString(), const QString& singer = QString(), const QString& url = QString()
+    OnlineMusicInfo(const QString& name = QString(), const QString& singer = QString(), const QString& url = QString()
             , const QString& image_url = QString(), const QUrl& absolute_url = QUrl(), const DList<Lyric>& lyrics = DList<Lyric>())
         : name_(name), singer_(singer), url_(url)
         , image_url_(image_url), absolute_url_(absolute_url), lyrics_(lyrics) {}
@@ -40,10 +40,10 @@ public:
     QByteArray get_html(const QUrl& url);
 
     // 根据关键词搜索音乐，返回所有音乐的QStringList
-    DList<MusicInfo> search_online_music(const QString& word);
+    DList<OnlineMusicInfo> search_online_music(const QString& word);
 
     // 根据一个音乐页面的链接，获取音乐文件的链接
-    void get_music_info(MusicInfo& music);
+    void get_music_info(OnlineMusicInfo& music);
 
     // 根据图片链接获取图片
     QImage get_image(const QString& url);

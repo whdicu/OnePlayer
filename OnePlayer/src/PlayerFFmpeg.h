@@ -1,5 +1,6 @@
 #pragma once
 
+#include "OnePlayerStruct.h"
 #include "PlayerBase.h"
 
 class PlayerFFmpeg : public PlayerBase
@@ -7,7 +8,7 @@ class PlayerFFmpeg : public PlayerBase
 	Q_OBJECT
 
 public:
-	static QImage getMusicImage(const QString& musicPath);
+	static MusicInfo getMusicInfo(const QString& musicPath);
 	PlayerFFmpeg(QObject* parent = nullptr);
 	~PlayerFFmpeg();
 
@@ -21,9 +22,6 @@ public:
 	virtual qint64 getDuration() { return 0; }
 	virtual void playCurrentIndex() {}
 	virtual void setLoop(bool loop) {};
-
-private slots:
-	void slotMetaDataChanged();
 
 private:
 

@@ -1,7 +1,7 @@
 #include "onlinemusicbutton.h"
 #include "ui_onlinemusicbutton.h"
 
-OnlineMusicButton::OnlineMusicButton(const MusicInfo& music, QWidget *parent)
+OnlineMusicButton::OnlineMusicButton(const OnlineMusicInfo& music, QWidget *parent)
     : BaseMusicButton(parent)
     , ui(new Ui::OnlineMusicButton)
     , music_info_(music)

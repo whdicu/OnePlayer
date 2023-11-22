@@ -6,7 +6,9 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QJsonParseError>
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 #include <QRandomGenerator64>
+#endif
 
 
 QByteArray readFile(const QString& filePath)
@@ -44,14 +46,14 @@ SettingHandler* SettingHandler::getInstance()
     return setting_handler;
 }
 
-void SettingHandler::addPlayList(const QString& name, const DList<QString>& list)
+void SettingHandler::addPlayList(const QString& name, const DList<QUrl>& list)
 {
     QString uniqueName = checkPlayListName(name);
     setting_.playListMap.insert(uniqueName, list);
     writeAll();
 }
 
-DList<QString> SettingHandler::getNowPlayList()
+const DList<QUrl> SettingHandler::currentPlayList()
 {
 	if ((setting_.playListName.isEmpty() || setting_.playListName == "Null")
 		&& !setting_.playListMap.isEmpty())
@@ -81,7 +83,7 @@ DSizeType SettingHandler::nextMusicIndex()
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
             DSizeType newIndex = QRandomGenerator64::global()->bounded(0ull, getNowPlayList().size());
 #else
-			DSizeType newIndex = qrand() % getNowPlayList().size();
+			DSizeType newIndex = qrand() % currentPlayList().size();
 #endif
 			randomIndexList_.pushBack(newIndex);
 		}
@@ -91,7 +93,7 @@ DSizeType SettingHandler::nextMusicIndex()
 	default:
 	{
 		++setting_.musicIndex;
-		if (setting_.musicIndex >= setting_.playListMap.value(setting_.playListName).size())
+		if (setting_.musicIndex >= currentPlayList().size())
 			setting_.musicIndex = 0;
 		break;
 	}
@@ -100,7 +102,7 @@ DSizeType SettingHandler::nextMusicIndex()
     return setting_.musicIndex;
 }
 
-QString SettingHandler::nowMusicPath()
+QUrl SettingHandler::currentMusicUrl()
 {
 	if ((setting_.playListName.isEmpty() || setting_.playListName == "Null")
 		&& !setting_.playListMap.isEmpty())
@@ -108,10 +110,10 @@ QString SettingHandler::nowMusicPath()
 		setting_.playListName = setting_.playListMap.begin().key();
 	}
 
-    if (setting_.musicIndex >= setting_.playListMap.value(setting_.playListName).size())
-        return QString();
+    if (setting_.musicIndex >= currentPlayList().size())
+        return QUrl();
 
-    return setting_.playListMap.value(setting_.playListName).at(setting_.musicIndex);
+    return currentPlayList().at(setting_.musicIndex);
 }
 
 DSizeType SettingHandler::previousMusicIndex()
@@ -127,7 +129,7 @@ DSizeType SettingHandler::previousMusicIndex()
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
             DSizeType newIndex = QRandomGenerator64::global()->bounded(0ull, getNowPlayList().size());
 #else
-            DSizeType newIndex = qrand() % getNowPlayList().size();
+            DSizeType newIndex = qrand() % currentPlayList().size();
 #endif
 			randomIndexList_.pushFront(newIndex);
 		}
@@ -137,7 +139,7 @@ DSizeType SettingHandler::previousMusicIndex()
 	default:
 	{
 		if (setting_.musicIndex == 0)
-			setting_.musicIndex = setting_.playListMap.value(setting_.playListName).size();
+			setting_.musicIndex = currentPlayList().size();
 		--setting_.musicIndex;
 		break;
 	}
@@ -264,7 +266,12 @@ void SettingHandler::readPlayList()
         }
         QStringList strList = str.split('\n');
         QString playListName = fileName.mid(0, fileName.indexOf('.'));
-        setting_.playListMap.insert(playListName, HD2QT::QList2DList(strList));
+		DList<QUrl> ret;
+		for (const QString& str : strList)
+		{
+			ret.pushBack(QUrl::fromLocalFile(str));
+		}
+        setting_.playListMap.insert(playListName, ret);
     }
     
     //QJsonObject playListObject = obj["playList"].toObject();
@@ -295,16 +302,21 @@ void SettingHandler::writePlayList()
 
         QFile file(strFile);
         bool ok = file.open(QIODevice::WriteOnly);
-        if (ok)
-        {
-            for (const QString& path : it.value())
-                file.write(path.toUtf8() + '\n');
-            file.close();
-        }
-        else
-        {
-            qWarning() << "File" << strFile << "open failed!";
-        }
+		if (!ok)
+		{
+			qWarning() << "File" << strFile << "open failed!";
+			continue;
+		}
+
+		for (const QUrl& path : it.value())
+		{
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+			file.write(path.toString().toUtf8() + '\n');
+#else
+			file.write(path.toLocalFile().toUtf8() + '\n');
+#endif
+		}
+		file.close();
     }
     
 }

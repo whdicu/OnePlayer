@@ -9,12 +9,10 @@ class BaseMusicButton : public QWidget
 
 public:
     explicit BaseMusicButton(QWidget* parent = nullptr) : QWidget(parent) {}
-    virtual const QUrl& get_url() const = 0;
-    virtual QString get_filename() const = 0;
     virtual void setNormalStyle() = 0;
     virtual void setPlayingStyle() = 0;
-    qint64 getMusicIndex() { return musicIndex_; }
-    void setMusicIndex(qint64 index) { musicIndex_ = index; }
+    qint64 getMusicIndex() const { return musicIndex_; }
+	void setMusicIndex(qint64 index) { musicIndex_ = index; }
 
 signals:
     void clicked(qint64 index);

@@ -1,4 +1,5 @@
 #pragma once
+#include <QImage>
 #include <QString>
 
 
@@ -43,3 +44,24 @@ const static int MUSIC_INFO_WIDGET_ANIMATION_TIME = 150;
 
 // 搜索框过渡动画时间
 const static int SEARCH_EDIT_ANIMATION_TIME = 200;
+
+struct MusicInfo
+{
+	MusicInfo() = default;
+	MusicInfo(const MusicInfo& info) = default;
+	~MusicInfo() = default;
+	MusicInfo& operator=(const MusicInfo& info) = default;
+
+	bool operator==(const MusicInfo& info)
+	{
+		return (title == info.title)
+			&& (singers == info.singers)
+			&& (album == info.album)
+			&& (image == info.image);
+	}
+
+	QString title;
+	QString singers;
+	QString album;
+	QImage image;
+};

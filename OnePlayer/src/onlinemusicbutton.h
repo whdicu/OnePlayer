@@ -18,13 +18,11 @@ class OnlineMusicButton : public BaseMusicButton
     Q_OBJECT
 
 public:
-    OnlineMusicButton(const MusicInfo& music, QWidget *parent = nullptr);
+    OnlineMusicButton(const OnlineMusicInfo& music, QWidget *parent = nullptr);
     ~OnlineMusicButton();
-    virtual const QUrl& get_url() const {return music_info_.absolute_url_;}
-    virtual QString get_filename() const {return "filename";}  // 没用
     virtual void setNormalStyle() {is_playing_ = false; setStyleSheet(ONLINE_NORMAL_STYLE);}
     virtual void setPlayingStyle() {is_playing_ = true; setStyleSheet(ONLINE_PLAYING_STYLE);};
-    MusicInfo& get_info() {return music_info_;}
+    OnlineMusicInfo& get_info() {return music_info_;}
 
 private slots:
     void on_btn_name_clicked() {emit clicked(-1);}
@@ -39,7 +37,7 @@ private:
     void leaveEvent(QEvent *);
 
     Ui::OnlineMusicButton *ui;
-    MusicInfo music_info_;
+    OnlineMusicInfo music_info_;
     bool is_playing_;
 };
 

@@ -3,10 +3,9 @@
 
 #include "HDBase/DList.hpp"
 #include "HDCore/HD2QT.hpp"
-#include "musicbutton.h"
+#include "LocalMusicButton.h"
 #include "neteasehandler.h"
 #include "onlinemusicbutton.h"
-#include "OnePlayerStruct.h"
 #include "PlayerFFmpeg.h"
 #include "PlayerQt.h"
 #include <QAudioOutput>
@@ -316,9 +315,9 @@ void Widget::setListener()
 #else
         QString musicPath = media.toLocalFile();
 #endif
-        QImage image = PlayerFFmpeg::getMusicImage(musicPath);
-        ui->music_info_widget->drawImage(image);
-
+        MusicInfo musicInfo = PlayerFFmpeg::getMusicInfo(musicPath);
+        ui->music_info_widget->drawImage(musicInfo.image);
+		refreshImageWidget(musicInfo);
         //switch (SETTING_HANDLER->get_player_mode())
         //{
         //case LOCAL:
@@ -340,8 +339,6 @@ void Widget::setListener()
         //}
         //SETTING_HANDLER->set_last_music(media);
     });
-
-    connect(player_, &PlayerQt::metaDataChanged, this, &Widget::slotMetaDataChanged);
 
     // 一些没用的事件
 //	connect(player_, &QMediaPlayer::seekableChanged, this, [](bool)
@@ -460,11 +457,11 @@ void Widget::refreshMusicBtns()
             delete child->widget();
     }
 
-    DList<QString> playList = SETTING_HANDLER->getNowPlayList();
+    DList<QUrl> playList = SETTING_HANDLER->currentPlayList();
     qint64 index = 0;
-    for (const QString& musicPath : playList)
+    for (const QUrl& musicUrl : playList)
     {
-        BaseMusicButton* btn = addMusicBtn(musicPath);
+        BaseMusicButton* btn = addLocalMusicBtn(musicUrl);
         btn->setMusicIndex(index);
         ++index;
     }
@@ -575,12 +572,17 @@ void Widget::refreshMusicBtns()
 //    play_music(newMusicIndex);
 //}
 
-BaseMusicButton* Widget::addMusicBtn(const QUrl& url)
+BaseMusicButton* Widget::addLocalMusicBtn(const QUrl& url)
 {
-    MusicButton* btn = new MusicButton(url, this);
+	//QString filename = url.fileName();
+	//QString str = filename.mid(0, filename.indexOf('.'));
+    LocalMusicButton* btn = new LocalMusicButton(url.fileName(), this);
     btn->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(btn, &MusicButton::clicked, this, [this](qint64 index)
+    connect(btn, &LocalMusicButton::clicked, this, [this](qint64 index)
     {
+		if (SETTING_HANDLER->getStruct().musicIndex == index)
+			return;
+
         SETTING_HANDLER->getStruct().musicIndex = index;
         player_->playCurrentIndex();
 
@@ -795,14 +797,15 @@ void Widget::dropEvent(QDropEvent *event)
 
     //bool play = btn_list_.isEmpty();
 
-    DList<QString> list;
-    auto all = event->mimeData()->urls();
-    for (const auto &url : all)
+    DList<QUrl> list;
+	QList<QUrl> all = event->mimeData()->urls();
+    for (const QUrl& url : all)
     {
         QString type = url.toLocalFile().section('.', -1);
 
-        if (TYPE_LIST.indexOf(type) != -1)
-            list.pushBack(url.toLocalFile());
+        //if (TYPE_LIST.indexOf(type) != -1)
+        if (TYPE_LIST.contains(type))
+            list.pushBack(url);
     }
     SETTING_HANDLER->addPlayList("新播放列表", list);
 
@@ -971,7 +974,7 @@ void Widget::keyReleaseEvent(QKeyEvent *event)
 //    btn_list_.clear();
 //}
 
-void Widget::refreshImageWidget(const QString& title, const QString& singers, const QString& album_title)
+void Widget::refreshImageWidget(const MusicInfo& info)
 {
 //    static QMutex mutex;
 //    static QPropertyAnimation* animationHide = nullptr;
@@ -1007,33 +1010,29 @@ void Widget::refreshImageWidget(const QString& title, const QString& singers, co
     //ui->music_info_widget->drawImage(image);
 
     // 设置歌曲名
-    if (!title.isEmpty())
+    if (!info.title.isEmpty())
     {
-        ui->music_info_widget->setMusicName(title);
-        ui->btn_music_name->setText(title);
+        ui->music_info_widget->setMusicName(info.title);
+        ui->btn_music_name->setText(info.title);
     }
     else
     {
         // H:/音乐/Apologize.mp3
-        QString nowMusicPath = SETTING_HANDLER->nowMusicPath().replace('\\', '/');
-        int index1 = nowMusicPath.lastIndexOf('/') + 1;
-        int index2 = nowMusicPath.lastIndexOf('.');
-        QString filename = SETTING_HANDLER->nowMusicPath().mid(index1, index2 - index1);
-        ui->music_info_widget->setMusicName(filename);
-        ui->btn_music_name->setText(filename);
+		QString filename = SETTING_HANDLER->currentMusicUrl().fileName();
+  //      QString nowMusicPath = url.replace('\\', '/');
+  //      int index1 = nowMusicPath.lastIndexOf('/') + 1;
+  //      int index2 = nowMusicPath.lastIndexOf('.');
+		//QString filename = url.mid(index1, index2 - index1);
+		QString str = filename.mid(0, filename.indexOf('.'));
+        ui->music_info_widget->setMusicName(str);
+        ui->btn_music_name->setText(str);
     }
 
     // 设置歌手名
-    if (!singers.isEmpty())
-        ui->music_info_widget->setSingerName(singers);
-    else
-        ui->music_info_widget->setSingerName("未知歌手");
+    ui->music_info_widget->setSingerName(info.singers.isEmpty() ? "未知歌手" : info.singers);
 
     // 设置专辑名
-    if (!album_title.isEmpty())
-        ui->music_info_widget->setAlbumName(album_title);
-    else
-        ui->music_info_widget->setAlbumName("未知专辑");
+    ui->music_info_widget->setAlbumName(info.album.isEmpty() ? "未知专辑" : info.album);
 
     // 播放切换动画
     //animationShow->start();
@@ -1366,11 +1365,6 @@ void Widget::on_btn_min_clicked()
 //        add_online_music(info);
 //    }
 //}
-
-void Widget::slotMetaDataChanged(const MusicMetaData& metaData)
-{
-    refreshImageWidget(metaData.title, metaData.singers, metaData.albumTitle);
-}
 
 //void Widget::play_music(DSizeType musicIndex)
 //{

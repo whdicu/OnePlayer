@@ -34,18 +34,18 @@ QByteArray OnlineHandler::get_html(const QUrl& url)
     return data;
 }
 
-DList<MusicInfo> OnlineHandler::search_online_music(const QString& word)
+DList<OnlineMusicInfo> OnlineHandler::search_online_music(const QString& word)
 {
     QString text = get_html(QString("%1/s/%2").arg(WEBSITE).arg(word));
     static QRegularExpression reg1("<tr>([\\s\\S]*?)</tr>");
     QRegularExpressionMatchIterator it = reg1.globalMatch(text);
-    DList<MusicInfo> ret;
+    DList<OnlineMusicInfo> ret;
     while (it.hasNext())
     {
         QRegularExpressionMatch match = it.next();
         QString one_info = match.capturedTexts().at(1);
 
-        MusicInfo music;
+        OnlineMusicInfo music;
         static QRegularExpression reg2("class=\"text-primary font-weight-bold\" target=\"_blank\">(.*)");
         auto match2 = reg2.match(one_info);
         if (match2.hasMatch())
@@ -73,7 +73,7 @@ DList<MusicInfo> OnlineHandler::search_online_music(const QString& word)
     return ret;
 }
 
-void OnlineHandler::get_music_info(MusicInfo& music)
+void OnlineHandler::get_music_info(OnlineMusicInfo& music)
 {
     QString text = get_html(QString("%1%2").arg(WEBSITE).arg(music.url_));
     static QRegularExpression reg1("const url = '(.*?)'.replace");

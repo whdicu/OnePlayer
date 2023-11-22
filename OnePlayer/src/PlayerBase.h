@@ -2,13 +2,6 @@
 #include <QImage>
 #include <QObject>
 
-struct MusicMetaData
-{
-	QString title;  // 标题
-	QString singers;  // 作家们
-	QString albumTitle;  // 专辑标题
-};
-
 class PlayerBase : public QObject
 {
 	Q_OBJECT
@@ -29,7 +22,6 @@ signals:
 	void durationChanged(qint64 position);
 	void positionChanged(qint64 position);
 	void sourceChanged(const QUrl& media);
-	void metaDataChanged(const MusicMetaData& metaData);
 
 	void mediaAtEnd();
 	void beginPlay();

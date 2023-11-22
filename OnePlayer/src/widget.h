@@ -4,6 +4,7 @@
 #include "HDBase/DList.hpp"
 #include "hook.h"
 #include "basemusicbutton.h"
+#include "OnePlayerStruct.h"
 #include "onlinehandler.h"
 #include "PlayerBase.h"
 #include <QGridLayout>
@@ -50,22 +51,6 @@ private slots:
 
     void slotKeyPressed(DWORD key);
     void slotPositionChanged(qint64 pos);
-    void slotMetaDataChanged(const MusicMetaData& metaData);
-
-private:
-//    void play_music(DSizeType musicIndex);
-    void setListener();
-//    void set_setting_tab_listener();
-    void refreshMusicBtns();
-//    void next_music();
-//    void previous_music();
-    BaseMusicButton* addMusicBtn(const QUrl& url);
-//    void add_online_music(const MusicInfo& music);
-//    void find_music(const QString& word);
-//    void init_local();
-//    void init_mysite();
-//    void init_online();
-//    void init_netease();
      
 // 控件动画
 private:
@@ -84,8 +69,23 @@ private:
     void mouseReleaseEvent(QMouseEvent *);
     void keyPressEvent(QKeyEvent *);
     void keyReleaseEvent(QKeyEvent *);
+
 //    void clear_button(QVBoxLayout* layout);
-    void refreshImageWidget(const QString& title, const QString& singers, const QString& album_title);
+    void refreshImageWidget(const MusicInfo& info);
+	//    void play_music(DSizeType musicIndex);
+	void setListener();
+	//    void set_setting_tab_listener();
+	void refreshMusicBtns();
+	//    void next_music();
+	//    void previous_music();
+	BaseMusicButton* addLocalMusicBtn(const QUrl& url);
+	//    void add_online_music(const MusicInfo& music);
+	//    void find_music(const QString& word);
+	//    void init_local();
+	//    void init_mysite();
+	//    void init_online();
+	//    void init_netease();
+
 
     Ui::Widget *ui;
     Hook* hook_;
