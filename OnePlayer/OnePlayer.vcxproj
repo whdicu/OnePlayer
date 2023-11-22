@@ -163,7 +163,7 @@
     <QtMoc Include="src\PlayerQt.h" />
     <QtMoc Include="src\PlayerBase.h" />
     <QtMoc Include="src\PlayerFFmpeg.h" />
-    <ClInclude Include="src\settinghandler.h" />
+    <QtMoc Include="src\settinghandler.h" />
     <QtMoc Include="src\settingtabwidget.h" />
     <QtMoc Include="src\widget.h" />
     <QtMoc Include="src\onlinemusicbutton.h" />

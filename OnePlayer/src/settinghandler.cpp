@@ -67,7 +67,7 @@ void SettingHandler::clearRandomPlayList()
 {
     randomIndex_ = 0;
     randomIndexList_.clear();
-    randomIndexList_.pushBack(setting_.musicIndex);
+    randomIndexList_.pushBack(getMusicIndex());
 }
 
 DSizeType SettingHandler::nextMusicIndex()
@@ -81,25 +81,26 @@ DSizeType SettingHandler::nextMusicIndex()
 		{
 			randomIndex_ = randomIndexList_.size();
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-            DSizeType newIndex = QRandomGenerator64::global()->bounded(0ull, getNowPlayList().size());
+            DSizeType newIndex = QRandomGenerator64::global()->bounded(0ull, currentPlayList().size());
 #else
 			DSizeType newIndex = qrand() % currentPlayList().size();
 #endif
 			randomIndexList_.pushBack(newIndex);
 		}
-		setting_.musicIndex = randomIndexList_.at(randomIndex_);
+        setMusicIndex(randomIndexList_.at(randomIndex_));
 		break;
 	}
 	default:
 	{
-		++setting_.musicIndex;
-		if (setting_.musicIndex >= currentPlayList().size())
-			setting_.musicIndex = 0;
+		if (getMusicIndex() >= currentPlayList().size() - 1)
+            setMusicIndex(0);
+        else
+            setMusicIndex(getMusicIndex() + 1);
 		break;
 	}
 	}
 
-    return setting_.musicIndex;
+    return getMusicIndex();
 }
 
 QUrl SettingHandler::currentMusicUrl()
@@ -110,10 +111,10 @@ QUrl SettingHandler::currentMusicUrl()
 		setting_.playListName = setting_.playListMap.begin().key();
 	}
 
-    if (setting_.musicIndex >= currentPlayList().size())
+    if (getMusicIndex() >= currentPlayList().size())
         return QUrl();
 
-    return currentPlayList().at(setting_.musicIndex);
+    return currentPlayList().at(getMusicIndex());
 }
 
 DSizeType SettingHandler::previousMusicIndex()
@@ -127,29 +128,42 @@ DSizeType SettingHandler::previousMusicIndex()
 		{
 			randomIndex_ = 0;
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-            DSizeType newIndex = QRandomGenerator64::global()->bounded(0ull, getNowPlayList().size());
+            DSizeType newIndex = QRandomGenerator64::global()->bounded(0ull, currentPlayList().size());
 #else
             DSizeType newIndex = qrand() % currentPlayList().size();
 #endif
 			randomIndexList_.pushFront(newIndex);
 		}
-		setting_.musicIndex = randomIndexList_.at(randomIndex_);
+        setMusicIndex(randomIndexList_.at(randomIndex_));
 		break;
 	}
 	default:
 	{
-		if (setting_.musicIndex == 0)
-			setting_.musicIndex = currentPlayList().size();
-		--setting_.musicIndex;
+		if (getMusicIndex() == 0)
+            setMusicIndex(currentPlayList().size() - 1);
+        else
+            setMusicIndex(getMusicIndex() - 1);
 		break;
 	}
 	}
     
-    return setting_.musicIndex;
+    return getMusicIndex();
+}
+
+void SettingHandler::setMusicIndex(DSizeType index)
+{
+    if (musicIndex_ != index)
+    {
+        DSizeType oldIndex = musicIndex_;
+        musicIndex_ = index;
+        emit sigMusicIndexChanged(oldIndex, index);
+    }
 }
 
 SettingHandler::SettingHandler()
-    : setting_(SettingStruct())
+    : QObject(nullptr)
+    , setting_(SettingStruct())
+    , musicIndex_(0)
 {
     readAll();
 }
@@ -188,13 +202,8 @@ void SettingHandler::readAll()
     setting_.musicDir = obj["musicDir"].toString();
     setting_.volume = obj["volume"].toDouble();
     setting_.playListName = obj["playListName"].toString();
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    setting_.musicIndex = obj["musicIndex"].toVariant().toULongLong();
-    setting_.musicPosition = obj["musicPosition"].toInteger();
-#else
-	setting_.musicIndex = obj["musicIndex"].toVariant().toULongLong();
-	setting_.musicPosition = obj["musicPosition"].toVariant().toLongLong();
-#endif
+    setMusicIndex(obj["musicIndex"].toVariant().toULongLong());
+    setting_.musicPosition = obj["musicPosition"].toVariant().toLongLong();
     setting_.playerMode = (PLAYER_MODE)obj["playerMode"].toInt();
     setting_.downloadDir = obj["downloadDir"].toString();
 
@@ -213,7 +222,7 @@ void SettingHandler::writeAll()
     wholeObject.insert("musicDir", setting_.musicDir);
     wholeObject.insert("volume", setting_.volume);
     wholeObject.insert("playListName", setting_.playListName);
-    wholeObject.insert("musicIndex", (qint64)setting_.musicIndex);
+    wholeObject.insert("musicIndex", QString::number(getMusicIndex()));
     wholeObject.insert("musicPosition", setting_.musicPosition);
     wholeObject.insert("playerMode", setting_.playerMode);
     wholeObject.insert("downloadDir", setting_.downloadDir);
@@ -269,7 +278,7 @@ void SettingHandler::readPlayList()
 		DList<QUrl> ret;
 		for (const QString& str : strList)
 		{
-			ret.pushBack(QUrl::fromLocalFile(str));
+			ret.pushBack(QUrl(str));
 		}
         setting_.playListMap.insert(playListName, ret);
     }

@@ -36,7 +36,7 @@
 #include <QProcess>
 
 
-bool point_in_widget(QWidget* widget, QPoint pos)
+bool pointInWidget(QWidget* widget, QPoint pos)
 {
     QPoint p = widget->mapToGlobal(QPoint(0, 0));
     return (pos.x() > p.x() && pos.x() < p.x() + widget->width() &&
@@ -227,52 +227,75 @@ void Widget::slotPositionChanged(qint64 pos)
         on_btn_next_clicked();
 }
 
+void Widget::slotSearchEditClose()
+{
+    ui->find_widget->animationHide();
+    animationStackedLocalBtnsLong();
+    ui->find_widget->setEditText("");
+}
+
+void Widget::slotMusicIndexChanged(DSizeType oldIndex, DSizeType newIndex)
+{
+    setMusicBtnStyle(oldIndex, &BaseMusicButton::setNormalStyle);
+    setMusicBtnStyle(newIndex, &BaseMusicButton::setPlayingStyle);
+}
+
 void Widget::setListener()
 {
-//    // 菜单失去焦点，判断是否需要隐藏
-//    connect(DMenu::getButtonMenu(), &DMenu::maybeNeedHide, this, [this]()
-//    {
-//        QPoint pos = QCursor::pos();
-//        // 遍历所有按钮，判断鼠标的绝对坐标是否在某个按钮上
-//        bool need_hide = true;
-//        for (BaseMusicButton* btn : btn_list_)
-//        {
-//            if (point_in_widget(btn, pos))
-//            {
-//                need_hide = false;
-//                break;
-//            }
-//        }
-//
-//        if (need_hide)
-//            DMenu::getButtonMenu()->animateHide();
-//    });
-//
-//    // 菜单中点了某一项
-//    connect(DMenu::getButtonMenu(), &DMenu::btn_clicked, this, [this](QString text)
-//    {
-//        if (text == "下一首播放")
-//        {
-//
-//        }
-//        else if (text == "打开文件所在位置")
-//        {
-//            QUrl url = DMenu::getButtonMenu()->getNowBtn()->get_url();
-//            QString path = url.toLocalFile();
-//
-//            QProcess process;
-//            path.replace("/", "\\");
-//            process.startDetached("explorer.exe", {"/select,", path});
-//        }
-//        else if (text == "从列表中移除")
-//        {
-//
-//        }
-//        else if (text == "删除")
-//        {
-//
-//        }
-//    });
+    // 菜单失去焦点，判断是否需要隐藏
+    connect(DMenu::getButtonMenu(), &DMenu::maybeNeedHide, this, [this]()
+    {
+        QPoint pos = QCursor::pos();
+        // 遍历所有按钮，判断鼠标的绝对坐标是否在某个按钮上
+        bool needHide = true;
+
+        QLayoutItem* child;
+        for (int i = 0; i < ui->music_layout->count(); ++i)
+        {
+            if (child = ui->music_layout->itemAt(i))
+            {
+                QWidget* btn = child->widget();
+                if (btn)
+                {
+                    if (pointInWidget(btn, pos))
+                    {
+                        needHide = false;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (needHide)
+            DMenu::getButtonMenu()->animateHide();
+    });
+
+    // 菜单中点了某一项
+    connect(DMenu::getButtonMenu(), &DMenu::btn_clicked, this, [this](QString text)
+    {
+        if (text == "下一首播放")
+        {
+
+        }
+        else if (text == "打开文件所在位置")
+        {
+            DSizeType musicIndex = DMenu::getButtonMenu()->getNowBtn()->getMusicIndex();
+            QUrl url = SETTING_HANDLER->currentPlayList().at(musicIndex);
+            QString path = url.toLocalFile();
+
+            QProcess process;
+            path.replace("/", "\\");
+            process.startDetached("explorer.exe", {"/select,", path});
+        }
+        else if (text == "从列表中移除")
+        {
+
+        }
+        else if (text == "删除")
+        {
+
+        }
+    });
 
     // 开始放歌时，播放图片Widget的隐藏动画
     connect(player_, &PlayerBase::beginPlay, this, [this]()
@@ -323,11 +346,7 @@ void Widget::setListener()
     // 先sourceChanged，再metaDataChanged
     connect(player_, &PlayerBase::sourceChanged, this, [this](const QUrl& media)
     {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-        QString musicPath = media.toString();
-#else
         QString musicPath = media.toLocalFile();
-#endif
         MusicInfo musicInfo = PlayerFFmpeg::getMusicInfo(musicPath);
 		refreshImageWidget(musicInfo);
         //switch (SETTING_HANDLER->get_player_mode())
@@ -426,21 +445,21 @@ void Widget::setListener()
         movingProgress_ = true;
     });
 
-////    connect(ui->progress, &QSlider::actionTriggered, this, [this](int action)
-////    {
-////        qDebug() << action;
-////        switch (action)
-////        {
-////        case 0:
-////            player_->setPosition(ui->progress->value());
-////            movingProgress_ = false;
-////            break;
-////        case 3:
-////        case 4:
-////            movingProgress_ = true;
-////            break;
-////        }
-////    });
+//    connect(ui->progress, &QSlider::actionTriggered, this, [this](int action)
+//    {
+//        qDebug() << action;
+//        switch (action)
+//        {
+//        case 0:
+//            player_->setPosition(ui->progress->value());
+//            movingProgress_ = false;
+//            break;
+//        case 3:
+//        case 4:
+//            movingProgress_ = true;
+//            break;
+//        }
+//    });
 
     // 松开进度条，改变音乐进度
     connect(ui->progress, &QSlider::sliderReleased, this, [this]()
@@ -449,14 +468,19 @@ void Widget::setListener()
         movingProgress_ = false;
     });
 
-//    // 搜索框文字改变
-//    connect(ui->le_find, &QLineEdit::textChanged, this, [this]()
-//    {
-//        if (ui->le_find->text() == "")
-//            ui->label_count->setText("0/0");
-//        else
-//            find_music(ui->le_find->text());
-//    });
+    // 搜索框文字改变
+    connect(ui->find_widget, &SearchEdit::focusOnBtnAt, this, [this](DSizeType index)
+    {
+        QLayoutItem* child = ui->music_layout->itemAt(index);
+        if (child)
+            ui->scrollArea->ensureWidgetVisible(child->widget());
+    });
+
+    // 点击搜索框内关闭按钮
+    connect(ui->find_widget, &SearchEdit::sigBtnCloseClicked, this, &Widget::slotSearchEditClose);
+
+    // 音乐下标改变
+    connect(SETTING_HANDLER, &SettingHandler::sigMusicIndexChanged, this, &Widget::slotMusicIndexChanged);
 }
 
 void Widget::refreshMusicBtns()
@@ -470,7 +494,7 @@ void Widget::refreshMusicBtns()
     }
 
     DList<QUrl> playList = SETTING_HANDLER->currentPlayList();
-    qint64 index = 0;
+    DSizeType index = 0;
     for (const QUrl& musicUrl : playList)
     {
         BaseMusicButton* btn = addLocalMusicBtn(musicUrl);
@@ -590,13 +614,15 @@ BaseMusicButton* Widget::addLocalMusicBtn(const QUrl& url)
 	//QString str = filename.mid(0, filename.indexOf('.'));
     LocalMusicButton* btn = new LocalMusicButton(url.fileName(), this);
     btn->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(btn, &LocalMusicButton::clicked, this, [this](qint64 index)
+    connect(btn, &LocalMusicButton::clicked, this, [this](DSizeType index)
     {
-		if (SETTING_HANDLER->getStruct().musicIndex == index)
-			return;
+        if (SETTING_HANDLER->getMusicIndex() == index)
+            return;
 
-        SETTING_HANDLER->getStruct().musicIndex = index;
+        SETTING_HANDLER->setMusicIndex(index);
         player_->playCurrentIndex();
+
+        
 
         //DSizeType newMusicIndex = btn_list_.indexOf(btn);
         //play_music(newMusicIndex);
@@ -614,6 +640,25 @@ BaseMusicButton* Widget::addLocalMusicBtn(const QUrl& url)
     });
     ui->music_layout->addWidget(btn);
     return btn;
+}
+
+void Widget::setMusicBtnStyle(int index, void (BaseMusicButton::* setStyleFunc)())
+{
+    QLayoutItem* child = ui->music_layout->itemAt(index);
+    if (nullptr == child)
+    {
+        qWarning() << "child at" << index << "is nullptr!" << __FUNCTION__ << __LINE__;
+        return;
+    }
+
+    BaseMusicButton* oldBtn = (BaseMusicButton*)child->widget();
+    if (nullptr == oldBtn)
+    {
+        qWarning() << "oldBtn is nullptr!" << __FUNCTION__ << __LINE__;
+        return;
+    }
+
+    (oldBtn->*setStyleFunc)();
 }
 
 //void Widget::add_online_music(const MusicInfo& music)
@@ -662,32 +707,7 @@ BaseMusicButton* Widget::addLocalMusicBtn(const QUrl& url)
 //    ui->music_layout_online->addWidget(btn);
 //    btn_list_.pushBack(btn);
 //}
-//
-//void Widget::find_music(const QString& word)
-//{
-//    if (word == "")
-//        return;
-//
-//    find_index = 0;
-//    ui->label_count->setText("0/0");
-//    find_index_list.clear();
-//    for (DSizeType i = 0; i < btn_list_.size(); ++i)
-//    {
-//        QRegularExpression reg(".*" + word + ".*");
-//        auto ret = reg.match(btn_list_.at(i)->get_filename());
-//        if (ret.hasMatch())
-//        {
-//            find_index_list.pushBack(i);
-//        }
-//    }
-//
-//    if (find_index_list.size() > 0)
-//    {
-//        ui->scrollArea->ensureWidgetVisible(btn_list_.at(find_index_list.first()));
-//        ui->label_count->setText(QString::number(find_index + 1) + "/" + QString::number(find_index_list.size()));
-//    }
-//}
-//
+
 //void Widget::init_local()
 //{
 //    clear_button(ui->music_layout);
@@ -992,9 +1012,7 @@ void Widget::keyPressEvent(QKeyEvent *event)
             }
             else
             {
-                ui->find_widget->animationHide();
-				animationStackedLocalBtnsLong();
-                ui->find_widget->setEditText("");
+                slotSearchEditClose();
             }
         }
         break;
@@ -1360,30 +1378,7 @@ void Widget::on_btn_min_clicked()
 //    SETTING_HANDLER->set_player_mode(newMode);
 //}
 //
-//// 查找框内上一个按钮
-//void Widget::on_btn_left_clicked()
-//{
-//    if (find_index > 0)
-//        --find_index;
-//    else
-//        find_index = find_index_list.size() - 1;
-//
-//    ui->scrollArea->ensureWidgetVisible(btn_list_.at(find_index_list.at(find_index)));
-//    ui->label_count->setText(QString::number(find_index + 1) + "/" + QString::number(find_index_list.size()));
-//}
-//
-//// 查找框内下一个按钮
-//void Widget::on_btn_right_clicked()
-//{
-//    if (find_index < find_index_list.size() - 1)
-//        ++find_index;
-//    else
-//        find_index = 0;
-//
-//    ui->scrollArea->ensureWidgetVisible(btn_list_.at(find_index_list.at(find_index)));
-//    ui->label_count->setText(QString::number(find_index + 1) + "/" + QString::number(find_index_list.size()));
-//}
-//
+
 //void Widget::on_btn_search_clicked()
 //{
 //    QString word = ui->le_search->text();

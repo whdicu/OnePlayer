@@ -1,5 +1,6 @@
 #pragma once
 
+#include "HDBase/DList.hpp"
 #include <QWidget>
 #include "ui_SearchEdit.h"
 
@@ -22,8 +23,22 @@ public:
 	void animationShow();
 	bool isAnimateHide() { return isAnimateHide_; }
 
+signals:
+	void focusOnBtnAt(DSizeType index);
+	void sigBtnCloseClicked();
+
+private slots:
+	void on_btn_left_clicked();
+	void on_btn_right_clicked();
+	void on_btn_close_clicked();
+
 private:
+	void findMusic(const QString& word);
+
 	Ui::SearchEditClass *ui;
 	QPropertyAnimation* animation_;
 	bool isAnimateHide_;
+
+	DSizeType findIndex_;
+	DList<DSizeType> findIndexList_;
 };

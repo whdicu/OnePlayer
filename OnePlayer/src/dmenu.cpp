@@ -50,8 +50,11 @@ DMenu::DMenu(const QStringList& texts)
 {
     setAttribute(Qt::WA_TranslucentBackground);
     setFocusPolicy(Qt::StrongFocus);
-    move(QCursor::pos());
 
+    animation_ = new QPropertyAnimation(this, "geometry");
+    animation_->setEasingCurve(QEasingCurve::InOutQuad);
+
+    move(QCursor::pos());
     widget_->move(0, 0);
     widget_->resize(130, 5 + 35 * texts.size());
 
@@ -91,55 +94,44 @@ void DMenu::animateMove(int newx, int newy)
 
 void DMenu::animateMove(QPoint pos)
 {
-    setFocus();
-    static QPropertyAnimation* animation = nullptr;
-    if (nullptr == animation)
-    {
-        animation = new QPropertyAnimation(this, "pos");
-        animation->setDuration(TIME300);
-        animation->setEasingCurve(QEasingCurve::InOutQuad);
-    }
+    animation_->stop();
 
-    animation->setStartValue(QPoint(x(), y()));
-    animation->setEndValue(pos);
-    animation->start();
+    setFocus();
+
+    animation_->setDuration(TIME300);
+    animation_->setStartValue(QRect(x(), y(), width(), height()));
+    animation_->setEndValue(QRect(pos, QSize(width(), height())));
+    animation_->start();
 }
 
 void DMenu::animateShow()
 {
+    animation_->stop();
     QWidget::show();
     setFocus();
     is_hidden_ = false;
     int newx = QCursor::pos().x();
     int newy = QCursor::pos().y();
-    static QPropertyAnimation* animation = nullptr;
-    if (nullptr == animation)
-    {
-        animation = new QPropertyAnimation(this, "geometry");
-        animation->setDuration(TIME150);
-        animation->setEasingCurve(QEasingCurve::InOutQuad);
-    }
-    qDebug() << newx << newy << widget_->width() << widget_->height();
-    animation->setStartValue(QRect(newx, newy, 0, 0));
-    animation->setEndValue(QRect(newx, newy, widget_->width(), widget_->height()));
-    animation->start();
+
+    animation_->setDuration(TIME150);
+    //qDebug() << newx << newy << widget_->width() << widget_->height();
+    animation_->setStartValue(QRect(newx, newy, width(), height()));
+    animation_->setEndValue(QRect(newx, newy, widget_->width(), widget_->height()));
+    animation_->start();
 }
 
 void DMenu::animateHide()
 {
+    animation_->stop();
+
     is_hidden_ = true;
     int newx = QCursor::pos().x();
     int newy = QCursor::pos().y();
-    static QPropertyAnimation* animation = nullptr;
-    if (nullptr == animation)
-    {
-        animation = new QPropertyAnimation(this, "geometry");
-        animation->setDuration(TIME150);
-        animation->setEasingCurve(QEasingCurve::InOutQuad);
-    }
-    animation->setStartValue(QRect(x(), y(), widget_->width(), widget_->height()));
-    animation->setEndValue(QRect(newx, newy, 0, 0));
-    animation->start();
+
+    animation_->setDuration(TIME150);
+    animation_->setStartValue(QRect(x(), y(), widget_->width(), widget_->height()));
+    animation_->setEndValue(QRect(newx, newy, 0, 0));
+    animation_->start();
 }
 
 bool DMenu::setFocus()
@@ -173,6 +165,7 @@ void DMenu::focusOutEvent(QFocusEvent* event)
     {
 //        qDebug() << "Widget lost focus.";
         // 发信号，让外部来判断是否需要隐藏
+        emit maybeNeedHide();
         emit maybeNeedHide();
     }
 

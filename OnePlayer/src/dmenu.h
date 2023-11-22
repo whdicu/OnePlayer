@@ -4,6 +4,8 @@
 #include <QFocusEvent>
 #include "basemusicbutton.h"
 
+class QPropertyAnimation;
+
 class DMenu : public QWidget
 {
     Q_OBJECT
@@ -33,4 +35,5 @@ private:
     QWidget* widget_;
     bool is_hidden_;
     BaseMusicButton* now_btn_;
+    QPropertyAnimation* animation_;
 };

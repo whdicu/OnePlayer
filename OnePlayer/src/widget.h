@@ -51,6 +51,8 @@ private slots:
 
     void slotKeyPressed(DWORD key);
     void slotPositionChanged(qint64 pos);
+    void slotSearchEditClose();
+    void slotMusicIndexChanged(DSizeType oldIndex, DSizeType newIndex);
      
 // 控件动画
 private:
@@ -87,11 +89,11 @@ private:
 	//    void previous_music();
 	BaseMusicButton* addLocalMusicBtn(const QUrl& url);
 	//    void add_online_music(const MusicInfo& music);
-	//    void find_music(const QString& word);
 	//    void init_local();
 	//    void init_mysite();
 	//    void init_online();
 	//    void init_netease();
+    void setMusicBtnStyle(int index, void (BaseMusicButton::* setStyleFunc)());
 
 
     Ui::Widget *ui;
@@ -101,8 +103,6 @@ private:
 
 //    DSizeType now_music_index_;
 //    DList<BaseMusicButton*> btn_list_;
-//    DSizeType find_index;
-//    DList<DSizeType> find_index_list;
 //    DList<DSizeType> random_index_list_;  // 随机播放时保存音乐顺序下标的列表
 //    DSizeType random_index_;  // 随机播放时的列表下表
     

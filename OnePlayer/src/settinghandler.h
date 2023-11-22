@@ -7,8 +7,11 @@
 #include "widget.h"
 
 
-class SettingHandler
+class SettingHandler : public QObject
 {
+    Q_OBJECT
+    Q_PROPERTY(DSizeType musicIndex_ READ getMusicIndex WRITE setMusicIndex NOTIFY sigMusicIndexChanged)
+
 public:
     static SettingHandler* getInstance();
     SettingStruct& getStruct() { return setting_; }
@@ -22,6 +25,12 @@ public:
     DSizeType nextMusicIndex();
 	QUrl currentMusicUrl();
     DSizeType previousMusicIndex();
+
+    void setMusicIndex(DSizeType index);
+    DSizeType getMusicIndex() { return musicIndex_; }
+
+signals:
+    void sigMusicIndexChanged(DSizeType oldIndex, DSizeType newIndex);
 
 private:
     SettingHandler();
@@ -39,6 +48,7 @@ private:
     void writePlayList();
 
     SettingStruct setting_;
+    DSizeType musicIndex_;  // 当前正在播放的音乐的index
 
     DSizeType randomIndex_;
     DList<DSizeType> randomIndexList_;

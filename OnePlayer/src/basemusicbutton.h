@@ -2,6 +2,7 @@
 #define BASEMUSICBUTTON_H
 
 #include <QWidget>
+#include "HDCore/DType.h"
 
 class BaseMusicButton : public QWidget
 {
@@ -11,14 +12,14 @@ public:
     explicit BaseMusicButton(QWidget* parent = nullptr) : QWidget(parent) {}
     virtual void setNormalStyle() = 0;
     virtual void setPlayingStyle() = 0;
-    qint64 getMusicIndex() const { return musicIndex_; }
-	void setMusicIndex(qint64 index) { musicIndex_ = index; }
+    DSizeType getMusicIndex() const { return musicIndex_; }
+	void setMusicIndex(DSizeType index) { musicIndex_ = index; }
 
 signals:
-    void clicked(qint64 index);
+    void clicked(DSizeType index);
 
 protected:
-    qint64 musicIndex_;
+    DSizeType musicIndex_;
 };
 
 #endif // BASEMUSICBUTTON_H

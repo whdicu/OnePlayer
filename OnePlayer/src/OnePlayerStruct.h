@@ -1,7 +1,9 @@
 #pragma once
 #include "HDBase/DList.hpp"
 #include <QImage>
+#include <QMap>
 #include <QString>
+#include <QUrl>
 
 
 // 支持播放的文件格式
@@ -79,18 +81,17 @@ enum PLAY_MODE
 struct SettingStruct
 {
 	SettingStruct() : playMode(AGAIN), musicDir(QString()), volume(0.0f)
-		, playListName(QString("Null")), musicIndex(0), musicPosition(0), playerMode(LOCAL)
+		, playListName(QString("Null")), musicPosition(0), playerMode(LOCAL)
 		, downloadDir(QString()), playListMap(QMap<QString, DList<QUrl>>()) {}
 
 	PLAY_MODE                       playMode;
 	QString                         musicDir;
 	float                           volume;
 	QString                         playListName;
-	DSizeType                       musicIndex;
 	qint64                          musicPosition;
 	PLAYER_MODE                     playerMode;
 	QString                         downloadDir;
-	QMap<QString, DList<QUrl>>   playListMap;
+	QMap<QString, DList<QUrl>>		playListMap;
 };
 
 struct MusicInfo
