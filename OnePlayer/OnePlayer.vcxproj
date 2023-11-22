@@ -110,7 +110,7 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\morewidget.cpp" />
     <ClCompile Include="src\MultiBtnWidget.cpp" />
-    <ClCompile Include="src\musicbutton.cpp" />
+    <ClCompile Include="src\LocalMusicButton.cpp" />
     <ClCompile Include="src\MusicInfoWidget.cpp" />
     <ClCompile Include="src\neteasehandler.cpp" />
     <ClCompile Include="src\neteasewidget.cpp" />
@@ -137,7 +137,7 @@
     <QtUic Include="src\lyricswidget.ui" />
     <QtUic Include="src\morewidget.ui" />
     <QtUic Include="src\MultiBtnWidget.ui" />
-    <QtUic Include="src\musicbutton.ui" />
+    <QtUic Include="src\LocalMusicButton.ui" />
     <QtUic Include="src\MusicInfoWidget.ui" />
     <QtUic Include="src\neteasewidget.ui" />
     <QtUic Include="src\onlinemusicbutton.ui" />
@@ -149,7 +149,7 @@
     <QtMoc Include="src\morewidget.h" />
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="src\musicbutton.h" />
+    <QtMoc Include="src\LocalMusicButton.h" />
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="src\neteasehandler.h" />
