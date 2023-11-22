@@ -38,15 +38,15 @@ void MusicInfoWidget::drawImage(QImage image)
     QString text_color = ImageHandler::getTextColor(image);
     setStyleSheet(QString("QLabel{color: %1;}").arg(text_color));
     //ui->lyrics_widget->set_color(text_color == "#5c5c66");
-    animationShow();
 }
 
 void MusicInfoWidget::animationHide()
 {
+	animation_->stop();
+
     static QEventLoop loop;
     connect(animation_, &QPropertyAnimation::finished, this, []()
     {
-        //isAnimateHide_ = true;
         loop.quit();
     });
     
@@ -58,6 +58,8 @@ void MusicInfoWidget::animationHide()
 
 void MusicInfoWidget::animationShow()
 {
+	animation_->stop();
+
     animation_->setStartValue(opacityEffect_->opacity());
     animation_->setEndValue(1.0);
     animation_->start();

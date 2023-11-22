@@ -84,15 +84,15 @@ Widget::Widget(const QString& filepath, QWidget *parent)
 
     stackedMusicBtnAnimation_ = new QPropertyAnimation(ui->stacked_music_btn, "geometry");
     stackedMusicBtnAnimation_->setDuration(MORE_BTN_WIDGET_ANIMATION_TIME);
-    stackedMusicBtnAnimation_->setEasingCurve(QEasingCurve::InOutQuad);
+    stackedMusicBtnAnimation_->setEasingCurve(QEasingCurve::OutCubic);
 
 	stackedMusicBtnAnimationSub1_ = new QPropertyAnimation(ui->find_widget, "geometry");
 	stackedMusicBtnAnimationSub1_->setDuration(MORE_BTN_WIDGET_ANIMATION_TIME);
-	stackedMusicBtnAnimationSub1_->setEasingCurve(QEasingCurve::InOutQuad);
+	stackedMusicBtnAnimationSub1_->setEasingCurve(QEasingCurve::OutCubic);
 
 	stackedLocalBtnsAnimation_ = new QPropertyAnimation(ui->stacked_local_btns, "geometry");
 	stackedLocalBtnsAnimation_->setDuration(MORE_BTN_WIDGET_ANIMATION_TIME);
-	stackedLocalBtnsAnimation_->setEasingCurve(QEasingCurve::InOutQuad);
+	stackedLocalBtnsAnimation_->setEasingCurve(QEasingCurve::OutCubic);
 
 //    ui->stacked_widget->setCurrentIndex(2);
 //
@@ -174,7 +174,12 @@ Widget::Widget(const QString& filepath, QWidget *parent)
 //    }
 
     // 初始化界面
-    ui->music_info_widget->drawImage(QImage(":/images/music.png"));
+	MusicInfo info;
+	info.title = "歌曲名";
+	info.singers = "歌手";
+	info.album = "专辑";
+	info.image = QImage(":/images/music.png");
+	refreshImageWidget(info);
 }
 
 void Widget::slotKeyPressed(DWORD key)
@@ -324,7 +329,6 @@ void Widget::setListener()
         QString musicPath = media.toLocalFile();
 #endif
         MusicInfo musicInfo = PlayerFFmpeg::getMusicInfo(musicPath);
-        ui->music_info_widget->drawImage(musicInfo.image);
 		refreshImageWidget(musicInfo);
         //switch (SETTING_HANDLER->get_player_mode())
         //{
@@ -1034,39 +1038,6 @@ void Widget::keyReleaseEvent(QKeyEvent *event)
 
 void Widget::refreshImageWidget(const MusicInfo& info)
 {
-//    static QMutex mutex;
-//    static QPropertyAnimation* animationHide = nullptr;
-//    static QPropertyAnimation* animationShow = nullptr;
-//    static QEventLoop loop;
-//    if (nullptr == animationHide)
-//    {
-//        animationHide = new QPropertyAnimation(opacityEffect, "opacity");
-//        animationHide->setEasingCurve(QEasingCurve::InOutQuad);
-//        animationHide->setStartValue(1.0);
-//        animationHide->setEndValue(0.0);
-//        animationHide->setDuration(TIME350);
-//
-//        animationShow = new QPropertyAnimation(opacityEffect, "opacity");
-//        animationShow->setEasingCurve(QEasingCurve::InOutQuad);
-//        animationShow->setStartValue(0.0);
-//        animationShow->setEndValue(1.0);
-//        animationShow->setDuration(TIME350);
-//
-//        connect(animationHide, &QPropertyAnimation::finished, &loop, &QEventLoop::quit);
-////        connect(animationShow, &QPropertyAnimation::finished, this, []()
-////        {
-//////            mutex.unlock();
-////        });
-//    }
-//
-////    mutex.lock();
-//    if (loop.isRunning())
-//        loop.quit();
-//    animationHide->start();
-//    loop.exec();
-
-    //ui->music_info_widget->drawImage(image);
-
     // 设置歌曲名
     if (!info.title.isEmpty())
     {
@@ -1075,12 +1046,7 @@ void Widget::refreshImageWidget(const MusicInfo& info)
     }
     else
     {
-        // H:/音乐/Apologize.mp3
 		QString filename = SETTING_HANDLER->currentMusicUrl().fileName();
-  //      QString nowMusicPath = url.replace('\\', '/');
-  //      int index1 = nowMusicPath.lastIndexOf('/') + 1;
-  //      int index2 = nowMusicPath.lastIndexOf('.');
-		//QString filename = url.mid(index1, index2 - index1);
 		QString str = filename.mid(0, filename.indexOf('.'));
         ui->music_info_widget->setMusicName(str);
         ui->btn_music_name->setText(str);
@@ -1092,8 +1058,9 @@ void Widget::refreshImageWidget(const MusicInfo& info)
     // 设置专辑名
     ui->music_info_widget->setAlbumName(info.album.isEmpty() ? "未知专辑" : info.album);
 
-    // 播放切换动画
-    //animationShow->start();
+	// 画图片
+	ui->music_info_widget->drawImage(info.image);
+	ui->music_info_widget->animationShow();
 }
 
 void Widget::animateShow()
@@ -1239,18 +1206,26 @@ void Widget::on_btn_mode_clicked()
 // 更多按钮
 void Widget::on_btn_more_clicked()
 {
-    // todo (实在不行的话)右侧按钮条可以用代码创建，播放完hide动画就delete，要显示了再重新创建
-    if (ui->multi_btn_widget->isAnimateHide())
+	QTimer* timer = new QTimer(this);
+	if (ui->multi_btn_widget->isAnimateHide())
     {
         animationStackedMusicBtnSmall();
-        ui->multi_btn_widget->animationShow();
+		connect(timer, &QTimer::timeout, this, [this, timer]()
+		{
+			timer->deleteLater();
+			ui->multi_btn_widget->animationShow();
+		});
     }
     else
     {
         ui->multi_btn_widget->animationHide();
-        animationStackedMusicBtnBig();
+		connect(timer, &QTimer::timeout, this, [this, timer]()
+		{
+			timer->deleteLater();
+			animationStackedMusicBtnBig();
+		});
     }
-
+	timer->start(SEARCH_EDIT_ANIMATION_TIME / 2);
     //switch (ui->stacked_widget->currentIndex())
     //{
     //case 0:

@@ -17,11 +17,11 @@ public:
 	void setMusicName(const QString& name) { ui.label_sound_name->setText(name); }
 	void setSingerName(const QString& name) { ui.label_singer->setText(name); }
 	void setAlbumName(const QString& name) { ui.label_album->setText(name); }
+	// 隐藏动画为阻塞式播放，使在动画播放完之后才会去做刷新文字、播放显示动画等操作。
 	void animationHide();
-
-private:
 	void animationShow();
 
+private:
 	Ui::MusicInfoWidgetClass ui;
 	QGraphicsOpacityEffect* opacityEffect_;
 	QPropertyAnimation* animation_;
