@@ -3,6 +3,7 @@
 
 #include "HDBase/DList.hpp"
 #include "HDCore/HD2QT.hpp"
+#include "hook.h"
 #include "LocalMusicButton.h"
 #include "neteasehandler.h"
 #include "onlinemusicbutton.h"
@@ -46,10 +47,8 @@ bool pointInWidget(QWidget* widget, QPoint pos)
 Widget::Widget(const QString& filepath, QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::Widget)
-    , hook_(Hook::getInstance())
     , player_(new PlayerQt)
     , movingProgress_(false)
-    //, now_music_index_(0)
     , pressedCtrl_(false)
     , thisIsMoveWindow_(false)
     , isShowAnimation_(true)
@@ -59,8 +58,8 @@ Widget::Widget(const QString& filepath, QWidget *parent)
     setWindowFlags(Qt::FramelessWindowHint);
     setAttribute(Qt::WA_TranslucentBackground);
     setAcceptDrops(true);
-    hook_->installHook();
-    connect(hook_, &Hook::sendKeyType, this, &Widget::slotKeyPressed);
+	Hook::getInstance()->installHook();
+    //connect(Hook::getInstance(), &Hook::sendKeyType, this, &Widget::slotKeyPressed);
 	
     // 动画创建
     animation_ = new QPropertyAnimation(this, "geometry");
@@ -438,9 +437,7 @@ void Widget::setListener()
     // 搜索框文字改变
     connect(ui->find_widget, &SearchEdit::focusOnBtnAt, this, [this](DSizeType index)
     {
-        QLayoutItem* child = ui->music_layout->itemAt(index);
-        if (child)
-            ui->scrollArea->ensureWidgetVisible(child->widget());
+		showMusicBtnAt(index);
     });
 
     // 点击搜索框内关闭按钮
@@ -668,6 +665,16 @@ void Widget::setPlayMode(PLAY_MODE mode)
 		ui->btn_mode->setIcon(QIcon(":/svgs/random.svg"));
 		break;
 	}
+	}
+}
+
+void Widget::showMusicBtnAt(DSizeType index)
+{
+	QLayoutItem* child = ui->music_layout->itemAt(index);
+	if (child && child->widget())
+	{
+		int margin = (ui->scrollArea->height() - child->widget()->height()) / 2;
+		ui->scrollArea->ensureWidgetVisible(child->widget(), 0, margin);
 	}
 }
 
@@ -1128,7 +1135,7 @@ Widget::~Widget()
 {
     delete ui;
 	NeteaseHandler::getInstance()->deleteThis();
-    hook_->unInstallHook();
+	Hook::getInstance()->unInstallHook();
 }
 
 // 关闭
@@ -1264,21 +1271,23 @@ void Widget::on_btn_min_clicked()
     animateHide();
 }
 
-//// 歌曲名按钮
-//void Widget::on_btn_music_name_clicked()
-//{
-//    switch (SETTING_HANDLER->get_player_mode())
-//    {
-//    case LOCAL:
-//    case MYSITE:
-//        ui->scrollArea->ensureWidgetVisible(btn_list_.at(now_music_index_));
-//        break;
-//    case ONLINE:
-//        ui->scrollArea_online->ensureWidgetVisible(btn_list_.at(now_music_index_));
-//        break;
-//    }
-//}
-//
+// 歌曲名按钮
+void Widget::on_btn_music_name_clicked()
+{
+    switch (SETTING_HANDLER->getStruct().playerMode)
+    {
+    case LOCAL:
+    case MYSITE:
+	{
+		showMusicBtnAt(SETTING_HANDLER->getMusicIndex());
+		break;
+	}
+	case ONLINE:
+        //ui->scrollArea_online->ensureWidgetVisible(btn_list_.at(now_music_index_));
+        break;
+    }
+}
+
 //void Widget::slot_btn_open_dir_clicked()
 //{
 //    QDesktopServices::openUrl(QUrl::fromLocalFile(SETTING_HANDLER->get_music_dir()));

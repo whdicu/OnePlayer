@@ -2,7 +2,6 @@
 #define WIDGET_H
 #pragma execution_character_set("utf-8")
 #include "HDBase/DList.hpp"
-#include "hook.h"
 #include "basemusicbutton.h"
 #include "OnePlayerStruct.h"
 #include "onlinehandler.h"
@@ -11,6 +10,7 @@
 #include <QMediaPlayer>
 #include <QLabel>
 #include <QWidget>
+#include "windows.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Widget; }
@@ -38,7 +38,7 @@ private slots:
     void on_btn_mode_clicked();
     void on_btn_more_clicked();
     void on_btn_min_clicked();
-//    void on_btn_music_name_clicked();
+    void on_btn_music_name_clicked();
 //    void on_btn_left_clicked();
 //    void on_btn_right_clicked();
 //    void on_btn_search_clicked();
@@ -95,17 +95,12 @@ private:
 	//    void init_netease();
     void setMusicBtnStyle(int index, void (BaseMusicButton::* setStyleFunc)());
 	void setPlayMode(PLAY_MODE mode);
+	void showMusicBtnAt(DSizeType index);
 
 
     Ui::Widget *ui;
-    Hook* hook_;
     bool movingProgress_;
     PlayerBase* player_;
-
-//    DSizeType now_music_index_;
-//    DList<BaseMusicButton*> btn_list_;
-//    DList<DSizeType> random_index_list_;  // 随机播放时保存音乐顺序下标的列表
-//    DSizeType random_index_;  // 随机播放时的列表下表
     
     // 拖动窗口时记录按下的xy，播放动画时用来记录隐藏前的xy
     int pressX_;
@@ -113,7 +108,7 @@ private:
     bool pressedCtrl_;
     bool thisIsMoveWindow_;
 
-    bool isShowAnimation_;  // 时播放的主界面显示动画还是隐藏动画
+    bool isShowAnimation_;  // 是播放的主界面显示动画还是隐藏动画
     bool shutdownBtnClicked_;
 };
 #endif // WIDGET_H

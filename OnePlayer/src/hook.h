@@ -5,7 +5,7 @@
 #include <QObject>
 #include "windows.h"
 
-class Hook :public QObject
+class Hook : public QObject
 {
 	Q_OBJECT
 public:
@@ -14,12 +14,12 @@ public:
 	void unInstallHook();
     void sendSignal(DWORD key);
 
+signals:
+	void sendKeyType(DWORD);
+
 private:
 	Hook() = default;
 	~Hook() = default;
-
-signals:
-	void sendKeyType(DWORD);
 };
 
 #endif // HOOK_H
