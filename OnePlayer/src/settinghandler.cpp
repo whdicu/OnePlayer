@@ -278,7 +278,7 @@ void SettingHandler::readPlayList()
 		DList<QUrl> ret;
 		for (const QString& str : strList)
 		{
-			ret.pushBack(QUrl(str));
+			ret.pushBack(QUrl::fromLocalFile(str));
 		}
         setting_.playListMap.insert(playListName, ret);
     }
@@ -319,11 +319,7 @@ void SettingHandler::writePlayList()
 
 		for (const QUrl& path : it.value())
 		{
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-			file.write(path.toString().toUtf8() + '\n');
-#else
 			file.write(path.toLocalFile().toUtf8() + '\n');
-#endif
 		}
 		file.close();
     }

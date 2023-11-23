@@ -94,6 +94,7 @@ private:
 	//    void init_online();
 	//    void init_netease();
     void setMusicBtnStyle(int index, void (BaseMusicButton::* setStyleFunc)());
+	void setPlayMode(PLAY_MODE mode);
 
 
     Ui::Widget *ui;

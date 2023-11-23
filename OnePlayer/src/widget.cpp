@@ -113,7 +113,6 @@ Widget::Widget(const QString& filepath, QWidget *parent)
         {
         case LOCAL:
         {
-
             refreshMusicBtns();
             //init_local();
             break;
@@ -139,39 +138,7 @@ Widget::Widget(const QString& filepath, QWidget *parent)
 //        play_music(0);
     }
 
-//    play_mode = SETTING_HANDLER->get_old_mode();
-//    switch (play_mode)
-//    {
-//    case ONE_AGAIN:
-//#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-//        player_->setLoops(-1);
-//#else
-//		player_->setPlaybackRate(QMediaPlaylist::CurrentItemInLoop);
-//#endif
-//        ui->btn_mode->setIcon(QIcon(":/svgs/one_again.svg"));
-//        break;
-//    case AGAIN:
-//#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-//		player_->setLoops(1);
-//#else
-//		player_->setPlaybackRate(QMediaPlaylist::CurrentItemOnce);
-//#endif
-//        ui->btn_mode->setIcon(QIcon(":/svgs/again.svg"));
-//        break;
-//    case RANDOM:
-//        random_index_ = 0;
-////        DSizeType music_index = QRandomGenerator64::global()->bounded(0, (int)btn_list_.size());
-//        random_index_list_.pushBack(now_music_index_);
-////        now_music_index_ = random_index_list_.at(0);
-//        qDebug() << "000 =" << random_index_list_.at(0);
-//#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-//		player_->setLoops(1);
-//#else
-//		player_->setPlaybackRate(QMediaPlaylist::CurrentItemOnce);
-//#endif
-//        ui->btn_mode->setIcon(QIcon(":/svgs/random.svg"));
-//        break;
-//    }
+	setPlayMode(SETTING_HANDLER->getStruct().playMode);
 
     // 初始化界面
 	MusicInfo info;
@@ -659,6 +626,49 @@ void Widget::setMusicBtnStyle(int index, void (BaseMusicButton::* setStyleFunc)(
     }
 
     (oldBtn->*setStyleFunc)();
+}
+
+void Widget::setPlayMode(PLAY_MODE mode)
+{
+	SETTING_HANDLER->getStruct().playMode = mode;
+	switch (mode)
+	{
+	case AGAIN:
+	{
+		//#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+		//        player_->setLoops(1);
+		//#else
+		//        player_->setPlaybackRate(QMediaPlaylist::CurrentItemOnce);
+		//#endif
+		ui->btn_mode->setIcon(QIcon(":/svgs/again.svg"));
+		break;
+	}
+	case ONE_AGAIN:
+	{
+		//#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+		//        player_->setLoops(-1);
+		//#else
+		//        player_->setPlaybackRate(QMediaPlaylist::CurrentItemInLoop);
+		//#endif
+		ui->btn_mode->setIcon(QIcon(":/svgs/one_again.svg"));
+		break;
+	}
+	case RANDOM:
+	{
+		//        random_index_list_.clear();
+		//        random_index_list_.pushBack(now_music_index_);
+		//        random_index_ = 0;
+		SETTING_HANDLER->getStruct().playMode = RANDOM;
+		SETTING_HANDLER->clearRandomPlayList();
+		//#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+		//        player_->setLoops(1);
+		//#else
+		//        player_->setPlaybackRate(QMediaPlaylist::CurrentItemOnce);
+		//#endif
+		ui->btn_mode->setIcon(QIcon(":/svgs/random.svg"));
+		break;
+	}
+	}
 }
 
 //void Widget::add_online_music(const MusicInfo& music)
@@ -1179,46 +1189,27 @@ void Widget::on_btn_up_clicked()
 // 模式切换按钮
 void Widget::on_btn_mode_clicked()
 {
+	PLAY_MODE newMode = AGAIN;
     switch (SETTING_HANDLER->getStruct().playMode)
     {
     case AGAIN:
     {
-        SETTING_HANDLER->getStruct().playMode = ONE_AGAIN;
-//#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-//        player_->setLoops(-1);
-//#else
-//        player_->setPlaybackRate(QMediaPlaylist::CurrentItemInLoop);
-//#endif
-        ui->btn_mode->setIcon(QIcon(":/svgs/one_again.svg"));
+		newMode = ONE_AGAIN;
         break;
     }
     case ONE_AGAIN:
     {
-//        random_index_list_.clear();
-//        random_index_list_.pushBack(now_music_index_);
-//        random_index_ = 0;
-        SETTING_HANDLER->getStruct().playMode = RANDOM;
-        SETTING_HANDLER->clearRandomPlayList();
-//#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-//        player_->setLoops(1);
-//#else
-//        player_->setPlaybackRate(QMediaPlaylist::CurrentItemOnce);
-//#endif
-        ui->btn_mode->setIcon(QIcon(":/svgs/random.svg"));
+		newMode = RANDOM;
         break;
     }
     case RANDOM:
     {
-        SETTING_HANDLER->getStruct().playMode = AGAIN;
-//#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-//        player_->setLoops(1);
-//#else
-//        player_->setPlaybackRate(QMediaPlaylist::CurrentItemOnce);
-//#endif
-        ui->btn_mode->setIcon(QIcon(":/svgs/again.svg"));
+		newMode = AGAIN;
         break;
     }
     }
+
+	setPlayMode(newMode);
 }
 
 // 更多按钮
