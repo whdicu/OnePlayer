@@ -7,6 +7,7 @@ class PlayerBase : public QObject
 	Q_OBJECT
 public:
 	PlayerBase(QObject* parent = nullptr);
+	virtual ~PlayerBase() {}
 	// 调用后，处于正在播放状态返回true
 	virtual bool playOrPause() = 0;
 	virtual void playNext() = 0;
@@ -15,7 +16,7 @@ public:
 	virtual void setPosition(qint64 pos) = 0;
 	virtual qint64 getPosition() = 0;
 	virtual qint64 getDuration() = 0;  // 音乐总长度
-	virtual void playCurrentIndex() = 0;
+	virtual void playCurrentIndex(qint64 pos=0) = 0;
 	virtual void setLoop(bool loop) = 0;
 
 signals:

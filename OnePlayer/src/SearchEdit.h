@@ -21,6 +21,9 @@ public:
 	void setEditText(const QString& text) { ui->le_find->setText(text); }
 	void animationHide();
 	void animationShow();
+	// 直接move到Hide位置
+	void moveToHide();
+
 	bool isAnimateHide() { return isAnimateHide_; }
 
 signals:

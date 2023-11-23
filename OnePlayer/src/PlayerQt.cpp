@@ -48,7 +48,9 @@ PlayerQt::PlayerQt(QObject* parent)
 }
 
 PlayerQt::~PlayerQt()
-{}
+{
+	player_->stop();
+}
 
 bool PlayerQt::playOrPause()
 {
@@ -59,6 +61,7 @@ bool PlayerQt::playOrPause()
 #endif
 	{
 		playCurrentIndex();
+		return true;
 	}
 
 	if (QMediaPlayer::PlayingState == GET_PLAY_STATE)
@@ -95,7 +98,7 @@ void PlayerQt::setPosition(qint64 pos)
 	player_->setPosition(pos);
 }
 
-void PlayerQt::playCurrentIndex()
+void PlayerQt::playCurrentIndex(qint64 pos)
 {
 	emit beginPlay();
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
@@ -103,6 +106,7 @@ void PlayerQt::playCurrentIndex()
 #else
 	player_->setMedia(SETTING_HANDLER->currentMusicUrl());
 #endif
+	setPosition(pos);
 	player_->play();
 }
 

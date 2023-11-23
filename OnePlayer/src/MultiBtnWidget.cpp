@@ -39,3 +39,9 @@ void MultiBtnWidget::animationShow()
 
 	animation_->start();
 }
+
+void MultiBtnWidget::moveToHide()
+{
+	isAnimateHide_ = true;
+	move(MORE_BTN_WIDGET_X, MORE_BTN_WIDGET_Y + MORE_BTN_WIDGET_HEIGHT);
+}
