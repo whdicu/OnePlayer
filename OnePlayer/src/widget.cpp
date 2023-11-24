@@ -985,14 +985,7 @@ void Widget::keyPressEvent(QKeyEvent *event)
     switch (event->key())
     {
     case 32:  // space
-        /*if (QMediaPlayer::StoppedState == GET_PLAY_STATE || QMediaPlayer::PausedState == GET_PLAY_STATE)
-        {
-            player_->play();
-        }
-        else if (QMediaPlayer::PlayingState == GET_PLAY_STATE)
-        {
-            player_->pause();
-        }*/
+        on_btn_play_clicked();
         break;
     case 16777249:  // ctrl
         pressedCtrl_ = true;
