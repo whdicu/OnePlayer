@@ -50,6 +50,9 @@ void SearchEdit::moveToHide()
 // 查找框内上一个按钮
 void SearchEdit::on_btn_left_clicked()
 {
+	if (findIndexList_.isEmpty())
+		return;
+
 	--findIndex_;
 	if (findIndex_ >= findIndexList_.size())
 		findIndex_ = findIndexList_.size() - 1;
@@ -61,6 +64,9 @@ void SearchEdit::on_btn_left_clicked()
 // 查找框内下一个按钮
 void SearchEdit::on_btn_right_clicked()
 {
+	if (findIndexList_.isEmpty())
+		return;
+
 	++findIndex_;
 	if (findIndex_ >= findIndexList_.size())
 		findIndex_ = 0;

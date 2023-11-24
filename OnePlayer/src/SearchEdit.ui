@@ -14,12 +14,16 @@
    <string>SearchEdit</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">#widget_find
+   <string notr="true">QPushButton
+{
+	background-color: transparent;
+}
+
+#widget_find
 {
 	border-radius: 20px;
 	border: 3px solid #5c5c66;
 }
-
 
 #le_find
 {
