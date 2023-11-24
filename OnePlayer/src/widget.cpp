@@ -59,7 +59,7 @@ Widget::Widget(const QString& filepath, QWidget *parent)
     setAttribute(Qt::WA_TranslucentBackground);
     setAcceptDrops(true);
 	Hook::getInstance()->installHook();
-    //connect(Hook::getInstance(), &Hook::sendKeyType, this, &Widget::slotKeyPressed);
+    connect(Hook::getInstance(), &Hook::sendKeyType, this, &Widget::slotKeyPressed, Qt::QueuedConnection);
 	
     // 动画创建
     animation_ = new QPropertyAnimation(this, "geometry");
