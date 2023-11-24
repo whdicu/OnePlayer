@@ -14,6 +14,9 @@ public:
 	~MultiBtnWidget();
 	void animationHide();
 	void animationShow();
+	// 直接move到Hide位置
+	void moveToHide();
+
 	bool isAnimateHide() { return isAnimateHide_; }
 
 private:

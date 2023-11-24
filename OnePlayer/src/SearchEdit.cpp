@@ -41,6 +41,12 @@ void SearchEdit::animationShow()
 	animation_->start();
 }
 
+void SearchEdit::moveToHide()
+{
+	isAnimateHide_ = true;
+	move(x(), -height());
+}
+
 // 查找框内上一个按钮
 void SearchEdit::on_btn_left_clicked()
 {

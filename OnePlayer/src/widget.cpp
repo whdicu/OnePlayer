@@ -47,7 +47,7 @@ bool pointInWidget(QWidget* widget, QPoint pos)
 Widget::Widget(const QString& filepath, QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::Widget)
-    , player_(new PlayerQt)
+    , player_(new PlayerQt(this))
     , movingProgress_(false)
     , pressedCtrl_(false)
     , thisIsMoveWindow_(false)
@@ -140,12 +140,17 @@ Widget::Widget(const QString& filepath, QWidget *parent)
 	setPlayMode(SETTING_HANDLER->getStruct().playMode);
 
     // 初始化界面
+    initMultiFuncWidget();
+
 	MusicInfo info;
 	info.title = "歌曲名";
 	info.singers = "歌手";
 	info.album = "专辑";
 	info.image = QImage(":/images/music.png");
 	refreshImageWidget(info);
+
+    // 播放之前上次关闭时放的歌
+    player_->playCurrentIndex(SETTING_HANDLER->getStruct().musicPosition);
 }
 
 void Widget::slotKeyPressed(DWORD key)
@@ -1070,6 +1075,16 @@ void Widget::keyReleaseEvent(QKeyEvent *event)
 //    }
 //    btn_list_.clear();
 //}
+
+void Widget::initMultiFuncWidget()
+{
+    ui->multi_btn_widget->moveToHide();
+    ui->stacked_music_btn->resize(ui->multi_func_widget->width(), ui->stacked_music_btn->height());
+    ui->find_widget->moveToHide();
+    ui->find_widget->resize(ui->multi_func_widget->width(), ui->find_widget->height());
+    ui->stacked_local_btns->setGeometry(QRect(ui->stacked_local_btns->x(), 0
+        , ui->multi_func_widget->width(), ui->multi_func_widget->height()));
+}
 
 void Widget::refreshImageWidget(const MusicInfo& info)
 {

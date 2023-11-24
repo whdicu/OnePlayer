@@ -80,6 +80,9 @@ private:
     void keyReleaseEvent(QKeyEvent *);
 
 //    void clear_button(QVBoxLayout* layout);
+    // 初始化右侧控件
+    void initMultiFuncWidget();
+
     void refreshImageWidget(const MusicInfo& info);
 	//    void play_music(DSizeType musicIndex);
 	void setListener();

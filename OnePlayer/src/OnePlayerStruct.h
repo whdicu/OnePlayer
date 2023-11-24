@@ -6,7 +6,6 @@
 #include <QUrl>
 
 
-// 支持播放的文件格式
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 #include <QRandomGenerator64>
 #define GET_PLAY_STATE player_->playbackState()
@@ -16,7 +15,7 @@ const static QStringList TYPE_LIST = { "mp3", "flac", "wav", "ogg", "acc", "m4a"
 #include <QMediaPlaylist>
 #define GET_PLAY_STATE player_->state()
 #define SET_VOLUME(v) player_->setVolume((v) * 100);
-const static QStringList TYPE_LIST = { "mp3", "flac", "wav", "ogg", "acc" };  // 5.9.4无法播放flac m4a
+const static QStringList TYPE_LIST = { "mp3", "wav", "ogg", "acc" };  // 5.9.4无法播放flac m4a
 #endif
 
 
@@ -54,13 +53,13 @@ const static int SEARCH_EDIT_ANIMATION_TIME = 200;
 
 /****************************** 样式 ******************************/
 // 本地音乐按钮样式
-static const QString LOCAL_NORMAL_STYLE = "QPushButton {color: #5c5c66;background-color: rgba(182, 209, 200, 0.25);border-radius: 15px; padding-left: 10px; padding-right: 10px;} QPushButton:hover {background-color: rgba(182, 209, 200, 0.5);}";
-static const QString LOCAL_PLAYING_STYLE = "QPushButton {color: #5c5c66;background-color: rgb(182, 209, 200);border-radius: 15px; padding-left: 10px; padding-right: 10px;}";
+static const QString LOCAL_NORMAL_STYLE = "QPushButton {color: #5c5c66;background-color: rgba(182, 209, 200, 0.25);border-radius: 20px; padding-left: 10px; padding-right: 10px;} QPushButton:hover {background-color: rgba(182, 209, 200, 0.5);}";
+static const QString LOCAL_PLAYING_STYLE = "QPushButton {color: #5c5c66;background-color: rgb(182, 209, 200);border-radius: 20px; padding-left: 10px; padding-right: 10px;}";
 
 // 在线音乐按钮样式
-static const QString ONLINE_NORMAL_STYLE = "QPushButton {color: #5c5c66;background-color: rgba(182, 209, 200, 0.25);border-radius: 0px;} #btn_name{text-align : left;padding-left: 10px;border-top-left-radius: 15px;border-bottom-left-radius: 15px;}#btn_singer{text-align : left;}#btn_download{color: #1473e6;border-top-right-radius: 15px;border-bottom-right-radius: 15px;}";
-static const QString ONLINE_PLAYING_STYLE = "QPushButton {color: #5c5c66;background-color: rgb(182, 209, 200);border-radius: 0px;} #btn_name{text-align : left;padding-left: 10px;border-top-left-radius: 15px;border-bottom-left-radius: 15px;}#btn_singer{text-align : left;}#btn_download{color: #1473e6;border-top-right-radius: 15px;border-bottom-right-radius: 15px;}";
-static const QString ONLINE_HOVER_STYLE = "QPushButton {color: #5c5c66;background-color: rgba(182, 209, 200, 0.5);border-radius: 0px;} #btn_name{text-align : left;padding-left: 10px;border-top-left-radius: 15px;border-bottom-left-radius: 15px;}#btn_singer{text-align : left;}#btn_download{color: #1473e6;border-top-right-radius: 15px;border-bottom-right-radius: 15px;}";
+static const QString ONLINE_NORMAL_STYLE = "QPushButton {color: #5c5c66;background-color: rgba(182, 209, 200, 0.25);border-radius: 0px;} #btn_name{text-align : left;padding-left: 10px;border-top-left-radius: 20px;border-bottom-left-radius: 20px;}#btn_singer{text-align : left;}#btn_download{color: #1473e6;border-top-right-radius: 20px;border-bottom-right-radius: 20px;}";
+static const QString ONLINE_PLAYING_STYLE = "QPushButton {color: #5c5c66;background-color: rgb(182, 209, 200);border-radius: 0px;} #btn_name{text-align : left;padding-left: 10px;border-top-left-radius: 20px;border-bottom-left-radius: 20px;}#btn_singer{text-align : left;}#btn_download{color: #1473e6;border-top-right-radius: 20px;border-bottom-right-radius: 20px;}";
+static const QString ONLINE_HOVER_STYLE = "QPushButton {color: #5c5c66;background-color: rgba(182, 209, 200, 0.5);border-radius: 0px;} #btn_name{text-align : left;padding-left: 10px;border-top-left-radius: 20px;border-bottom-left-radius: 20px;}#btn_singer{text-align : left;}#btn_download{color: #1473e6;border-top-right-radius: 20px;border-bottom-right-radius: 20px;}";
 
 
 enum PLAYER_MODE
