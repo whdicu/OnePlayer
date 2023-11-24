@@ -22,10 +22,10 @@
       <Extensions>qrc;*</Extensions>
       <ParseFiles>false</ParseFiles>
     </Filter>
-    <Filter Include="Source Files\widgets">
+    <Filter Include="widgets">
       <UniqueIdentifier>{54e64ff5-6481-48b4-8335-cf6bba9608cf}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\players">
+    <Filter Include="players">
       <UniqueIdentifier>{e45d69eb-c340-450a-a639-c61bc0b01360}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -52,37 +52,37 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="src\SearchEdit.h">
-      <Filter>Source Files\widgets</Filter>
+      <Filter>widgets</Filter>
     </QtMoc>
     <QtMoc Include="src\MusicInfoWidget.h">
-      <Filter>Source Files\widgets</Filter>
+      <Filter>widgets</Filter>
     </QtMoc>
     <QtMoc Include="src\PlayerQt.h">
-      <Filter>Source Files\players</Filter>
+      <Filter>players</Filter>
     </QtMoc>
     <QtMoc Include="src\MultiBtnWidget.h">
-      <Filter>Source Files\widgets</Filter>
+      <Filter>widgets</Filter>
     </QtMoc>
     <QtMoc Include="src\PlayerBase.h">
-      <Filter>Source Files\players</Filter>
+      <Filter>players</Filter>
     </QtMoc>
     <QtMoc Include="src\PlayerFFmpeg.h">
-      <Filter>Source Files\players</Filter>
+      <Filter>players</Filter>
     </QtMoc>
     <QtMoc Include="src\basemusicbutton.h">
-      <Filter>Source Files\widgets</Filter>
+      <Filter>widgets</Filter>
     </QtMoc>
     <QtMoc Include="src\onlinemusicbutton.h">
-      <Filter>Source Files\widgets</Filter>
+      <Filter>widgets</Filter>
     </QtMoc>
     <QtMoc Include="src\LocalMusicButton.h">
-      <Filter>Source Files\widgets</Filter>
+      <Filter>widgets</Filter>
     </QtMoc>
     <QtMoc Include="src\settinghandler.h">
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="src\dmenu.h">
-      <Filter>Source Files\widgets</Filter>
+      <Filter>widgets</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
@@ -120,31 +120,31 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\MusicInfoWidget.cpp">
-      <Filter>Source Files\widgets</Filter>
+      <Filter>widgets</Filter>
     </ClCompile>
     <ClCompile Include="src\SearchEdit.cpp">
-      <Filter>Source Files\widgets</Filter>
+      <Filter>widgets</Filter>
     </ClCompile>
     <ClCompile Include="src\PlayerQt.cpp">
-      <Filter>Source Files\players</Filter>
+      <Filter>players</Filter>
     </ClCompile>
     <ClCompile Include="src\PlayerBase.cpp">
-      <Filter>Source Files\players</Filter>
+      <Filter>players</Filter>
     </ClCompile>
     <ClCompile Include="src\MultiBtnWidget.cpp">
-      <Filter>Source Files\widgets</Filter>
+      <Filter>widgets</Filter>
     </ClCompile>
     <ClCompile Include="src\PlayerFFmpeg.cpp">
-      <Filter>Source Files\players</Filter>
+      <Filter>players</Filter>
     </ClCompile>
     <ClCompile Include="src\onlinemusicbutton.cpp">
-      <Filter>Source Files\widgets</Filter>
+      <Filter>widgets</Filter>
     </ClCompile>
     <ClCompile Include="src\LocalMusicButton.cpp">
-      <Filter>Source Files\widgets</Filter>
+      <Filter>widgets</Filter>
     </ClCompile>
     <ClCompile Include="src\dmenu.cpp">
-      <Filter>Source Files\widgets</Filter>
+      <Filter>widgets</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -164,19 +164,19 @@
       <Filter>Form Files</Filter>
     </QtUic>
     <QtUic Include="src\MusicInfoWidget.ui">
-      <Filter>Source Files\widgets</Filter>
+      <Filter>widgets</Filter>
     </QtUic>
     <QtUic Include="src\SearchEdit.ui">
-      <Filter>Source Files\widgets</Filter>
+      <Filter>widgets</Filter>
     </QtUic>
     <QtUic Include="src\MultiBtnWidget.ui">
-      <Filter>Source Files\widgets</Filter>
+      <Filter>widgets</Filter>
     </QtUic>
     <QtUic Include="src\LocalMusicButton.ui">
-      <Filter>Source Files\widgets</Filter>
+      <Filter>widgets</Filter>
     </QtUic>
     <QtUic Include="src\onlinemusicbutton.ui">
-      <Filter>Source Files\widgets</Filter>
+      <Filter>widgets</Filter>
     </QtUic>
   </ItemGroup>
   <ItemGroup>
