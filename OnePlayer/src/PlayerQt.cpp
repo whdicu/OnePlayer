@@ -19,18 +19,18 @@ PlayerQt::PlayerQt(QObject* parent)
 
 	connect(player_, &QMediaPlayer::durationChanged, this, &PlayerQt::durationChanged);
 	connect(player_, &QMediaPlayer::positionChanged, this, &PlayerQt::positionChanged);
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-	connect(player_, &QMediaPlayer::sourceChanged, this, &PlayerQt::sourceChanged);
-#else
-	connect(player_, &QMediaPlayer::mediaChanged, this, [this](const QMediaContent& media)
-	{
-		//qDebug() << media.canonicalUrl().fileName();
-		//qDebug() << media.canonicalUrl().path();
-		//qDebug() << media.canonicalUrl().toString();
-		//qDebug() << media.canonicalUrl().toLocalFile();
-		emit sourceChanged(media.canonicalUrl());
-	});
-#endif
+//#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+//	connect(player_, &QMediaPlayer::sourceChanged, this, &PlayerQt::sourceChanged);
+//#else
+//	connect(player_, &QMediaPlayer::mediaChanged, this, [this](const QMediaContent& media)
+//	{
+//		//qDebug() << media.canonicalUrl().fileName();
+//		//qDebug() << media.canonicalUrl().path();
+//		//qDebug() << media.canonicalUrl().toString();
+//		//qDebug() << media.canonicalUrl().toLocalFile();
+//		emit sourceChanged(media.canonicalUrl());
+//	});
+//#endif
 	connect(player_, &QMediaPlayer::mediaStatusChanged, this, [this](QMediaPlayer::MediaStatus status)
 	{
 		switch (status)
@@ -101,11 +101,13 @@ void PlayerQt::setPosition(qint64 pos)
 void PlayerQt::playCurrentIndex(qint64 pos)
 {
 	emit beginPlay();
+	QUrl url = SETTING_HANDLER->currentMusicUrl();
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-	player_->setSource(SETTING_HANDLER->currentMusicUrl());
+	player_->setSource(url);
 #else
-	player_->setMedia(SETTING_HANDLER->currentMusicUrl());
+	player_->setMedia(url);
 #endif
+	emit sourceChanged(url);
 	setPosition(pos);
 	player_->play();
 }
