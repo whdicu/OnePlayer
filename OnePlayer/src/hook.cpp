@@ -1,6 +1,7 @@
 #define Q_OS_WIN
 #ifdef Q_OS_WIN
 #include "hook.h"
+#include <QThread>
 
 static HHOOK keyHook = nullptr;
 static Hook* hook = nullptr;
@@ -48,6 +49,12 @@ void Hook::unInstallHook()
 void Hook::sendSignal(DWORD key)
 {
 	emit sendKeyType(key);
+}
+
+Hook::Hook()
+{
+	QThread* thread = new QThread(this);
+	moveToThread(thread);
 }
 
 #endif  // Q_OS_WIN

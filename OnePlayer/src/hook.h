@@ -18,7 +18,7 @@ signals:
 	void sendKeyType(DWORD);
 
 private:
-	Hook() = default;
+	Hook();
 	~Hook() = default;
 };
 
