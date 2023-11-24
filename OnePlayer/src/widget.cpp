@@ -75,7 +75,7 @@ Widget::Widget(const QString& filepath, QWidget *parent)
         else
         {
             resize(MAIN_WIDGET_WIDTH, MAIN_WIDGET_HEIGHT);
-            move(pressX_, pressY_); 
+            move(pressX_, pressY_);
             show();
             setWindowState(Qt::WindowMinimized);
         }

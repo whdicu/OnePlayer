@@ -36,7 +36,8 @@ void MusicInfoWidget::drawImage(QImage image)
         , ui.label_background->height(), 20, true, 0.85));
 
     QString text_color = ImageHandler::getTextColor(image);
-    setStyleSheet(QString("QLabel{color: %1;}").arg(text_color));
+    //setStyleSheet(QString("QLabel{color: %1;}").arg(text_color));
+    setStyleSheet(QString("QLabel{ color: rgba(%1, 0.8); }").arg(text_color));
     //ui->lyrics_widget->set_color(text_color == "#5c5c66");
 }
 

@@ -72,7 +72,6 @@ QRgb ImageHandler::getMainColor(const QImage& image)
 {
 	unsigned long long r = 0, g = 0, b = 0, a = 0;
 	unsigned long long cnt = 0;
-	// 下半部分图像抽样取点
 	for (int i = 0; i < image.width(); i += 4)
 	{
 		// 原来只采样图片下半部分
@@ -94,9 +93,13 @@ QString ImageHandler::getTextColor(const QImage& image)
 {
 	QRgb c3 = getMainColor(image);
 
-	return QString("#%1%2%3").arg((int)qMin(qRed(c3) * 1.3, 255.0), 2, 16, QChar('0'))
-		.arg((int)qMin(qGreen(c3) * 1.3, 255.0), 2, 16, QChar('0'))
-		.arg((int)qMin(qBlue(c3) * 1.3, 255.0), 2, 16, QChar('0'));
+	return QString("%1, %2, %3").arg((int)((qRed(c3) << 2) + 255) / 5)
+		.arg((int)((qGreen(c3) << 2) + 255) / 5)
+		.arg((int)((qBlue(c3) << 2) + 255) / 5);
+
+	//return QString("#%1%2%3").arg((int)qMin(qRed(c3) * 1.3, 255.0), 2, 16, QChar('0'))
+	//	.arg((int)qMin(qGreen(c3) * 1.3, 255.0), 2, 16, QChar('0'))
+	//	.arg((int)qMin(qBlue(c3) * 1.3, 255.0), 2, 16, QChar('0'));
 
 	/*if (qRed(c3) + qGreen(c3) + qBlue(c3) < 384)
 		return "#b6d1c8";
