@@ -92,7 +92,7 @@ void SearchEdit::findMusic(const QString& word)
 	DList<QUrl> playList = SETTING_HANDLER->currentPlayList();
 	for (DSizeType i = 0; i < playList.size(); ++i)
 	{
-		QRegularExpression reg(".*" + word + ".*");
+		QRegularExpression reg(".*" + word + ".*", QRegularExpression::CaseInsensitiveOption);
 		auto ret = reg.match(playList.at(i).fileName());
 		if (ret.hasMatch())
 		{
