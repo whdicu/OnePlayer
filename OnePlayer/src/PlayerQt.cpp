@@ -1,7 +1,8 @@
-#include "PlayerQt.h"
+﻿#include "PlayerQt.h"
 #include "OnePlayerStruct.h"
 #include <QDebug>
-#include <QMediaMetaData>
+#include "OneMessageBox.h"
+#include <QMessageBox>
 #include "settinghandler.h"
 
 
@@ -45,6 +46,33 @@ PlayerQt::PlayerQt(QObject* parent)
 		
 	});
 	//connect(player_, &QMediaPlayer::metaDataChanged, this, &PlayerQt::slotMetaDataChanged);
+
+	// 发生错误
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    connect(player_, &QMediaPlayer::errorOccurred, this, [this](QMediaPlayer::Error err, const QString& err_str)
+	{
+		qWarning() << err << "\n" << err_str << "\n";
+		switch (err)
+		{
+		case QMediaPlayer::FormatError:
+			break;
+		default:
+		{
+			OneMessageBox::critical(nullptr, tr("发生了意想不到的事情")
+				, tr("详情：%1\n文件：%2").arg(err_str).arg(player_->source().fileName()));
+			break;
+		}
+		}
+	});
+#else
+	auto slotError = [this](QMediaPlayer::Error err)
+	{
+		qWarning() << err << "\n" << err_str << "\n";
+		OneMessageBox::critical(nullptr, tr("发生了意想不到的事情")
+			, tr("详情：%1\n文件：%2").arg(err_str)/*.arg(player_->source().fileName())*/);
+	};
+	connect(player_, SIGNAL(error(QMediaPlayer::Error error)), this, SLOT(slotError));
+#endif
 }
 
 PlayerQt::~PlayerQt()
