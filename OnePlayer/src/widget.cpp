@@ -166,6 +166,7 @@ Widget::Widget(const QString& filepath, QWidget *parent)
 
     // 播放之前上次关闭时放的歌
     player_->playCurrentIndex(SETTING_HANDLER->getStruct().musicPosition);
+    slotMusicIndexChanged(SETTING_HANDLER->getMusicIndex(), SETTING_HANDLER->getMusicIndex());  // 初始化被播放的那个音乐按钮样式
 }
 
 void Widget::slotKeyPressed(DWORD key)
@@ -249,10 +250,11 @@ void Widget::slotMenuBtnClicked(const QString& text)
 	{
 		QUrl url = SETTING_HANDLER->currentPlayList().at(musicIndex);
 		QString path = url.toLocalFile();
+        path.replace("/", "\\");
 
-		QProcess process;
-		path.replace("/", "\\");
-		process.startDetached("explorer.exe", { "/select,", path });
+		//QProcess process;
+		//process.startDetached("explorer.exe", { "/select,", path });
+        QProcess::startDetached("explorer.exe", { "/select,", path });
 		break;
 	}
 	case 2:  // 从列表中移除
@@ -298,35 +300,13 @@ void Widget::setListener()
 
     // 菜单中点了某一项
 	connect(DMenu::getButtonMenu(), &DMenu::sigBtnClicked, this, &Widget::slotMenuBtnClicked);
-
+    
     // 开始放歌时，播放图片Widget的隐藏动画
     connect(player_, &PlayerBase::beginPlay, this, [this]()
     {
         ui->btn_play->setIcon(QIcon(":/svgs/pause.svg"));
         ui->music_info_widget->animationHide();
     });
-
-//    // 音乐播放状态改变事件
-//#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-//    connect(player_, &QMediaPlayer::playbackStateChanged, this, [this](QMediaPlayer::PlaybackState state)
-//#else
-//	connect(player_, &QMediaPlayer::stateChanged, this, [this](QMediaPlayer::State state)
-//#endif
-//	{
-//        switch (state)
-//        {
-//        case QMediaPlayer::PlayingState:
-//            ui->btn_play->setIcon(QIcon(":/svgs/pause.svg"));
-//            // 每次播放音乐都
-//            break;
-//        case QMediaPlayer::PausedState:
-//            ui->btn_play->setIcon(QIcon(":/svgs/play.svg"));
-//            break;
-//        case QMediaPlayer::StoppedState:
-//            ui->btn_play->setIcon(QIcon(":/svgs/play.svg"));
-//            break;
-//        }
-//    });
 
     // 先sourceChanged，再metaDataChanged
     connect(player_, &PlayerBase::sourceChanged, this, [this](const QUrl& media)
