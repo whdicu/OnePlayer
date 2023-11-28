@@ -56,6 +56,7 @@ private slots:
     void slotPositionChanged(qint64 pos);
     void slotSearchEditClose();
     void slotMusicIndexChanged(DSizeType oldIndex, DSizeType newIndex);
+	void slotMenuBtnClicked(const QString& text);
      
 // 控件动画
 private:

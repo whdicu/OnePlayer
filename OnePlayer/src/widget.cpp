@@ -226,6 +226,52 @@ void Widget::slotMusicIndexChanged(DSizeType oldIndex, DSizeType newIndex)
     setMusicBtnStyle(newIndex, &BaseMusicButton::setPlayingStyle);
 }
 
+void Widget::slotMenuBtnClicked(const QString& text)
+{
+	int i = BUTTON_MENU_STR_LIST.indexOf(text);
+	switch (i)
+	{
+	case 0:  // 下一首播放
+	{
+		if (nullptr == DMenu::getButtonMenu()->getNowBtn())
+		{
+			qWarning() << "DMenu::getNowBtn is nullptr!" << __FUNCTION__ << __LINE__;
+			return;
+		}
+		DSizeType musicIndex = DMenu::getButtonMenu()->getNowBtn()->getMusicIndex();
+		switch (SETTING_HANDLER->getStruct().playMode)
+		{
+		case RANDOM:
+			SETTING_HANDLER->insertToRandomPlayList(musicIndex);
+			break;
+		default:
+			SETTING_HANDLER->setNextIndexTemp(musicIndex);
+			break;
+		}
+		break;
+	}
+	case 1:  // 打开文件所在位置
+	{
+		DSizeType musicIndex = DMenu::getButtonMenu()->getNowBtn()->getMusicIndex();
+		QUrl url = SETTING_HANDLER->currentPlayList().at(musicIndex);
+		QString path = url.toLocalFile();
+
+		QProcess process;
+		path.replace("/", "\\");
+		process.startDetached("explorer.exe", { "/select,", path });
+		break;
+	}
+	case 2:  // 从列表中移除
+	{
+		break;
+	}
+	case 3:  // 删除
+	{
+		break;
+	}
+	}
+}
+
 void Widget::setListener()
 {
     // 菜单失去焦点，判断是否需要隐藏
@@ -257,40 +303,7 @@ void Widget::setListener()
     });
 
     // 菜单中点了某一项
-    connect(DMenu::getButtonMenu(), &DMenu::sigBtnClicked, this, [this](QString text)
-    {
-        if (text == "下一首播放")
-        {
-			DSizeType musicIndex = DMenu::getButtonMenu()->getNowBtn()->getMusicIndex();
-			switch (SETTING_HANDLER->getStruct().playMode)
-			{
-			case RANDOM:
-				SETTING_HANDLER->insertToRandomPlayList(musicIndex);
-				break;
-			default:
-				SETTING_HANDLER->setNextIndexTemp(musicIndex);
-				break;
-			}
-        }
-        else if (text == "打开文件所在位置")
-        {
-            DSizeType musicIndex = DMenu::getButtonMenu()->getNowBtn()->getMusicIndex();
-            QUrl url = SETTING_HANDLER->currentPlayList().at(musicIndex);
-            QString path = url.toLocalFile();
-
-            QProcess process;
-            path.replace("/", "\\");
-            process.startDetached("explorer.exe", {"/select,", path});
-        }
-        else if (text == "从列表中移除")
-        {
-
-        }
-        else if (text == "删除")
-        {
-
-        }
-    });
+	connect(DMenu::getButtonMenu(), &DMenu::sigBtnClicked, this, &Widget::slotMenuBtnClicked);
 
     // 开始放歌时，播放图片Widget的隐藏动画
     connect(player_, &PlayerBase::beginPlay, this, [this]()

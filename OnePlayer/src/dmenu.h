@@ -23,7 +23,7 @@ public:
     void show(BaseMusicButton* btn);
 
 signals:
-    void sigBtnClicked(QString text);
+    void sigBtnClicked(const QString& text);
     void maybeNeedHide();
 
 private:

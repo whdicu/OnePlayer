@@ -53,6 +53,14 @@ const static QEasingCurve MUSIC_INFO_WIDGET_HIDE_EASING = QEasingCurve::OutQuad;
 // 搜索框过渡动画时间
 const static int SEARCH_EDIT_ANIMATION_TIME = 200;
 
+const static QStringList BUTTON_MENU_STR_LIST =
+{
+	QObject::tr("下一首播放"),
+	QObject::tr("打开文件所在位置"),
+	QObject::tr("从列表中移除"),
+	QObject::tr("删除")
+};
+
 
 /****************************** 样式 ******************************/
 // 本地音乐按钮样式
