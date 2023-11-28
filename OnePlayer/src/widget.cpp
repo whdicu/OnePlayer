@@ -54,6 +54,7 @@ Widget::Widget(const QString& filepath, QWidget *parent)
     , thisIsMoveWindow_(false)
     , isShowAnimation_(true)
     , shutdownBtnClicked_(false)
+    , isAnimateHide_(true)
 {
     ui->setupUi(this);
     setWindowFlags(Qt::FramelessWindowHint);
@@ -75,17 +76,11 @@ Widget::Widget(const QString& filepath, QWidget *parent)
             close();
         else
 		{
-            resize(MAIN_WIDGET_WIDTH, MAIN_WIDGET_HEIGHT);
+			//hide();
+            //resize(MAIN_WIDGET_WIDTH, MAIN_WIDGET_HEIGHT);
             move(pressX_, pressY_);
-			show();
-			QThread::msleep(1000);
-			QTimer* timer = new QTimer;
-			connect(timer, &QTimer::timeout, this, [this]()
-			{
-				setWindowState(Qt::WindowMinimized);
-			});
-			timer->start(500);
-			
+			//show();
+			setWindowState(Qt::WindowMinimized);
         }
     });
 
@@ -1099,26 +1094,55 @@ void Widget::refreshImageWidget(const MusicInfo& info)
 	ui->music_info_widget->animationShow();
 }
 
-void Widget::animateShow()
+void Widget::animateShow(bool fromCursor)
 {
+	isAnimateHide_ = false;
     QWidget::show();
-    int startx = QCursor::pos().x();
-    int starty = QCursor::pos().y();
-    int endx = startx - width() / 2;
-    if (endx < 20)
-        endx = 20;
-    int endy = starty - height() / 2;
-    if (endy < 20)
-        endy = 20;
+	int startx = QCursor::pos().x();
+	int starty = QCursor::pos().y();
+	int startWidth = 0;
+	int startHeight = 0;
+	int endx;
+	int endy;
+	if (fromCursor)
+	{
+		endx = startx - MAIN_WIDGET_WIDTH / 2;
+		if (endx < 20)
+			endx = 20;
+		endy = starty - MAIN_WIDGET_HEIGHT / 2;
+		if (endy < 20)
+			endy = 20;
+	}
+	else
+	{
+		if (animation_->state() == QPropertyAnimation::Running)
+		{
+			int startx = x();
+			int starty = y();
+			startWidth = width();
+			startHeight = height();
+			endx = pressX_;
+			endy = pressY_;
+		}
+		else
+		{
+			int beginX = x() + MAIN_WIDGET_WIDTH / 2;
+			int beginY = y() + MAIN_WIDGET_HEIGHT / 2;
+			endx = pressX_;
+			endy = pressY_;
+		}
+	}
 
-    animation_->setStartValue(QRect(startx, starty, 0, 0));
-    animation_->setEndValue(QRect(endx, endy, width(), height()));
+	animation_->stop();
+    animation_->setStartValue(QRect(startx, starty, startWidth, startHeight));
+    animation_->setEndValue(QRect(endx, endy, MAIN_WIDGET_WIDTH, MAIN_WIDGET_HEIGHT));
     animation_->start();
     isShowAnimation_ = true;
 }
 
 void Widget::animateHide()
 {
+	isAnimateHide_ = true;
     pressX_ = x();
     pressY_ = y();
     int newx = QCursor::pos().x();
@@ -1126,6 +1150,7 @@ void Widget::animateHide()
     int w = width();
     int h = height();
 
+	animation_->stop();
     animation_->setStartValue(QRect(pressX_, pressY_, w, h));
     animation_->setEndValue(QRect(newx, newy, 0, 0));
     animation_->start();
