@@ -27,4 +27,6 @@ private:
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 	QAudioOutput* audioOutput_;
 #endif
+	// 放歌的开始pos，在playCurrentIndex中修改，在durationChange中设置到player中
+	qint64 startPos_;
 };

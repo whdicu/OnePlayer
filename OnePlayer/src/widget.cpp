@@ -579,6 +579,15 @@ BaseMusicButton* Widget::addLocalMusicBtn(const QUrl& url)
         if (SETTING_HANDLER->getMusicIndex() == index)
             return;
 
+		switch (SETTING_HANDLER->getStruct().playMode)
+		{
+		case RANDOM:
+		{
+			SETTING_HANDLER->insertToRandomPlayList(index);
+			break;
+		}
+		}
+
         SETTING_HANDLER->setMusicIndex(index);
         player_->playCurrentIndex();
 

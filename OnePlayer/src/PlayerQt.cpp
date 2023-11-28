@@ -12,13 +12,20 @@ PlayerQt::PlayerQt(QObject* parent)
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 	, audioOutput_(new QAudioOutput(this))
 #endif
+	, startPos_(0)
 {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 	player_->setAudioOutput(audioOutput_);
 #endif
 	setVolume(SETTING_HANDLER->getStruct().volume);
 
-	connect(player_, &QMediaPlayer::durationChanged, this, &PlayerQt::durationChanged);
+	connect(player_, &QMediaPlayer::durationChanged, this, [this](qint64 duration)
+	{
+		if (startPos_ >= 0)
+			setPosition(startPos_);
+
+		emit durationChanged(duration);
+	});
 	connect(player_, &QMediaPlayer::positionChanged, this, &PlayerQt::positionChanged);
 //#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 //	connect(player_, &QMediaPlayer::sourceChanged, this, &PlayerQt::sourceChanged);
@@ -123,6 +130,9 @@ void PlayerQt::setVolume(float vol)
 
 void PlayerQt::setPosition(qint64 pos)
 {
+	if (pos > player_->duration())
+		return;
+
 	player_->setPosition(pos);
 }
 
@@ -136,7 +146,7 @@ void PlayerQt::playCurrentIndex(qint64 pos)
 	player_->setMedia(url);
 #endif
 	emit sourceChanged(url);
-	setPosition(pos);
+	startPos_ = pos;
 	player_->play();
 }
 
