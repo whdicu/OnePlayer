@@ -12,7 +12,7 @@ class DMenu : public QWidget
 
 public:
     static DMenu* getButtonMenu();
-    BaseMusicButton* getNowBtn() {return now_btn_;}
+    DSizeType getSelectedMusicIndex() { return musicIndex_; }
 
     void animateMove(int newx, int newy);
     void animateMove(QPoint pos);
@@ -20,7 +20,7 @@ public:
     void animateHide();
     bool isHidden() { return is_hidden_; }
     bool setFocus();
-    void show(BaseMusicButton* btn);
+    void show(DSizeType musicIndex);
 
 signals:
     void sigBtnClicked(const QString& text);
@@ -34,6 +34,6 @@ private:
 
     QWidget* widget_;
     bool is_hidden_;
-    BaseMusicButton* now_btn_;
+    DSizeType musicIndex_;
     QPropertyAnimation* animation_;
 };

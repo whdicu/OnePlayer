@@ -228,17 +228,12 @@ void Widget::slotMusicIndexChanged(DSizeType oldIndex, DSizeType newIndex)
 
 void Widget::slotMenuBtnClicked(const QString& text)
 {
+	DSizeType musicIndex = DMenu::getButtonMenu()->getSelectedMusicIndex();
 	int i = BUTTON_MENU_STR_LIST.indexOf(text);
 	switch (i)
 	{
 	case 0:  // 下一首播放
 	{
-		if (nullptr == DMenu::getButtonMenu()->getNowBtn())
-		{
-			qWarning() << "DMenu::getNowBtn is nullptr!" << __FUNCTION__ << __LINE__;
-			return;
-		}
-		DSizeType musicIndex = DMenu::getButtonMenu()->getNowBtn()->getMusicIndex();
 		switch (SETTING_HANDLER->getStruct().playMode)
 		{
 		case RANDOM:
@@ -252,7 +247,6 @@ void Widget::slotMenuBtnClicked(const QString& text)
 	}
 	case 1:  // 打开文件所在位置
 	{
-		DSizeType musicIndex = DMenu::getButtonMenu()->getNowBtn()->getMusicIndex();
 		QUrl url = SETTING_HANDLER->currentPlayList().at(musicIndex);
 		QString path = url.toLocalFile();
 
@@ -624,7 +618,7 @@ BaseMusicButton* Widget::addLocalMusicBtn(const QUrl& url)
     connect(btn, &QPushButton::customContextMenuRequested, this, [btn](const QPoint& pos)
     {
         DMenu* menu = DMenu::getButtonMenu();
-        menu->show(btn);
+        menu->show(btn->getMusicIndex());
     });
     ui->music_layout->addWidget(btn);
     return btn;

@@ -47,7 +47,7 @@ DMenu::DMenu(const QStringList& texts)
     : QWidget(nullptr, Qt::FramelessWindowHint | Qt::Drawer | Qt::WindowStaysOnTopHint)
     , widget_(new QWidget(this))
     , is_hidden_(true)
-    , now_btn_(nullptr)
+    , musicIndex_(0)
 {
     setAttribute(Qt::WA_TranslucentBackground);
     setFocusPolicy(Qt::StrongFocus);
@@ -142,9 +142,9 @@ bool DMenu::setFocus()
     return hasFocus();
 }
 
-void DMenu::show(BaseMusicButton* btn)
+void DMenu::show(DSizeType musicIndex)
 {
-    now_btn_ = btn;
+	musicIndex_ = musicIndex;
     if (isHidden())
         animateShow();
     else
