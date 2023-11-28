@@ -48,6 +48,7 @@ Widget::Widget(const QString& filepath, QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::Widget)
     , player_(new PlayerQt(this))
+	, initSuccess_(true)
     , movingProgress_(false)
     , pressedCtrl_(false)
     , thisIsMoveWindow_(false)
@@ -129,6 +130,13 @@ Widget::Widget(const QString& filepath, QWidget *parent)
     }
     else
     {
+		QString type = filepath.section('.', -1);
+		if (!TYPE_LIST.contains(type))
+		{
+			QMessageBox::warning(this, tr("警告"), tr("不支持的类型:\n") + type);
+			initSuccess_ = false;
+			return;
+		}
 //        SETTING_HANDLER->set_player_mode(LOCAL);
 //        ui->stacked_widget->setCurrentIndex(0);
 //        QUrl url = QUrl::fromLocalFile(filepath);

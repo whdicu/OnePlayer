@@ -23,6 +23,9 @@ int main(int argc, char *argv[])
         file_path = QString::fromLocal8Bit(argv[1]);
 
     Widget w(file_path, nullptr);
+	if (!w.initSuccess())
+		return -1;
+
     w.animateShow();
     return a.exec();
 }

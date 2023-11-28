@@ -27,6 +27,9 @@ public:
 	~Widget();
     void animateShow();
     void animateHide();
+	
+	// Widget构造函数失败时，为false
+	bool initSuccess() { return initSuccess_; }
 
 private slots:
     void on_btn_shutdown_clicked();
@@ -104,6 +107,7 @@ private:
     Ui::Widget *ui;
     bool movingProgress_;
     PlayerBase* player_;
+	bool initSuccess_;
     
     // 拖动窗口时记录按下的xy，播放动画时用来记录隐藏前的xy
     int pressX_;
