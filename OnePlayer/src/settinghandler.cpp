@@ -70,6 +70,20 @@ void SettingHandler::clearRandomPlayList()
     randomIndexList_.pushBack(getMusicIndex());
 }
 
+void SettingHandler::insertToRandomPlayList(DSizeType musicIndex)
+{
+	if (randomIndexList_.isEmpty())
+	{
+		randomIndexList_.pushBack(musicIndex);
+		randomIndex_ = 0;
+	}
+	else
+	{
+		++randomIndex_;
+		randomIndexList_.insert(randomIndex_, musicIndex);
+	}
+}
+
 DSizeType SettingHandler::nextMusicIndex()
 {
 	switch (setting_.playMode)
@@ -150,14 +164,14 @@ DSizeType SettingHandler::previousMusicIndex()
     return getMusicIndex();
 }
 
-void SettingHandler::setMusicIndex(DSizeType index)
+void SettingHandler::setMusicIndex(DSizeType musicIndex)
 {
-    if (musicIndex_ != index)
-    {
-        DSizeType oldIndex = musicIndex_;
-        musicIndex_ = index;
-        emit sigMusicIndexChanged(oldIndex, index);
-    }
+	if (musicIndex_ == musicIndex)
+		return;
+
+	DSizeType oldIndex = musicIndex_;
+	musicIndex_ = musicIndex;
+	emit sigMusicIndexChanged(oldIndex, musicIndex);
 }
 
 SettingHandler::SettingHandler()

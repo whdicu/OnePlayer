@@ -21,12 +21,13 @@ public:
     // 获取当前歌单下的歌曲，随机播放时 不是 返回随机播放歌曲Index列表
 	const DList<QUrl> currentPlayList();
     void clearRandomPlayList();
+	void insertToRandomPlayList(DSizeType musicIndex);
 
     DSizeType nextMusicIndex();
 	QUrl currentMusicUrl();
     DSizeType previousMusicIndex();
 
-    void setMusicIndex(DSizeType index);
+    void setMusicIndex(DSizeType musicIndex);
     DSizeType getMusicIndex() { return musicIndex_; }
 
 signals:
