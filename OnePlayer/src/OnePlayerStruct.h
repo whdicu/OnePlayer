@@ -40,7 +40,7 @@ const static int STACKED_MUSIC_BTN_HEIGHT = 355;
 
 /****************************** 时间 ******************************/
 // 主界面显示隐藏的过渡动画时间
-const static int MAIN_WIDGET_ANIMATION_TIME = 250;
+const static int MAIN_WIDGET_ANIMATION_TIME = 2500;
 
 // 右侧按钮框的过渡动画Widget
 const static int MORE_BTN_WIDGET_ANIMATION_TIME = 250;

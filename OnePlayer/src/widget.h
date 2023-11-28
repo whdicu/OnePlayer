@@ -25,8 +25,9 @@ class Widget : public QWidget
 public:
 	Widget(const QString& filepath = "", QWidget *parent = nullptr);
 	~Widget();
-    void animateShow();
+    void animateShow(bool fromCursor = true);
     void animateHide();
+	bool isAnimateHide() { return isAnimateHide_; }
 	
 	// Widget构造函数失败时，为false
 	bool initSuccess() { return initSuccess_; }
@@ -118,5 +119,7 @@ private:
 
     bool isShowAnimation_;  // 是播放的主界面显示动画还是隐藏动画
     bool shutdownBtnClicked_;
+
+	bool isAnimateHide_;
 };
 #endif // WIDGET_H
