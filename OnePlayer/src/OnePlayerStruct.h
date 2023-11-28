@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "HDBase/DList.hpp"
 #include <QEasingCurve>
 #include <QImage>
@@ -16,58 +16,58 @@ const static QStringList TYPE_LIST = { "mp3", "flac", "wav", "ogg", "acc", "m4a"
 #include <QMediaPlaylist>
 #define GET_PLAY_STATE player_->state()
 #define SET_VOLUME(v) player_->setVolume((v) * 100);
-const static QStringList TYPE_LIST = { "mp3", "wav", "ogg", "acc" };  // 5.9.4ÎŞ·¨²¥·Åflac m4a
+const static QStringList TYPE_LIST = { "mp3", "wav", "ogg", "acc" };  // 5.9.4æ— æ³•æ’­æ”¾flac m4a
 #endif
 
 
 const static QString IP = "47.113.231.74";
 const static int PORT = 9002;
 
-// Ö÷½çÃæ´óĞ¡
+// ä¸»ç•Œé¢å¤§å°
 const static int MAIN_WIDGET_WIDTH = 920;
 const static int MAIN_WIDGET_HEIGHT = 520;
 
-// ÓÒ²à°´Å¥¿òµÄÎ»ÖÃ´óĞ¡
+// å³ä¾§æŒ‰é’®æ¡†çš„ä½ç½®å¤§å°
 const static int MORE_BTN_WIDGET_X = 420;
 const static int MORE_BTN_WIDGET_Y = 0;
 const static int MORE_BTN_WIDGET_WIDTH = 40;
 const static int MORE_BTN_WIDGET_HEIGHT = 400;
 
-// ÒôÀÖ°´Å¥¿Ø¼ş´óĞ¡
+// éŸ³ä¹æŒ‰é’®æ§ä»¶å¤§å°
 const static int STACKED_MUSIC_BTN_WIDTH = 400;
 const static int STACKED_MUSIC_BTN_HEIGHT = 355;
 
 
-/****************************** Ê±¼ä ******************************/
-// Ö÷½çÃæÏÔÊ¾Òş²ØµÄ¹ı¶É¶¯»­Ê±¼ä
+/****************************** æ—¶é—´ ******************************/
+// ä¸»ç•Œé¢æ˜¾ç¤ºéšè—çš„è¿‡æ¸¡åŠ¨ç”»æ—¶é—´
 const static int MAIN_WIDGET_ANIMATION_TIME = 250;
 
-// ÓÒ²à°´Å¥¿òµÄ¹ı¶É¶¯»­Widget
+// å³ä¾§æŒ‰é’®æ¡†çš„è¿‡æ¸¡åŠ¨ç”»Widget
 const static int MORE_BTN_WIDGET_ANIMATION_TIME = 250;
 
-// ×ó²àÍ¼Æ¬widgetµÄ¹ı¶É¶¯»­
+// å·¦ä¾§å›¾ç‰‡widgetçš„è¿‡æ¸¡åŠ¨ç”»
 const static int MUSIC_INFO_WIDGET_ANIMATION_TIME = 150;
 const static QEasingCurve MUSIC_INFO_WIDGET_SHOW_EASING = QEasingCurve::InQuad;
 const static QEasingCurve MUSIC_INFO_WIDGET_HIDE_EASING = QEasingCurve::OutQuad;
 
-// ËÑË÷¿ò¹ı¶É¶¯»­Ê±¼ä
+// æœç´¢æ¡†è¿‡æ¸¡åŠ¨ç”»æ—¶é—´
 const static int SEARCH_EDIT_ANIMATION_TIME = 200;
 
 const static QStringList BUTTON_MENU_STR_LIST =
 {
-	QObject::tr("ÏÂÒ»Ê×²¥·Å"),
-	QObject::tr("´ò¿ªÎÄ¼şËùÔÚÎ»ÖÃ"),
-	QObject::tr("´ÓÁĞ±íÖĞÒÆ³ı"),
-	QObject::tr("É¾³ı")
+	QString("ä¸‹ä¸€é¦–æ’­æ”¾"),
+	QString("æ‰“å¼€æ–‡ä»¶æ‰€åœ¨ä½ç½®"),
+	QString("ä»åˆ—è¡¨ä¸­ç§»é™¤"),
+	QString("åˆ é™¤")
 };
 
 
-/****************************** ÑùÊ½ ******************************/
-// ±¾µØÒôÀÖ°´Å¥ÑùÊ½
+/****************************** æ ·å¼ ******************************/
+// æœ¬åœ°éŸ³ä¹æŒ‰é’®æ ·å¼
 static const QString LOCAL_NORMAL_STYLE = "QPushButton {color: #5c5c66;background-color: rgba(182, 209, 200, 0.25);border-radius: 20px; padding-left: 10px; padding-right: 10px;} QPushButton:hover {background-color: rgba(182, 209, 200, 0.5);}";
 static const QString LOCAL_PLAYING_STYLE = "QPushButton {color: #5c5c66;background-color: rgb(182, 209, 200);border-radius: 20px; padding-left: 10px; padding-right: 10px;}";
 
-// ÔÚÏßÒôÀÖ°´Å¥ÑùÊ½
+// åœ¨çº¿éŸ³ä¹æŒ‰é’®æ ·å¼
 static const QString ONLINE_NORMAL_STYLE = "QPushButton {color: #5c5c66;background-color: rgba(182, 209, 200, 0.25);border-radius: 0px;} #btn_name{text-align : left;padding-left: 10px;border-top-left-radius: 20px;border-bottom-left-radius: 20px;}#btn_singer{text-align : left;}#btn_download{color: #1473e6;border-top-right-radius: 20px;border-bottom-right-radius: 20px;}";
 static const QString ONLINE_PLAYING_STYLE = "QPushButton {color: #5c5c66;background-color: rgb(182, 209, 200);border-radius: 0px;} #btn_name{text-align : left;padding-left: 10px;border-top-left-radius: 20px;border-bottom-left-radius: 20px;}#btn_singer{text-align : left;}#btn_download{color: #1473e6;border-top-right-radius: 20px;border-bottom-right-radius: 20px;}";
 static const QString ONLINE_HOVER_STYLE = "QPushButton {color: #5c5c66;background-color: rgba(182, 209, 200, 0.5);border-radius: 0px;} #btn_name{text-align : left;padding-left: 10px;border-top-left-radius: 20px;border-bottom-left-radius: 20px;}#btn_singer{text-align : left;}#btn_download{color: #1473e6;border-top-right-radius: 20px;border-bottom-right-radius: 20px;}";
