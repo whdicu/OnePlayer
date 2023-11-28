@@ -70,7 +70,7 @@ DMenu::DMenu(const QStringList& texts)
         QPushButton* btn = new QPushButton(text);
         connect(btn, &QPushButton::clicked, this, [this, text]()
         {
-            emit btn_clicked(text);
+            emit sigBtnClicked(text);
             animateHide();
         });
         btn->setCursor(Qt::PointingHandCursor);

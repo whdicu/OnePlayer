@@ -8,6 +8,8 @@
 #include <QJsonParseError>
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 #include <QRandomGenerator64>
+#else
+#include <QTime>
 #endif
 
 
@@ -72,16 +74,14 @@ void SettingHandler::clearRandomPlayList()
 
 void SettingHandler::insertToRandomPlayList(DSizeType musicIndex)
 {
-	if (randomIndexList_.isEmpty())
+	if (randomIndex_ > randomIndexList_.size())
+		return;
+	else if (randomIndex_ == randomIndexList_.size())
 	{
 		randomIndexList_.pushBack(musicIndex);
-		randomIndex_ = 0;
+		return;
 	}
-	else
-	{
-		++randomIndex_;
-		randomIndexList_.insert(randomIndex_, musicIndex);
-	}
+	randomIndexList_.insert(randomIndex_ + 1, musicIndex);
 }
 
 DSizeType SettingHandler::nextMusicIndex()
@@ -97,6 +97,7 @@ DSizeType SettingHandler::nextMusicIndex()
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
             DSizeType newIndex = QRandomGenerator64::global()->bounded(0ull, currentPlayList().size());
 #else
+			qsrand(QTime::currentTime().msec());
 			DSizeType newIndex = qrand() % currentPlayList().size();
 #endif
 			randomIndexList_.pushBack(newIndex);
@@ -106,6 +107,14 @@ DSizeType SettingHandler::nextMusicIndex()
 	}
 	default:
 	{
+		// 在菜单中点过下一首播放
+		if (nextIndexTemp_ != -1)
+		{
+			setMusicIndex(nextIndexTemp_);
+			nextIndexTemp_ = -1;
+			break;
+		}
+
 		if (getMusicIndex() >= currentPlayList().size() - 1)
             setMusicIndex(0);
         else
@@ -125,10 +134,20 @@ QUrl SettingHandler::currentMusicUrl()
 		setting_.playListName = setting_.playListMap.begin().key();
 	}
 
-    if (getMusicIndex() >= currentPlayList().size())
+	DSizeType musicIndex;
+	switch (setting_.playMode)
+	{
+	case RANDOM:
+		musicIndex = randomIndexList_.at(randomIndex_);
+		break;
+	default:
+		musicIndex = getMusicIndex();
+		break;
+	}
+    if (musicIndex >= currentPlayList().size())
         return QUrl();
 
-    return currentPlayList().at(getMusicIndex());
+    return currentPlayList().at(musicIndex);
 }
 
 DSizeType SettingHandler::previousMusicIndex()
@@ -144,6 +163,7 @@ DSizeType SettingHandler::previousMusicIndex()
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
             DSizeType newIndex = QRandomGenerator64::global()->bounded(0ull, currentPlayList().size());
 #else
+			qsrand(QTime::currentTime().msec());
             DSizeType newIndex = qrand() % currentPlayList().size();
 #endif
 			randomIndexList_.pushFront(newIndex);
@@ -178,6 +198,7 @@ SettingHandler::SettingHandler()
     : QObject(nullptr)
     , setting_(SettingStruct())
     , musicIndex_(0)
+	, nextIndexTemp_(-1)
 {
     readAll();
 }

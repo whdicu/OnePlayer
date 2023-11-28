@@ -24,11 +24,17 @@ public:
 	void insertToRandomPlayList(DSizeType musicIndex);
 
     DSizeType nextMusicIndex();
+	// 随机播放时根据randomIndex获取musicIndex，其他播放模式直接使用musicIndex_
 	QUrl currentMusicUrl();
     DSizeType previousMusicIndex();
 
     void setMusicIndex(DSizeType musicIndex);
     DSizeType getMusicIndex() { return musicIndex_; }
+
+	// 在非随机播放模式下，菜单中点击了下一首播放
+	void setNextIndexTemp(DSizeType nextIndexTemp) { nextIndexTemp_ = nextIndexTemp; }
+
+	void plusRandomIndex() { ++randomIndex_; }
 
 signals:
     void sigMusicIndexChanged(DSizeType oldIndex, DSizeType newIndex);
@@ -50,6 +56,7 @@ private:
 
     SettingStruct setting_;
     DSizeType musicIndex_;  // 当前正在播放的音乐的index
+	DSizeType nextIndexTemp_;  // 点击菜单中的下一首播放，会将index暂存到这里
 
     DSizeType randomIndex_;
     DList<DSizeType> randomIndexList_;

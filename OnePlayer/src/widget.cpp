@@ -74,11 +74,18 @@ Widget::Widget(const QString& filepath, QWidget *parent)
         if (shutdownBtnClicked_)
             close();
         else
-        {
+		{
             resize(MAIN_WIDGET_WIDTH, MAIN_WIDGET_HEIGHT);
             move(pressX_, pressY_);
-            show();
-            setWindowState(Qt::WindowMinimized);
+			show();
+			QThread::msleep(1000);
+			QTimer* timer = new QTimer;
+			connect(timer, &QTimer::timeout, this, [this]()
+			{
+				setWindowState(Qt::WindowMinimized);
+			});
+			timer->start(500);
+			
         }
     });
 
@@ -250,11 +257,20 @@ void Widget::setListener()
     });
 
     // 菜单中点了某一项
-    connect(DMenu::getButtonMenu(), &DMenu::btn_clicked, this, [this](QString text)
+    connect(DMenu::getButtonMenu(), &DMenu::sigBtnClicked, this, [this](QString text)
     {
         if (text == "下一首播放")
         {
-
+			DSizeType musicIndex = DMenu::getButtonMenu()->getNowBtn()->getMusicIndex();
+			switch (SETTING_HANDLER->getStruct().playMode)
+			{
+			case RANDOM:
+				SETTING_HANDLER->insertToRandomPlayList(musicIndex);
+				break;
+			default:
+				SETTING_HANDLER->setNextIndexTemp(musicIndex);
+				break;
+			}
         }
         else if (text == "打开文件所在位置")
         {
@@ -582,25 +598,15 @@ BaseMusicButton* Widget::addLocalMusicBtn(const QUrl& url)
 		switch (SETTING_HANDLER->getStruct().playMode)
 		{
 		case RANDOM:
-		{
 			SETTING_HANDLER->insertToRandomPlayList(index);
+			SETTING_HANDLER->plusRandomIndex();
+			break;
+		default:
+			SETTING_HANDLER->setMusicIndex(index);
 			break;
 		}
-		}
-
-        SETTING_HANDLER->setMusicIndex(index);
+		
         player_->playCurrentIndex();
-
-        
-
-        //DSizeType newMusicIndex = btn_list_.indexOf(btn);
-        //play_music(newMusicIndex);
-
-        //if (play_mode == RANDOM)
-        //{
-        //    random_index_ = random_index_list_.size();
-        //    random_index_list_.pushBack(newMusicIndex);
-        //}
     });
     connect(btn, &QPushButton::customContextMenuRequested, this, [btn](const QPoint& pos)
     {
