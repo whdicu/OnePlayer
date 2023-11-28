@@ -14,7 +14,6 @@ MusicInfoWidget::MusicInfoWidget(QWidget *parent)
     opacityEffect_ = new QGraphicsOpacityEffect(this);
     animation_ = new QPropertyAnimation(opacityEffect_, "opacity");
     animation_->setDuration(MUSIC_INFO_WIDGET_ANIMATION_TIME);
-    animation_->setEasingCurve(QEasingCurve::InOutQuad);
     setGraphicsEffect(opacityEffect_);
 }
 
@@ -51,6 +50,7 @@ void MusicInfoWidget::animationHide()
         loop.quit();
     });
     
+	animation_->setEasingCurve(MUSIC_INFO_WIDGET_HIDE_EASING);
     animation_->setStartValue(opacityEffect_->opacity());
     animation_->setEndValue(0.0);
     animation_->start();
@@ -61,6 +61,7 @@ void MusicInfoWidget::animationShow()
 {
 	animation_->stop();
 
+	animation_->setEasingCurve(MUSIC_INFO_WIDGET_SHOW_EASING);
     animation_->setStartValue(opacityEffect_->opacity());
     animation_->setEndValue(1.0);
     animation_->start();
