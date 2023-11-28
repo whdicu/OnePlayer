@@ -1,4 +1,4 @@
-#define Q_OS_WIN
+﻿#define Q_OS_WIN
 #ifdef Q_OS_WIN
 #ifndef HOOK_H
 #define HOOK_H

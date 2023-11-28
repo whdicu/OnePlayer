@@ -1,4 +1,4 @@
-#include "settingtabwidget.h"
+﻿#include "settingtabwidget.h"
 #include <QComboBox>
 #include <QMap>
 #include <QPushButton>

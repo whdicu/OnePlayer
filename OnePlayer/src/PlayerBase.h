@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <QImage>
 #include <QObject>
 
@@ -8,14 +8,14 @@ class PlayerBase : public QObject
 public:
 	PlayerBase(QObject* parent = nullptr);
 	virtual ~PlayerBase() {}
-	// µ÷ÓÃºó£¬´¦ÓÚÕıÔÚ²¥·Å×´Ì¬·µ»Øtrue
+	// è°ƒç”¨åï¼Œå¤„äºæ­£åœ¨æ’­æ”¾çŠ¶æ€è¿”å›true
 	virtual bool playOrPause() = 0;
 	virtual void playNext() = 0;
     virtual void playPrevious() = 0;
 	virtual void setVolume(float vol) = 0;
 	virtual void setPosition(qint64 pos) = 0;
 	virtual qint64 getPosition() = 0;
-	virtual qint64 getDuration() = 0;  // ÒôÀÖ×Ü³¤¶È
+	virtual qint64 getDuration() = 0;  // éŸ³ä¹æ€»é•¿åº¦
 	virtual void playCurrentIndex(qint64 pos=0) = 0;
 	virtual void setLoop(bool loop) = 0;
 

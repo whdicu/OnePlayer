@@ -67,9 +67,9 @@ PlayerQt::PlayerQt(QObject* parent)
 #else
 	auto slotError = [this](QMediaPlayer::Error err)
 	{
-		qWarning() << err << "\n" << err_str << "\n";
+		qWarning() << err << "\n" << player_->errorString() << "\n";
 		OneMessageBox::critical(nullptr, tr("发生了意想不到的事情")
-			, tr("详情：%1\n文件：%2").arg(err_str)/*.arg(player_->source().fileName())*/);
+			, tr("详情：%1\n文件：%2").arg(player_->errorString())/*.arg(player_->source().fileName())*/);
 	};
 	connect(player_, SIGNAL(error(QMediaPlayer::Error error)), this, SLOT(slotError));
 #endif

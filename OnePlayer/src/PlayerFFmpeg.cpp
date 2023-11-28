@@ -1,4 +1,4 @@
-#include "PlayerFFmpeg.h"
+ï»¿#include "PlayerFFmpeg.h"
 //#include "OnePlayerStruct.h"
 #include <QDebug>
 #include "settinghandler.h"
@@ -21,7 +21,7 @@ MusicInfo PlayerFFmpeg::getMusicInfo(const QString& musicPath)
 		return ret;
 	}
 
-	//¶ÁÈ¡metadataÖÐËùÓÐµÄtag
+	//è¯»å–metadataä¸­æ‰€æœ‰çš„tag
 	AVDictionaryEntry* tag = nullptr;
 	if (tag = av_dict_get(formatContext->metadata, "title", nullptr, AV_DICT_IGNORE_SUFFIX))
 		ret.title = tag->value;

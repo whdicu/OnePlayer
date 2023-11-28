@@ -1,4 +1,4 @@
-#include "PlayerBase.h"
+﻿#include "PlayerBase.h"
 #include "settinghandler.h"
 
 PlayerBase::PlayerBase(QObject* parent)

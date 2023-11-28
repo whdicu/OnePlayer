@@ -1,4 +1,4 @@
-#define Q_OS_WIN
+﻿#define Q_OS_WIN
 #ifdef Q_OS_WIN
 #include "hook.h"
 #include <QThread>
