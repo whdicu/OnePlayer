@@ -304,23 +304,6 @@ void Widget::setListener()
 //            break;
 //        }
 //    });
-//
-//    // 发生错误
-//#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-//    connect(player_, &QMediaPlayer::errorOccurred, this, [this](QMediaPlayer::Error err, const QString& err_str)
-//	{
-//		qDebug() << err << "\n" << err_str << "\n";
-//		QMessageBox::critical(this, "发生了意想不到的事情", "详情：" + err_str + "\n文件：" + player_->source().fileName());
-//	});
-//#else
-//	auto slotError = [this](QMediaPlayer::Error err)
-//	{
-//		qDebug() << err << "\n" << player_->errorString() << "\n";
-//		QMessageBox::critical(this, "发生了意想不到的事情", "详情：" + player_->errorString() + "\n文件："/* + player_->source().fileName()*/);
-//	};
-//	connect(player_, SIGNAL(error(QMediaPlayer::Error error)), this, SLOT(slotError));
-//#endif
-	
 
     // 先sourceChanged，再metaDataChanged
     connect(player_, &PlayerBase::sourceChanged, this, [this](const QUrl& media)

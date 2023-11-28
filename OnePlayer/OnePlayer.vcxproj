@@ -114,6 +114,7 @@
     <ClCompile Include="src\MusicInfoWidget.cpp" />
     <ClCompile Include="src\neteasehandler.cpp" />
     <ClCompile Include="src\neteasewidget.cpp" />
+    <ClCompile Include="src\OneMessageBox.cpp" />
     <ClCompile Include="src\onlinehandler.cpp" />
     <ClCompile Include="src\onlinemusicbutton.cpp" />
     <ClCompile Include="src\PlayerBase.cpp" />
@@ -140,6 +141,7 @@
     <QtUic Include="src\LocalMusicButton.ui" />
     <QtUic Include="src\MusicInfoWidget.ui" />
     <QtUic Include="src\neteasewidget.ui" />
+    <QtUic Include="src\OneMessageBox.ui" />
     <QtUic Include="src\onlinemusicbutton.ui" />
     <QtUic Include="src\SearchEdit.ui" />
     <QtUic Include="src\settingtabwidget.ui" />
@@ -158,6 +160,7 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="src\ImageHandler.h" />
     <QtMoc Include="src\MultiBtnWidget.h" />
+    <QtMoc Include="src\OneMessageBox.h" />
     <ClInclude Include="src\OnePlayerStruct.h" />
     <ClInclude Include="src\onlinehandler.h" />
     <QtMoc Include="src\SearchEdit.h" />
