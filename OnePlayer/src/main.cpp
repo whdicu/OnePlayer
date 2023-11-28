@@ -39,7 +39,6 @@ int main(int argc, char *argv[])
 		case QSystemTrayIcon::Context:
 			break;
 		case QSystemTrayIcon::DoubleClick:
-			break;
 		case QSystemTrayIcon::Trigger:
 			if (w.isAnimateHide())
 				w.animateShow(false);

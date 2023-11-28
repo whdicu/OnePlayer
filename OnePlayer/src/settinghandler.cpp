@@ -134,20 +134,18 @@ QUrl SettingHandler::currentMusicUrl()
 		setting_.playListName = setting_.playListMap.begin().key();
 	}
 
-	DSizeType musicIndex;
 	switch (setting_.playMode)
 	{
 	case RANDOM:
-		musicIndex = randomIndexList_.at(randomIndex_);
+		setMusicIndex(randomIndexList_.at(randomIndex_));
 		break;
 	default:
-		musicIndex = getMusicIndex();
 		break;
 	}
-    if (musicIndex >= currentPlayList().size())
+    if (musicIndex_ >= currentPlayList().size())
         return QUrl();
 
-    return currentPlayList().at(musicIndex);
+    return currentPlayList().at(musicIndex_);
 }
 
 DSizeType SettingHandler::previousMusicIndex()

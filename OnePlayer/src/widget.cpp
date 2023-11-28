@@ -66,7 +66,6 @@ Widget::Widget(const QString& filepath, QWidget *parent)
     // 动画创建
     animation_ = new QPropertyAnimation(this, "geometry");
     animation_->setDuration(MAIN_WIDGET_ANIMATION_TIME);
-    animation_->setEasingCurve(QEasingCurve::InOutQuad);
     connect(animation_, &QPropertyAnimation::finished, this, [this]()
     {
         if (isShowAnimation_)
@@ -76,11 +75,11 @@ Widget::Widget(const QString& filepath, QWidget *parent)
             close();
         else
 		{
-			//hide();
             //resize(MAIN_WIDGET_WIDTH, MAIN_WIDGET_HEIGHT);
             move(pressX_, pressY_);
+            hide();
 			//show();
-			setWindowState(Qt::WindowMinimized);
+			//setWindowState(Qt::WindowMinimized);
         }
     });
 
@@ -1097,7 +1096,6 @@ void Widget::refreshImageWidget(const MusicInfo& info)
 void Widget::animateShow(bool fromCursor)
 {
 	isAnimateHide_ = false;
-    QWidget::show();
 	int startx = QCursor::pos().x();
 	int starty = QCursor::pos().y();
 	int startWidth = 0;
@@ -1115,25 +1113,37 @@ void Widget::animateShow(bool fromCursor)
 	}
 	else
 	{
-		if (animation_->state() == QPropertyAnimation::Running)
+		if (isHidden())
 		{
-			int startx = x();
-			int starty = y();
-			startWidth = width();
-			startHeight = height();
-			endx = pressX_;
-			endy = pressY_;
+            int beginX = x() + MAIN_WIDGET_WIDTH / 2;
+            int beginY = y() + MAIN_WIDGET_HEIGHT / 2;
+            endx = pressX_;
+            endy = pressY_;
 		}
 		else
 		{
-			int beginX = x() + MAIN_WIDGET_WIDTH / 2;
-			int beginY = y() + MAIN_WIDGET_HEIGHT / 2;
-			endx = pressX_;
-			endy = pressY_;
+            // 在播放hide动画时打断，从当前位置当前大小开始恢复到press位置
+            startx = x();
+            starty = y();
+            startWidth = width();
+            startHeight = height();
+            endx = pressX_;
+            endy = pressY_;
 		}
 	}
 
+    // 防止界面在被其他窗口遮挡。
+    // 排除了 在播放hide动画时打断 的情况，防止show时窗口闪烁
+    if (isHidden())
+    {
+        setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
+        QWidget::show();
+        setWindowFlags(windowFlags() & ~Qt::WindowStaysOnTopHint);
+    }
+    QWidget::show();
+
 	animation_->stop();
+    animation_->setEasingCurve(MAIN_WIDGET_SHOW_EASING);
     animation_->setStartValue(QRect(startx, starty, startWidth, startHeight));
     animation_->setEndValue(QRect(endx, endy, MAIN_WIDGET_WIDTH, MAIN_WIDGET_HEIGHT));
     animation_->start();
@@ -1143,15 +1153,25 @@ void Widget::animateShow(bool fromCursor)
 void Widget::animateHide()
 {
 	isAnimateHide_ = true;
-    pressX_ = x();
-    pressY_ = y();
+    
+    int startX = x();
+    int startY = y();
+
+    // 界面还在播放动画显示或隐藏时，不会更新pressX_和pressY_的值
+    if (animation_->state() != QPropertyAnimation::Running)
+    {
+        pressX_ = startX;
+        pressY_ = startY;
+    }
+
     int newx = QCursor::pos().x();
     int newy = QCursor::pos().y();
     int w = width();
     int h = height();
 
 	animation_->stop();
-    animation_->setStartValue(QRect(pressX_, pressY_, w, h));
+    animation_->setEasingCurve(MAIN_WIDGET_HIDE_EASING);
+    animation_->setStartValue(QRect(startX, startY, w, h));
     animation_->setEndValue(QRect(newx, newy, 0, 0));
     animation_->start();
     isShowAnimation_ = false;
