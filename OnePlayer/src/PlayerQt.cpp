@@ -21,9 +21,11 @@ PlayerQt::PlayerQt(QObject* parent)
 
 	connect(player_, &QMediaPlayer::durationChanged, this, [this](qint64 duration)
 	{
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+		// QT6的在playCurrentIndex中设置Pos
 		if (startPos_ >= 0)
 			setPosition(startPos_);
-
+#endif
 		emit durationChanged(duration);
 	});
 	connect(player_, &QMediaPlayer::positionChanged, this, &PlayerQt::positionChanged);
@@ -139,14 +141,16 @@ void PlayerQt::setPosition(qint64 pos)
 void PlayerQt::playCurrentIndex(qint64 pos)
 {
 	emit beginPlay();
+	startPos_ = pos;
 	QUrl url = SETTING_HANDLER->currentMusicUrl();
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 	player_->setSource(url);
+	setPosition(pos);  // QT5的在durationChanged中设置Pos
 #else
 	player_->setMedia(url);
 #endif
 	emit sourceChanged(url);
-	startPos_ = pos;
+	
 	player_->play();
 }
 
