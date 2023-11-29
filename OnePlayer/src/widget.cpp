@@ -147,20 +147,6 @@ Widget::Widget(const QString& filepath, QWidget *parent)
     }
 
 	setPlayMode(SETTING_HANDLER->getStruct().playMode);
-
-    // 初始化界面
-    initMultiFuncWidget();
-
-	MusicInfo info;
-	info.title = "歌曲名";
-	info.singers = "歌手";
-	info.album = "专辑";
-	info.image = QImage(":/images/music.png");
-	refreshImageWidget(info);
-
-    // 播放之前上次关闭时放的歌
-    player_->playCurrentIndex(SETTING_HANDLER->getStruct().musicPosition);
-    slotMusicIndexChanged(SETTING_HANDLER->getMusicIndex(), SETTING_HANDLER->getMusicIndex());  // 初始化被播放的那个音乐按钮样式
 }
 
 void Widget::slotKeyPressed(DWORD key)
@@ -308,6 +294,10 @@ void Widget::setListener()
         QString musicPath = media.toLocalFile();
         MusicInfo musicInfo = PlayerFFmpeg::getMusicInfo(musicPath);
 		refreshImageWidget(musicInfo);
+
+
+		emit sigChangeSystemIconToolTip(QString("OnePlayer\n正在播放:%1\n歌手:%2\n专辑%3")
+			.arg(musicInfo.title).arg(musicInfo.singers).arg(musicInfo.album));
         //switch (SETTING_HANDLER->get_player_mode())
         //{
         //case LOCAL:
@@ -1182,6 +1172,23 @@ Widget::~Widget()
     delete ui;
 	NeteaseHandler::getInstance()->deleteThis();
 	Hook::getInstance()->unInstallHook();
+}
+
+void Widget::init()
+{
+	// 初始化界面
+	initMultiFuncWidget();
+
+	MusicInfo info;
+	info.title = "歌曲名";
+	info.singers = "歌手";
+	info.album = "专辑";
+	info.image = QImage(":/images/music.png");
+	refreshImageWidget(info);
+
+	// 播放之前上次关闭时放的歌
+	player_->playCurrentIndex(SETTING_HANDLER->getStruct().musicPosition);
+	slotMusicIndexChanged(SETTING_HANDLER->getMusicIndex(), SETTING_HANDLER->getMusicIndex());  // 初始化被播放的那个音乐按钮样式
 }
 
 // 关闭

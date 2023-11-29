@@ -25,6 +25,7 @@ class Widget : public QWidget
 public:
 	Widget(const QString& filepath = "", QWidget *parent = nullptr);
 	~Widget();
+	void init();
     void animateShow(bool fromCursor = true);
     void animateHide();
 	bool isAnimateHide() { return isAnimateHide_; }
@@ -59,6 +60,9 @@ private slots:
     void slotMusicIndexChanged(DSizeType oldIndex, DSizeType newIndex);
 	void slotMenuBtnClicked(const QString& text);
      
+signals:
+	void sigChangeSystemIconToolTip(const QString& tip);
+
 // 控件动画
 private:
     // stacked_music_btn

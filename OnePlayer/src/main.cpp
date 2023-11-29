@@ -30,6 +30,7 @@ int main(int argc, char *argv[])
 
 	QSystemTrayIcon trayIcon(QIcon(":icon.ico"));
 	trayIcon.setToolTip("OnePlayer");
+	QObject::connect(&w, &Widget::sigChangeSystemIconToolTip, &trayIcon, &QSystemTrayIcon::setToolTip);
 	QObject::connect(&trayIcon, &QSystemTrayIcon::activated, &w, [&w](QSystemTrayIcon::ActivationReason reason)
 	{
 		switch (reason)
@@ -61,6 +62,7 @@ int main(int argc, char *argv[])
 	trayIcon.setContextMenu(trayMenu);
 	trayIcon.show();
 
+	w.init();
     w.animateShow();
     return a.exec();
 }
