@@ -87,6 +87,9 @@
     <QtMoc Include="src\OneMessageBox.h">
       <Filter>widgets</Filter>
     </QtMoc>
+    <QtMoc Include="src\DSystemTrayMenu.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\hook.cpp">
@@ -151,6 +154,9 @@
     </ClCompile>
     <ClCompile Include="src\OneMessageBox.cpp">
       <Filter>widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="src\DSystemTrayMenu.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

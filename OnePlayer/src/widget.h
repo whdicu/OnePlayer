@@ -26,6 +26,7 @@ public:
 	Widget(const QString& filepath = "", QWidget *parent = nullptr);
 	~Widget();
 	void init();
+	void uninit();
     void animateShow(bool fromCursor = true);
     void animateHide();
 	bool isAnimateHide() { return isAnimateHide_; }
@@ -59,6 +60,7 @@ private slots:
     void slotSearchEditClose();
     void slotMusicIndexChanged(DSizeType oldIndex, DSizeType newIndex);
 	void slotMenuBtnClicked(const QString& text);
+	void slotLocalMusicBtnClicked(DSizeType musicIndex);
      
 signals:
 	void sigChangeSystemIconToolTip(const QString& tip);

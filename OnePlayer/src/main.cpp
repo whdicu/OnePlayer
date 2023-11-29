@@ -1,7 +1,7 @@
 ﻿#include "widget.h"
 
+#include "DSystemTrayMenu.h"
 #include <QApplication>
-#include <QMenu>
 #include <QMessageBox>
 #include <QSystemTrayIcon>
 
@@ -52,14 +52,15 @@ int main(int argc, char *argv[])
 			break;
 		}
 	});
+	QObject::connect(&a, &QApplication::aboutToQuit, &w, &Widget::uninit);
+	QObject::connect(&a, &QApplication::aboutToQuit, &trayIcon, &QSystemTrayIcon::hide);
 
 	// 创建托盘菜单
-	QMenu *trayMenu = new QMenu();
-	QAction *quitAction = new QAction(QObject::tr("退出"), &a);
-	QObject::connect(quitAction, &QAction::triggered, &w, &QWidget::close);
+	DSystemTrayMenu trayMenu;
+	
 
-	trayMenu->addAction(quitAction);
-	trayIcon.setContextMenu(trayMenu);
+	
+	trayIcon.setContextMenu(&trayMenu);
 	trayIcon.show();
 
 	w.init();

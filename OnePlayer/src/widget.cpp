@@ -248,6 +248,25 @@ void Widget::slotMenuBtnClicked(const QString& text)
 	}
 }
 
+void Widget::slotLocalMusicBtnClicked(DSizeType musicIndex)
+{
+	if (SETTING_HANDLER->getMusicIndex() == musicIndex)
+		return;
+
+	switch (SETTING_HANDLER->getStruct().playMode)
+	{
+	case RANDOM:
+		SETTING_HANDLER->insertToRandomPlayList(musicIndex);
+		SETTING_HANDLER->plusRandomIndex();
+		break;
+	default:
+		SETTING_HANDLER->setMusicIndex(musicIndex);
+		break;
+	}
+
+	player_->playCurrentIndex();
+}
+
 void Widget::setListener()
 {
     // 菜单失去焦点，判断是否需要隐藏
@@ -561,24 +580,7 @@ BaseMusicButton* Widget::addLocalMusicBtn(const QUrl& url)
 	//QString str = filename.mid(0, filename.indexOf('.'));
     LocalMusicButton* btn = new LocalMusicButton(url.fileName(), this);
     btn->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(btn, &LocalMusicButton::clicked, this, [this](DSizeType index)
-    {
-        if (SETTING_HANDLER->getMusicIndex() == index)
-            return;
-
-		switch (SETTING_HANDLER->getStruct().playMode)
-		{
-		case RANDOM:
-			SETTING_HANDLER->insertToRandomPlayList(index);
-			SETTING_HANDLER->plusRandomIndex();
-			break;
-		default:
-			SETTING_HANDLER->setMusicIndex(index);
-			break;
-		}
-		
-        player_->playCurrentIndex();
-    });
+	connect(btn, &LocalMusicButton::clicked, this, &Widget::slotLocalMusicBtnClicked);
     connect(btn, &QPushButton::customContextMenuRequested, this, [btn](const QPoint& pos)
     {
         DMenu* menu = DMenu::getButtonMenu();
@@ -1191,12 +1193,16 @@ void Widget::init()
 	slotMusicIndexChanged(SETTING_HANDLER->getMusicIndex(), SETTING_HANDLER->getMusicIndex());  // 初始化被播放的那个音乐按钮样式
 }
 
+void Widget::uninit()
+{
+	SETTING_HANDLER->save();
+}
+
 // 关闭
 void Widget::on_btn_shutdown_clicked()
 {
-    SETTING_HANDLER->save();
-    shutdownBtnClicked_ = true;
-    animateHide();
+	animateHide();
+	shutdownBtnClicked_ = true;
 }
 
 // 播放/暂停
