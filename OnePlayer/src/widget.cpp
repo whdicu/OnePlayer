@@ -315,7 +315,7 @@ void Widget::setListener()
 		refreshImageWidget(musicInfo);
 
 
-		emit sigChangeSystemIconToolTip(QString("OnePlayer\n正在播放:%1\n歌手:%2\n专辑%3")
+		emit sigChangeSystemIconToolTip(QString("OnePlayer\n正在播放：%1\n歌手：%2\n专辑：%3")
 			.arg(musicInfo.title).arg(musicInfo.singers).arg(musicInfo.album));
         //switch (SETTING_HANDLER->get_player_mode())
         //{
