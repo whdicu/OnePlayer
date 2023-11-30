@@ -59,6 +59,11 @@ Widget::Widget(const QString& filepath, QWidget *parent)
     ui->setupUi(this);
     setWindowFlags(Qt::FramelessWindowHint);
     setAttribute(Qt::WA_TranslucentBackground);
+
+	// 硬件加速
+	setAttribute(Qt::WA_OpaquePaintEvent);
+	setAttribute(Qt::WA_PaintOnScreen);
+
     setAcceptDrops(true);
 	Hook::getInstance()->installHook();
     connect(Hook::getInstance(), &Hook::sendKeyType, this, &Widget::slotKeyPressed, Qt::QueuedConnection);
