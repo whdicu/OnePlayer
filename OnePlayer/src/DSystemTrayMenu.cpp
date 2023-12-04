@@ -1,4 +1,4 @@
-#include "DSystemTrayMenu.h"
+﻿#include "DSystemTrayMenu.h"
 
 DSystemTrayMenu::DSystemTrayMenu(QWidget *parent)
 	: QMenu(parent)
@@ -7,8 +7,8 @@ DSystemTrayMenu::DSystemTrayMenu(QWidget *parent)
 	setAttribute(Qt::WA_TranslucentBackground);
 	setStyleSheet("QMenu { border: 1px solid red; border-radius: 10px; }");
 
-	QAction *quitAction = new QAction(QObject::tr("�˳�"), &a);
-	connect(quitAction, &QAction::triggered, &w, &QWidget::close);
+	QAction* quitAction = new QAction(QObject::tr("退出"), this);
+	connect(quitAction, &QAction::triggered, this, &DSystemTrayMenu::sigQuit);
 
 	addAction(quitAction);
 }

@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
 
 	// 创建托盘菜单
 	DSystemTrayMenu trayMenu;
-	
+	QObject::connect(&trayMenu, &DSystemTrayMenu::sigQuit, &w, &QWidget::close);
 
 	
 	trayIcon.setContextMenu(&trayMenu);

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <QMenu>
 
@@ -9,4 +9,7 @@ class DSystemTrayMenu : public QMenu
 public:
 	DSystemTrayMenu(QWidget *parent = nullptr);
 	~DSystemTrayMenu();
+
+signals:
+	void sigQuit();
 };

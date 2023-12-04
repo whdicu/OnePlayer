@@ -10,6 +10,7 @@ class BaseMusicButton : public QWidget
 
 public:
     explicit BaseMusicButton(QWidget* parent = nullptr) : QWidget(parent) {}
+    ~BaseMusicButton() {}
     virtual void setNormalStyle() = 0;
     virtual void setPlayingStyle() = 0;
     DSizeType getMusicIndex() const { return musicIndex_; }
