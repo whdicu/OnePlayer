@@ -26,5 +26,6 @@ void DProgressBar::mouseReleaseEvent(QMouseEvent *event)
 {
 	int mouseX = event->x();
 	int progressPercentage = mouseX * maximum() / width();
+	setValue(progressPercentage);
 	emit sigMouseReleased(progressPercentage);
 }
