@@ -87,8 +87,11 @@
     <QtMoc Include="src\OneMessageBox.h">
       <Filter>widgets</Filter>
     </QtMoc>
+    <QtMoc Include="src\DProgressBar.h">
+      <Filter>widgets</Filter>
+    </QtMoc>
     <QtMoc Include="src\DSystemTrayMenu.h">
-      <Filter>Header Files</Filter>
+      <Filter>widgets</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
@@ -155,8 +158,11 @@
     <ClCompile Include="src\OneMessageBox.cpp">
       <Filter>widgets</Filter>
     </ClCompile>
+    <ClCompile Include="src\DProgressBar.cpp">
+      <Filter>widgets</Filter>
+    </ClCompile>
     <ClCompile Include="src\DSystemTrayMenu.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>widgets</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -413,7 +413,7 @@ void Widget::setListener()
     connect(player_, &PlayerQt::positionChanged, this, &Widget::slotPositionChanged);
 
     // 按下进度条，停止根据音乐改变进度条
-    connect(ui->progress, &QSlider::sliderPressed, this, [this]()
+    connect(ui->progress, &DProgressBar::sigMousePressed, this, [this]()
     {
         movingProgress_ = true;
     });
@@ -435,11 +435,12 @@ void Widget::setListener()
 //    });
 
     // 松开进度条，改变音乐进度
-    connect(ui->progress, &QSlider::sliderReleased, this, [this]()
+    connect(ui->progress, &DProgressBar::sigMouseReleased, this, [this](int val)
     {
-        player_->setPosition(ui->progress->value());
+        player_->setPosition(val);
         movingProgress_ = false;
     });
+
 
     // 搜索框文字改变
     connect(ui->find_widget, &SearchEdit::focusOnBtnAt, this, [this](DSizeType index)

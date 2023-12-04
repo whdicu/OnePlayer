@@ -104,6 +104,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\dmenu.cpp" />
+    <ClCompile Include="src\DProgressBar.cpp" />
     <ClCompile Include="src\DSystemTrayMenu.cpp" />
     <ClCompile Include="src\hook.cpp" />
     <ClCompile Include="src\ImageHandler.cpp" />
@@ -160,6 +161,7 @@
     <QtMoc Include="src\MusicInfoWidget.h" />
     <ClInclude Include="resource.h" />
     <QtMoc Include="src\DSystemTrayMenu.h" />
+    <QtMoc Include="src\DProgressBar.h" />
     <ClInclude Include="src\ImageHandler.h" />
     <QtMoc Include="src\MultiBtnWidget.h" />
     <QtMoc Include="src\OneMessageBox.h" />

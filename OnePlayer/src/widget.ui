@@ -751,7 +751,7 @@ QLabel {
         <number>6</number>
        </property>
        <item>
-        <widget class="QSlider" name="progress">
+        <widget class="DProgressBar" name="progress">
          <property name="minimumSize">
           <size>
            <width>0</width>
@@ -1281,6 +1281,11 @@ QLabel {
    <extends>QWidget</extends>
    <header>MultiBtnWidget.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>DProgressBar</class>
+   <extends>QSlider</extends>
+   <header>dprogressbar.h</header>
   </customwidget>
  </customwidgets>
  <resources>
