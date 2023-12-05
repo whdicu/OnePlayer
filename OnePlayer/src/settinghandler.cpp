@@ -105,6 +105,8 @@ DSizeType SettingHandler::nextMusicIndex()
         setMusicIndex(randomIndexList_.at(randomIndex_));
 		break;
 	}
+    case ONE_AGAIN:
+        break;
 	default:
 	{
 		// 在菜单中点过下一首播放
@@ -169,6 +171,8 @@ DSizeType SettingHandler::previousMusicIndex()
         setMusicIndex(randomIndexList_.at(randomIndex_));
 		break;
 	}
+    case ONE_AGAIN:
+        break;
 	default:
 	{
 		if (getMusicIndex() == 0)
