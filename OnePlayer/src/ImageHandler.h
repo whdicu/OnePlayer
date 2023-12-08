@@ -18,5 +18,7 @@ namespace ImageHandler
 	QImage roundImage(const QImage& image, int radius);
 	
 	cv::Mat roundCVMat(const cv::Mat& image, int radius);
+
+	QImage downloadImage(const QString& url);
 }
 

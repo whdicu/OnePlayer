@@ -1,9 +1,13 @@
 #include "ImageHandler.h"
 #include "opencv2/imgproc.hpp"
 #include <QDebug>
+#include <QElapsedTimer>
+#include <QEventLoop>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
 #include <QPainter>
 #include <QPainterPath>
-#include <QElapsedTimer>
+
 
 QPixmap ImageHandler::cutImage(const QImage& image, int width, int height, int radius, bool blur, double brightness)
 {
@@ -282,4 +286,31 @@ cv::Mat ImageHandler::roundCVMat(const cv::Mat& image, int radius)
 	cv::Mat result;
 	image.copyTo(result, mask);
 	return result;
+}
+
+QImage ImageHandler::downloadImage(const QString& url)
+{
+	QImage image;
+
+	QNetworkAccessManager manager;
+	QNetworkRequest request(url);
+
+	QNetworkReply* reply = manager.get(request);
+	QEventLoop loop;
+	QObject::connect(reply, &QNetworkReply::finished, &loop, &QEventLoop::quit);
+	loop.exec();
+
+	if (reply->error() == QNetworkReply::NoError)
+	{
+		QByteArray imageData = reply->readAll();
+		image.loadFromData(imageData);
+	}
+	else
+	{
+		qWarning() << __FUNCTION__ << "Failed to download image:" << reply->errorString();
+	}
+
+	reply->deleteLater();
+
+	return image;
 }

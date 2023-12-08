@@ -4,6 +4,7 @@
 #include "HDBase/DList.hpp"
 #include "HDCore/HD2QT.hpp"
 #include "hook.h"
+#include "ImageHandler.h"
 #include "LocalMusicButton.h"
 #include "neteasehandler.h"
 #include "onlinemusicbutton.h"
