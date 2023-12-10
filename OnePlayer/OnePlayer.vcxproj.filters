@@ -28,6 +28,9 @@
     <Filter Include="players">
       <UniqueIdentifier>{e45d69eb-c340-450a-a639-c61bc0b01360}</UniqueIdentifier>
     </Filter>
+    <Filter Include="NCM">
+      <UniqueIdentifier>{a5e157ae-af7c-439b-888a-8b9263d86b17}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="src\hook.h">
@@ -164,6 +167,18 @@
     <ClCompile Include="src\DSystemTrayMenu.cpp">
       <Filter>widgets</Filter>
     </ClCompile>
+    <ClCompile Include="src\NCM\aes.c">
+      <Filter>NCM</Filter>
+    </ClCompile>
+    <ClCompile Include="src\NCM\cJSON.c">
+      <Filter>NCM</Filter>
+    </ClCompile>
+    <ClCompile Include="src\NCM\NCMHandler.cpp">
+      <Filter>NCM</Filter>
+    </ClCompile>
+    <ClCompile Include="src\NCM\ncmToMp3.c">
+      <Filter>NCM</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="src\lyricswidget.ui">
@@ -212,6 +227,18 @@
     </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\NCM\cJSON.h">
+      <Filter>NCM</Filter>
+    </ClInclude>
+    <ClInclude Include="src\NCM\aes.h">
+      <Filter>NCM</Filter>
+    </ClInclude>
+    <ClInclude Include="src\NCM\ncmToMp3.h">
+      <Filter>NCM</Filter>
+    </ClInclude>
+    <ClInclude Include="src\NCM\NCMHandler.h">
+      <Filter>NCM</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

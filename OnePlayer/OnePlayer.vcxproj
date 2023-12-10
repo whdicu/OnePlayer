@@ -114,6 +114,10 @@
     <ClCompile Include="src\MultiBtnWidget.cpp" />
     <ClCompile Include="src\LocalMusicButton.cpp" />
     <ClCompile Include="src\MusicInfoWidget.cpp" />
+    <ClCompile Include="src\NCM\aes.c" />
+    <ClCompile Include="src\NCM\cJSON.c" />
+    <ClCompile Include="src\NCM\NCMHandler.cpp" />
+    <ClCompile Include="src\NCM\ncmToMp3.c" />
     <ClCompile Include="src\neteasehandler.cpp" />
     <ClCompile Include="src\neteasewidget.cpp" />
     <ClCompile Include="src\OneMessageBox.cpp" />
@@ -165,6 +169,10 @@
     <ClInclude Include="src\ImageHandler.h" />
     <QtMoc Include="src\MultiBtnWidget.h" />
     <QtMoc Include="src\OneMessageBox.h" />
+    <ClInclude Include="src\NCM\aes.h" />
+    <ClInclude Include="src\NCM\cJSON.h" />
+    <ClInclude Include="src\NCM\NCMHandler.h" />
+    <ClInclude Include="src\NCM\ncmToMp3.h" />
     <ClInclude Include="src\OnePlayerStruct.h" />
     <ClInclude Include="src\onlinehandler.h" />
     <QtMoc Include="src\SearchEdit.h" />
