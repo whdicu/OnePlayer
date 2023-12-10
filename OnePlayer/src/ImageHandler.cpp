@@ -44,7 +44,7 @@ QPixmap ImageHandler::cutImage(const QImage& image, int width, int height, int r
 		//qDebug() << "GaussianBlur:" << time.elapsed();
 	}
 	else
-		blurredMat = QImageToCvMat(image);
+		blurredMat = croppedImage;
 
 	// ½µµÍÍ¼Æ¬ÁÁ¶È
 	if (blurredMat.type() == CV_8UC4)
