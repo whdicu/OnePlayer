@@ -1,21 +1,22 @@
 ﻿#include "PlayerQt.h"
 #include "PlayerFFmpeg.h"
 #include "NCM/NCMHandler.h"
-#include "OnePlayerStruct.h"
-#include <QDebug>
 #include "OneMessageBox.h"
+#include "OnePlayerStruct.h"
+#include <QAudioOutput>
 #include <QBuffer>
-#include <QMessageBox>
+#include <QDebug>
 #include "settinghandler.h"
 
 
 PlayerQt::PlayerQt(QObject* parent)
 	: PlayerBase(parent)
-	, player_(new QMediaPlayer)
+	, player_(new QMediaPlayer(this))
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 	, audioOutput_(new QAudioOutput(this))
 #endif
 	, startPos_(0)
+	, dataBuffer_(nullptr)
 {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 	player_->setAudioOutput(audioOutput_);
@@ -147,15 +148,20 @@ void PlayerQt::playCurrentIndex(qint64 pos)
 	startPos_ = pos;
 	QUrl url = SETTING_HANDLER->currentMusicUrl();
 
+	if (dataBuffer_ != nullptr)
+	{
+		dataBuffer_->deleteLater();
+		dataBuffer_ = nullptr;
+	}
+
 	QString filePath = url.toLocalFile();
 	if (filePath.endsWith(".ncm"))
 	{
 		CPPMusicData musicData = NCMHandler::dealNCM(filePath);
 		//QByteArray aa(reinterpret_cast<const char*>(mb.data.data()), mb.data.size());
-
-		QBuffer* buffer = new QBuffer(this);
-		buffer->setData(musicData.data);
-		buffer->open(QIODevice::ReadOnly);
+		dataBuffer_ = new QBuffer(this);
+		dataBuffer_->setData(musicData.data);
+		dataBuffer_->open(QIODevice::ReadOnly);
 
 		musicInfo_.title = musicData.title;
 		musicInfo_.singers = musicData.singers;
@@ -163,7 +169,7 @@ void PlayerQt::playCurrentIndex(qint64 pos)
 		musicInfo_.image = musicData.image;
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-		player_->setSourceDevice(buffer);
+		player_->setSourceDevice(dataBuffer_);
 		setPosition(pos);  // QT5的在durationChanged中设置Pos
 #else
 		player_->setMedia(QMediaContent(), buffer);
