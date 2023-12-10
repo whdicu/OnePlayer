@@ -11,46 +11,47 @@
 
 QPixmap ImageHandler::cutImage(const QImage& image, int width, int height, int radius, bool blur, double brightness)
 {
-	cv::Mat blurredMat;
-	if (blur)
-	{
-		QElapsedTimer time;
-		time.start();
-		//cv::GaussianBlur(QImageToCvMat(image), blurredMat, cv::Size(101, 101), 18);  // 31 8
-		//cv::blur(QImageToCvMat(image), blurredMat, cv::Size(31, 31));
-		cv::stackBlur(QImageToCvMat(image), blurredMat, cv::Size(91, 91));
-		//qDebug() << "GaussianBlur:" << time.elapsed();
-	}
-	else
-		blurredMat = QImageToCvMat(image);
+	cv::Mat origintMat = QImageToCvMat(image);
 
 	// 将mat裁剪
-	int widthByHeight = blurredMat.cols * height / width;
-
+	int widthByHeight = origintMat.cols * height / width;
 	double scale = 1.0;
-	if (blurredMat.rows > widthByHeight)  // 竖直长条形
+	if (origintMat.rows > widthByHeight)  // 竖直长条形
 	{
 		// 根据宽度缩放图像到指定大小
-		scale = static_cast<double>(width) / blurredMat.cols;
+		scale = static_cast<double>(width) / origintMat.cols;
 	}
 	else  // 横向长条形
 	{
 		// 根据高度缩放图像到指定大小
-		scale = static_cast<double>(height) / blurredMat.rows;
+		scale = static_cast<double>(height) / origintMat.rows;
 	}
 	cv::Mat resizedImage;
-	cv::resize(blurredMat, resizedImage, cv::Size(), scale, scale, cv::INTER_AREA);
+	cv::resize(origintMat, resizedImage, cv::Size(), scale, scale, cv::INTER_AREA);
 
 	// 裁剪到与label相同大小
 	cv::Rect roi((resizedImage.cols - width) / 2, (resizedImage.rows - height) / 2, width, height);
 	cv::Mat croppedImage = resizedImage(roi);
 
-	// 降低图片亮度
-	if (croppedImage.type() == CV_8UC4)
-		cv::cvtColor(croppedImage, croppedImage, cv::COLOR_RGBA2RGB);
-	cv::Mat darkened_image = brightness * croppedImage;
+	cv::Mat blurredMat;
+	if (blur)
+	{
+		//QElapsedTimer time;
+		//time.start();
+		//cv::GaussianBlur(resizedImage, blurredMat, cv::Size(101, 101), 18);  // 31 8
+		//cv::blur(resizedImage, blurredMat, cv::Size(31, 31));
+		cv::stackBlur(croppedImage, blurredMat, cv::Size(61, 61));
+		//qDebug() << "GaussianBlur:" << time.elapsed();
+	}
+	else
+		blurredMat = QImageToCvMat(image);
 
-	//qDebug() << croppedImage.cols << croppedImage.rows;
+	// 降低图片亮度
+	if (blurredMat.type() == CV_8UC4)
+		cv::cvtColor(blurredMat, blurredMat, cv::COLOR_RGBA2RGB);
+	cv::Mat darkened_image = brightness * blurredMat;
+
+	//qDebug() << blurredMat.cols << blurredMat.rows;
 	//qDebug() << labelWidth << labelHeight;
 
 	QImage aaa = cvMatToQImage(darkened_image);
