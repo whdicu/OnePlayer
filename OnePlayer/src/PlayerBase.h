@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "OnePlayerStruct.h"
 #include <QImage>
 #include <QObject>
 
@@ -18,6 +19,7 @@ public:
 	virtual qint64 getDuration() = 0;  // 音乐总长度
 	virtual void playCurrentIndex(qint64 pos=0) = 0;
 	virtual void setLoop(bool loop) = 0;
+	MusicInfo getMusicInfo() { return musicInfo_; }
 
 signals:
 	void durationChanged(qint64 position);
@@ -26,5 +28,8 @@ signals:
 
 	void mediaAtEnd();
 	void beginPlay();
+
+protected:
+	MusicInfo musicInfo_;
 };
 

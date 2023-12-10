@@ -11,7 +11,7 @@ extern "C"
 #include <libavutil/imgutils.h>
 }
 
-MusicInfo PlayerFFmpeg::getMusicInfo(const QString& musicPath)
+MusicInfo PlayerFFmpeg::analyzeMusicInfo(const QString& musicPath)
 {
 	MusicInfo ret = MusicInfo();
 	AVFormatContext* formatContext = nullptr;

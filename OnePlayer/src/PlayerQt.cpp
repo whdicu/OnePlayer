@@ -1,7 +1,10 @@
 ﻿#include "PlayerQt.h"
+#include "PlayerFFmpeg.h"
+#include "NCM/NCMHandler.h"
 #include "OnePlayerStruct.h"
 #include <QDebug>
 #include "OneMessageBox.h"
+#include <QBuffer>
 #include <QMessageBox>
 #include "settinghandler.h"
 
@@ -143,14 +146,41 @@ void PlayerQt::playCurrentIndex(qint64 pos)
 	emit beginPlay();
 	startPos_ = pos;
 	QUrl url = SETTING_HANDLER->currentMusicUrl();
+
+	QString filePath = url.toLocalFile();
+	if (filePath.endsWith(".ncm"))
+	{
+		CPPMusicData musicData = NCMHandler::dealNCM(filePath);
+		//QByteArray aa(reinterpret_cast<const char*>(mb.data.data()), mb.data.size());
+
+		QBuffer* buffer = new QBuffer(this);
+		buffer->setData(musicData.data);
+		buffer->open(QIODevice::ReadOnly);
+
+		musicInfo_.title = musicData.title;
+		musicInfo_.singers = musicData.singers;
+		musicInfo_.album = musicData.album;
+		musicInfo_.image = musicData.image;
+
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-	player_->setSource(url);
-	setPosition(pos);  // QT5的在durationChanged中设置Pos
+		player_->setSourceDevice(buffer);
+		setPosition(pos);  // QT5的在durationChanged中设置Pos
 #else
-	player_->setMedia(url);
+		player_->setMedia(QMediaContent(), buffer);
 #endif
+	}
+	else
+	{
+		musicInfo_ = PlayerFFmpeg::analyzeMusicInfo(url.toLocalFile());
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+		player_->setSource(url);
+		setPosition(pos);  // QT5的在durationChanged中设置Pos
+#else
+		player_->setMedia(url);
+#endif
+	}
+
 	emit sourceChanged(url);
-	
 	player_->play();
 }
 

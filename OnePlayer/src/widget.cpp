@@ -316,33 +316,11 @@ void Widget::setListener()
     // 先sourceChanged，再metaDataChanged
     connect(player_, &PlayerBase::sourceChanged, this, [this](const QUrl& media)
     {
-        QString musicPath = media.toLocalFile();
-        MusicInfo musicInfo = PlayerFFmpeg::getMusicInfo(musicPath);
+        MusicInfo musicInfo = player_->getMusicInfo();
 		refreshImageWidget(musicInfo);
-
 
 		emit sigChangeSystemIconToolTip(QString("OnePlayer\n正在播放：%1\n歌手：%2\n专辑：%3")
 			.arg(musicInfo.title).arg(musicInfo.singers).arg(musicInfo.album));
-        //switch (SETTING_HANDLER->get_player_mode())
-        //{
-        //case LOCAL:
-        //case MYSITE:
-        //{
-        //    //            QString file_type = media.fileName().section('.', 0, -1);
-        //    QString file_name = media.fileName().section('.', 0, -2);
-        //    ui->btn_music_name->setText(file_name);
-        //    //            ui->label_sound_name->setText(file_name);
-        //}
-        //break;
-        //case ONLINE:
-        //{
-        //    OnlineMusicButton* btn = static_cast<OnlineMusicButton*> (btn_list_.at(now_music_index_));
-        //    MusicInfo& info = btn->get_info();
-        //    ui->btn_music_name->setText(info.name_);
-        //}
-        //break;
-        //}
-        //SETTING_HANDLER->set_last_music(media);
     });
 
     // 一些没用的事件

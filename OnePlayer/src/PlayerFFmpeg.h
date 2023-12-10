@@ -8,7 +8,7 @@ class PlayerFFmpeg : public PlayerBase
 	Q_OBJECT
 
 public:
-	static MusicInfo getMusicInfo(const QString& musicPath);
+	static MusicInfo analyzeMusicInfo(const QString& musicPath);
 	PlayerFFmpeg(QObject* parent = nullptr);
 	~PlayerFFmpeg();
 
