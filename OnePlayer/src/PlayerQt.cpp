@@ -33,18 +33,7 @@ PlayerQt::PlayerQt(QObject* parent)
 		emit durationChanged(duration);
 	});
 	connect(player_, &QMediaPlayer::positionChanged, this, &PlayerQt::positionChanged);
-//#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-//	connect(player_, &QMediaPlayer::sourceChanged, this, &PlayerQt::sourceChanged);
-//#else
-//	connect(player_, &QMediaPlayer::mediaChanged, this, [this](const QMediaContent& media)
-//	{
-//		//qDebug() << media.canonicalUrl().fileName();
-//		//qDebug() << media.canonicalUrl().path();
-//		//qDebug() << media.canonicalUrl().toString();
-//		//qDebug() << media.canonicalUrl().toLocalFile();
-//		emit sourceChanged(media.canonicalUrl());
-//	});
-//#endif
+
 	connect(player_, &QMediaPlayer::mediaStatusChanged, this, [this](QMediaPlayer::MediaStatus status)
 	{
 		switch (status)
@@ -96,7 +85,7 @@ PlayerQt::~PlayerQt()
 bool PlayerQt::playOrPause()
 {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-	if (!player_->hasAudio() && (nullptr == player_->mediaStream()))
+	if (!player_->hasAudio() && (nullptr == player_->sourceDevice()))
 #else
 	if (player_->media().isNull() && (nullptr == player_->mediaStream()))
 #endif
