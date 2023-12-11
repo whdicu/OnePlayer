@@ -96,9 +96,9 @@ PlayerQt::~PlayerQt()
 bool PlayerQt::playOrPause()
 {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-	if (!player_->hasAudio())
+	if (!player_->hasAudio() && (nullptr == player_->mediaStream()))
 #else
-	if (player_->media().isNull())
+	if (player_->media().isNull() && (nullptr == player_->mediaStream()))
 #endif
 	{
 		playCurrentIndex();
@@ -172,7 +172,7 @@ void PlayerQt::playCurrentIndex(qint64 pos)
 		player_->setSourceDevice(dataBuffer_);
 		setPosition(pos);  // QT5的在durationChanged中设置Pos
 #else
-		player_->setMedia(QMediaContent(), buffer);
+		player_->setMedia(QMediaContent(), dataBuffer_);
 #endif
 	}
 	else

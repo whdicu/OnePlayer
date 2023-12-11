@@ -14,6 +14,7 @@ struct CPPMusicData
 	QString singers;
 	QString album;
 	QImage image;
+	QString format;
 };
 
 namespace NCMHandler

@@ -27,13 +27,19 @@ CPPMusicData NCMHandler::dealNCM(const QString& filename)
 	int status = getFileData(fileStr.c_str(), &musicData);
 	ret.data = QByteArray(reinterpret_cast<const char*>(musicData.data), musicData.dataSize);
 
+
 	QJsonParseError parseError;
-	QJsonDocument jsonDoc = QJsonDocument::fromJson(
-		QString::fromLocal8Bit(musicData.jsonStr).toUtf8(), &parseError);
+	QJsonDocument jsonDoc = QJsonDocument::fromJson(musicData.jsonStr, &parseError);
 	if (QJsonParseError::NoError != parseError.error)
 	{
-		qWarning() << __FUNCTION__ << "JsonStr analyze failed";
-		return ret;
+		// 直接用musicData.jsonStr（utf8格式）不对，尝试fromLocal8Bit
+		jsonDoc = QJsonDocument::fromJson(
+			QString::fromLocal8Bit(musicData.jsonStr).toUtf8(), &parseError);
+		if (QJsonParseError::NoError != parseError.error)
+		{
+			qWarning() << __FUNCTION__ << "JsonStr analyze failed";
+			return ret;
+		}
 	}
 
 	QJsonObject obj = jsonDoc.object();
@@ -64,11 +70,13 @@ CPPMusicData NCMHandler::dealNCM(const QString& filename)
 
 	ret.title = obj["musicName"].toString();
 	QJsonArray artists = obj["artist"].toArray().first().toArray();
-	QString artistsStr;
-	for (auto artist : artists)
-		artistsStr.append(artist.toString()).append(' ');
-	ret.singers = artistsStr.trimmed();
+	//QString artistsStr;
+	//for (auto artist : artists)
+	//	artistsStr.append(artist.toString()).append(' ');
+	//ret.singers = artistsStr.trimmed();
+	ret.singers = artists.isEmpty() ? "" : artists.first().toString();
 	ret.album = obj["album"].toString();
+	ret.format = obj["format"].toString();
 
 	if (obj.contains("albumPic"))
 	{
