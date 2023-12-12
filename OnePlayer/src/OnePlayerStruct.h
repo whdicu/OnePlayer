@@ -45,7 +45,7 @@ const static QEasingCurve MAIN_WIDGET_SHOW_EASING = QEasingCurve::Linear;
 const static QEasingCurve MAIN_WIDGET_HIDE_EASING = QEasingCurve::Linear;
 
 // 右侧按钮框的过渡动画Widget
-const static int MORE_BTN_WIDGET_ANIMATION_TIME = 250;
+const static int MORE_BTN_WIDGET_ANIMATION_TIME = 300;
 
 // 左侧图片widget的过渡动画
 const static int MUSIC_INFO_WIDGET_ANIMATION_TIME = 150;

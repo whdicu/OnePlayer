@@ -21,7 +21,14 @@ public:
 
 private:
 	Ui::MultiBtnWidgetClass ui;
-
 	QPropertyAnimation* animation_;
+	// 内部按钮动画
+	QPropertyAnimation* animationAdd_;
+	QPropertyAnimation* animationSetting_;
+	QPropertyAnimation* animationSetting2_;
+	QPropertyAnimation* animationSetting3_;
+	QPropertyAnimation* animationSetting4_;
+	QPropertyAnimation* animationSetting5_;
+	QPropertyAnimation* animationSetting6_;
 	bool isAnimateHide_;
 };
