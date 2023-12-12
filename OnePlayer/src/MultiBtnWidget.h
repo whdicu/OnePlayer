@@ -21,7 +21,6 @@ public:
 
 private:
 	Ui::MultiBtnWidgetClass ui;
-	QPropertyAnimation* animation_;
 	// 内部按钮动画
 	QPropertyAnimation* animationAdd_;
 	QPropertyAnimation* animationSetting_;
