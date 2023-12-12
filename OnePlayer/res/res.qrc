@@ -21,5 +21,7 @@
         <file>svgs/folder.svg</file>
         <file>svgs/goto.svg</file>
         <file>svgs/close.svg</file>
+        <file>svgs/play_list.svg</file>
+        <file>svgs/setting.svg</file>
     </qresource>
 </RCC>

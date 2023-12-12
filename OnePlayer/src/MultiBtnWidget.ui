@@ -92,7 +92,7 @@ QPushButton:hover
        <bool>false</bool>
       </property>
      </widget>
-     <widget class="QPushButton" name="btn_setting">
+     <widget class="QPushButton" name="btn_play_list">
       <property name="geometry">
        <rect>
         <x>0</x>
@@ -121,7 +121,7 @@ QPushButton:hover
       </property>
       <property name="icon">
        <iconset resource="../res/res.qrc">
-        <normaloff>:/svgs/jia.svg</normaloff>:/svgs/jia.svg</iconset>
+        <normaloff>:/svgs/play_list.svg</normaloff>:/svgs/play_list.svg</iconset>
       </property>
       <property name="iconSize">
        <size>
@@ -297,7 +297,7 @@ QPushButton:hover
        <bool>false</bool>
       </property>
      </widget>
-     <widget class="QPushButton" name="btn_setting_6">
+     <widget class="QPushButton" name="btn_setting">
       <property name="geometry">
        <rect>
         <x>0</x>
@@ -326,7 +326,7 @@ QPushButton:hover
       </property>
       <property name="icon">
        <iconset resource="../res/res.qrc">
-        <normaloff>:/svgs/jia.svg</normaloff>:/svgs/jia.svg</iconset>
+        <normaloff>:/svgs/setting.svg</normaloff>:/svgs/setting.svg</iconset>
       </property>
       <property name="iconSize">
        <size>
