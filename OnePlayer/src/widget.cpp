@@ -65,6 +65,9 @@ Widget::Widget(const QString& filepath, QWidget *parent)
 	setAttribute(Qt::WA_OpaquePaintEvent);
 	setAttribute(Qt::WA_PaintOnScreen);
 
+    // 捕获所有按键，让上下左右键也能捕获到
+    grabKeyboard();
+
     setAcceptDrops(true);
 	Hook::getInstance()->installHook();
     connect(Hook::getInstance(), &Hook::sendKeyType, this, &Widget::slotKeyPressed, Qt::QueuedConnection);

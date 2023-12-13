@@ -47,7 +47,7 @@
     <number>0</number>
    </property>
    <property name="bottomMargin">
-    <number>0</number>
+    <number>20</number>
    </property>
    <item>
     <widget class="QStackedWidget" name="stacked_info">

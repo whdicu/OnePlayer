@@ -232,7 +232,7 @@ QLabel {
       <number>20</number>
      </property>
      <property name="bottomMargin">
-      <number>20</number>
+      <number>0</number>
      </property>
      <item>
       <widget class="MusicInfoWidget" name="music_info_widget" native="true"/>
@@ -577,19 +577,19 @@ QLabel {
           <x>420</x>
           <y>0</y>
           <width>40</width>
-          <height>400</height>
+          <height>420</height>
          </rect>
         </property>
         <property name="minimumSize">
          <size>
           <width>40</width>
-          <height>400</height>
+          <height>420</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
           <width>40</width>
-          <height>400</height>
+          <height>420</height>
          </size>
         </property>
        </widget>
