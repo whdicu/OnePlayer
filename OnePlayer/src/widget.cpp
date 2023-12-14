@@ -56,6 +56,7 @@ Widget::Widget(const QString& filepath, QWidget *parent)
     , isShowAnimation_(true)
     , shutdownBtnClicked_(false)
     , isAnimateHide_(true)
+    , stackedMusicBtnAnimationTimer_(nullptr)
 {
     ui->setupUi(this);
     setWindowFlags(Qt::FramelessWindowHint);
@@ -1269,26 +1270,31 @@ void Widget::on_btn_mode_clicked()
 // 更多按钮
 void Widget::on_btn_more_clicked()
 {
-	QTimer* timer = new QTimer(this);
+    if (nullptr != stackedMusicBtnAnimationTimer_)
+        stackedMusicBtnAnimationTimer_->deleteLater();
+
+    stackedMusicBtnAnimationTimer_ = new QTimer(this);
 	if (ui->multi_btn_widget->isAnimateHide())
     {
         animationStackedMusicBtnSmall();
-		connect(timer, &QTimer::timeout, this, [this, timer]()
+		connect(stackedMusicBtnAnimationTimer_, &QTimer::timeout, this, [this]()
 		{
-			timer->deleteLater();
+            stackedMusicBtnAnimationTimer_->deleteLater();
+            stackedMusicBtnAnimationTimer_ = nullptr;
 			ui->multi_btn_widget->animationShow();
 		});
     }
     else
     {
         ui->multi_btn_widget->animationHide();
-		connect(timer, &QTimer::timeout, this, [this, timer]()
+		connect(stackedMusicBtnAnimationTimer_, &QTimer::timeout, this, [this]()
 		{
-			timer->deleteLater();
+            stackedMusicBtnAnimationTimer_->deleteLater();
+            stackedMusicBtnAnimationTimer_ = nullptr;
 			animationStackedMusicBtnBig();
 		});
     }
-	timer->start(SEARCH_EDIT_ANIMATION_TIME / 2);
+    stackedMusicBtnAnimationTimer_->start(MORE_BTN_WIDGET_ANIMATION_TIME / 2);
     //switch (ui->stacked_widget->currentIndex())
     //{
     //case 0:

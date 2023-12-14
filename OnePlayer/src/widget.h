@@ -68,6 +68,7 @@ signals:
 // 控件动画
 private:
     // stacked_music_btn
+    QTimer* stackedMusicBtnAnimationTimer_;
 	QPropertyAnimation* stackedMusicBtnAnimation_;
     void animationStackedMusicBtnSmall();
     void animationStackedMusicBtnBig();
