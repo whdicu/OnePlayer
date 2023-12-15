@@ -10,6 +10,7 @@
 #include "onlinemusicbutton.h"
 #include "PlayerFFmpeg.h"
 #include "PlayerQt.h"
+#include "OneMessageBox.h"
 #include <QAudioOutput>
 #include <QCollator>
 #include <QDebug>
@@ -819,7 +820,7 @@ void Widget::dropEvent(QDropEvent *event)
 
     //bool play = btn_list_.isEmpty();
 
-    DList<QUrl> list;
+	DList<QUrl> list;
 	QList<QUrl> all = event->mimeData()->urls();
     for (const QUrl& url : all)
     {
@@ -829,7 +830,20 @@ void Widget::dropEvent(QDropEvent *event)
         if (TYPE_LIST.contains(type))
             list.pushBack(url);
     }
-    SETTING_HANDLER->addPlayList("新播放列表", list);
+
+	int ret = OneMessageBox::information(nullptr, tr("提示"),
+		tr("把这%1首歌添加到歌单%2?").arg(list.size()).arg(SETTING_HANDLER->getStruct().playListName), ALL_BTN);
+
+	if (QDialog::Accepted == ret)
+	{
+		if (SETTING_HANDLER->notExistPlayList())
+			SETTING_HANDLER->addPlayList("新播放列表", list);
+		else
+			SETTING_HANDLER->addList2CurrentPlayList(list);
+	}
+
+	refreshMusicBtns();
+
 
     //// 重新设置滚动条的数值
     //ui->scrollArea->verticalScrollBar()->setMaximum(btn_list_.size());

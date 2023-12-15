@@ -55,6 +55,36 @@ void SettingHandler::addPlayList(const QString& name, const DList<QUrl>& list)
     writeAll();
 }
 
+void SettingHandler::addList2CurrentPlayList(const DList<QUrl>& list)
+{
+	if (!setting_.playListMap.contains(setting_.playListName))
+	{
+		DWarning << "PlayList" << setting_.playListName << "is not exist, add musics faild!";
+		return;
+	}
+
+	// 去除播放列表中已存在的歌曲
+	DList<QUrl> onlyList;
+	for (const QUrl& url : list)
+	{
+		if (setting_.playListMap.value(setting_.playListName).contains(url))
+			continue;
+		onlyList.pushBack(url);
+	}
+
+	setting_.playListMap[setting_.playListName].insert(0, onlyList);
+}
+
+bool SettingHandler::isPlayListExists(const QString& playListName)
+{
+	return setting_.playListMap.contains(playListName);
+}
+
+bool SettingHandler::notExistPlayList()
+{
+	return setting_.playListMap.isEmpty();
+}
+
 const DList<QUrl> SettingHandler::currentPlayList()
 {
 	if ((setting_.playListName.isEmpty() || setting_.playListName == "Null")

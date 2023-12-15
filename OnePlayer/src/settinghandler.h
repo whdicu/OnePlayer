@@ -17,7 +17,18 @@ public:
     SettingStruct& getStruct() { return setting_; }
 	void save() { writeAll(); }
 
+	// 添加一些音乐到新的播放列表
     void addPlayList(const QString& name, const DList<QUrl>& list);
+
+	// 添加一些音乐到当前播放列表，会排除已存在的歌曲
+	void addList2CurrentPlayList(const DList<QUrl>& list);
+
+	// 查看播放列表是否存在
+	bool isPlayListExists(const QString& playListName);
+
+	// 当前没有任何播放列表
+	bool notExistPlayList();
+
     // 获取当前歌单下的歌曲，随机播放时 不是 返回随机播放歌曲Index列表
 	const DList<QUrl> currentPlayList();
     void clearRandomPlayList();

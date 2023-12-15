@@ -6,6 +6,9 @@
 #include <QString>
 #include <QUrl>
 
+#define DWarning (qWarning() << __FUNCTION__)
+#define DDebug (qDebug() << __FUNCTION__)
+
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 #include <QRandomGenerator64>
