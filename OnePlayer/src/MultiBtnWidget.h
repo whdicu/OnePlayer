@@ -19,6 +19,9 @@ public:
 
 	bool isAnimateHide() { return isAnimateHide_; }
 
+signals:
+	void sigBtnSettingClicked();
+
 private:
 	Ui::MultiBtnWidgetClass ui;
 	// 内部按钮动画

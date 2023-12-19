@@ -437,6 +437,13 @@ void Widget::setListener()
 
     // 音乐下标改变
     connect(SETTING_HANDLER, &SettingHandler::sigMusicIndexChanged, this, &Widget::slotMusicIndexChanged);
+
+    // 右侧按钮Widget
+    connect(ui->multi_btn_widget, &MultiBtnWidget::sigBtnSettingClicked, this, [this]()
+    {
+        ui->btn_more->setIcon(QIcon(":/svgs/back.svg"));
+        ui->stacked_widget->setCurrentIndex(1);
+    });
 }
 
 void Widget::refreshMusicBtns()
@@ -1284,51 +1291,49 @@ void Widget::on_btn_mode_clicked()
 // 更多按钮
 void Widget::on_btn_more_clicked()
 {
-    if (nullptr != stackedMusicBtnAnimationTimer_)
-        stackedMusicBtnAnimationTimer_->deleteLater();
-
-    stackedMusicBtnAnimationTimer_ = new QTimer(this);
-	if (ui->multi_btn_widget->isAnimateHide())
+    switch (ui->stacked_widget->currentIndex())
     {
-        animationStackedMusicBtnSmall();
-		connect(stackedMusicBtnAnimationTimer_, &QTimer::timeout, this, [this]()
-		{
+    case 0:
+    case 2:
+        if (nullptr != stackedMusicBtnAnimationTimer_)
             stackedMusicBtnAnimationTimer_->deleteLater();
-            stackedMusicBtnAnimationTimer_ = nullptr;
-			ui->multi_btn_widget->animationShow();
-		});
-    }
-    else
-    {
-        ui->multi_btn_widget->animationHide();
-		connect(stackedMusicBtnAnimationTimer_, &QTimer::timeout, this, [this]()
-		{
-            stackedMusicBtnAnimationTimer_->deleteLater();
-            stackedMusicBtnAnimationTimer_ = nullptr;
-			animationStackedMusicBtnBig();
-		});
-    }
-    stackedMusicBtnAnimationTimer_->start(MORE_BTN_WIDGET_ANIMATION_TIME / 2);
-    //switch (ui->stacked_widget->currentIndex())
-    //{
-    //case 0:
-    //case 2:
-    //    ui->btn_more->setIcon(QIcon(":/svgs/back.svg"));
-    //    ui->stacked_widget->setCurrentIndex(1);
-    //    break;
-    //case 1:
-    //    ui->btn_more->setIcon(QIcon(":/svgs/more.svg"));
-    //    if (ONLINE == SETTING_HANDLER->get_player_mode())
-    //    {
-    //        ui->stacked_widget->setCurrentIndex(0);
-    //    }
-    //    else
-    //    {
-    //        ui->stacked_widget->setCurrentIndex(btn_list_.isEmpty() ? 2 : 0);
-    //    }
 
-    //    break;
-    //}
+        stackedMusicBtnAnimationTimer_ = new QTimer(this);
+        if (ui->multi_btn_widget->isAnimateHide())
+        {
+            animationStackedMusicBtnSmall();
+            connect(stackedMusicBtnAnimationTimer_, &QTimer::timeout, this, [this]()
+            {
+                stackedMusicBtnAnimationTimer_->deleteLater();
+                stackedMusicBtnAnimationTimer_ = nullptr;
+                ui->multi_btn_widget->animationShow();
+            });
+        }
+        else
+        {
+            ui->multi_btn_widget->animationHide();
+            connect(stackedMusicBtnAnimationTimer_, &QTimer::timeout, this, [this]()
+            {
+                stackedMusicBtnAnimationTimer_->deleteLater();
+                stackedMusicBtnAnimationTimer_ = nullptr;
+                animationStackedMusicBtnBig();
+            });
+        }
+        stackedMusicBtnAnimationTimer_->start(MORE_BTN_WIDGET_ANIMATION_TIME / 2);
+        break;
+    case 1:  // 处于设置页
+        ui->btn_more->setIcon(QIcon(":/svgs/more.svg"));
+        //if (ONLINE == SETTING_HANDLER->get_player_mode())
+        //{
+        //    ui->stacked_widget->setCurrentIndex(0);
+        //}
+        //else
+        {
+            ui->stacked_widget->setCurrentIndex(0);
+        }
+
+        break;
+    }
 }
 
 // 最小化

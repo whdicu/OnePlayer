@@ -31,6 +31,8 @@ MultiBtnWidget::MultiBtnWidget(QWidget *parent)
 
 	animationSetting_ = new QPropertyAnimation(ui.btn_setting, "pos");
 	animationSetting_->setDuration(MORE_BTN_WIDGET_ANIMATION_TIME * 8 / 44);
+
+	connect(ui.btn_setting, &QPushButton::clicked, this, &MultiBtnWidget::sigBtnSettingClicked);
 }
 
 MultiBtnWidget::~MultiBtnWidget()

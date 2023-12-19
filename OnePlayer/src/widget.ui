@@ -203,7 +203,7 @@ QLabel {
     <number>1</number>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>1</number>
    </property>
    <widget class="QWidget" name="music">
     <property name="minimumSize">
@@ -598,16 +598,26 @@ QLabel {
     </layout>
    </widget>
    <widget class="QWidget" name="setting">
-    <widget class="SettingTabWidget" name="setting_tab_widget" native="true">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>20</y>
-       <width>840</width>
-       <height>409</height>
-      </rect>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <property name="spacing">
+      <number>0</number>
      </property>
-    </widget>
+     <property name="leftMargin">
+      <number>20</number>
+     </property>
+     <property name="topMargin">
+      <number>20</number>
+     </property>
+     <property name="rightMargin">
+      <number>20</number>
+     </property>
+     <property name="bottomMargin">
+      <number>20</number>
+     </property>
+     <item>
+      <widget class="SettingTabWidget" name="setting_tab_widget" native="true"/>
+     </item>
+    </layout>
    </widget>
    <widget class="QWidget" name="page_netease">
     <layout class="QVBoxLayout" name="verticalLayout">
