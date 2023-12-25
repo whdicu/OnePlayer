@@ -9,7 +9,8 @@
 #include <QPainterPath>
 
 
-QPixmap ImageHandler::cutImage(const QImage& image, int width, int height, int radius, bool blur, double brightness)
+QPixmap ImageHandler::cutImage(const QImage& image, int width, int height, int radiusTL
+	, int radiusTR, int radiusBL, int radiusBR, bool blur, double brightness)
 {
 	cv::Mat origintMat = QImageToCvMat(image);
 
@@ -55,8 +56,10 @@ QPixmap ImageHandler::cutImage(const QImage& image, int width, int height, int r
 	//qDebug() << labelWidth << labelHeight;
 
 	QImage aaa = cvMatToQImage(darkened_image);
-	//qDebug() << aaa.width() << aaa.height();
-	return QPixmap::fromImage(roundImage(aaa, radius));
+	return QPixmap::fromImage(roundImage(aaa, radiusTL, radiusTR, radiusBL, radiusBR));
+
+	//cv::Mat roundMat = roundCVMat(darkened_image, radiusTL, radiusTR, radiusBL, radiusBR);
+	//return QPixmap::fromImage(cvMatToQImage(roundMat));
 
 
 	// 将mat添加圆角
@@ -71,6 +74,11 @@ QPixmap ImageHandler::cutImage(const QImage& image, int width, int height, int r
 	//
 	//qDebug() << ui.label_background->size() << scaledImage.size();
 	
+}
+
+QPixmap ImageHandler::cutImage(const QImage& image, int width, int height, int radius, bool blur, double brightness)
+{
+	return cutImage(image, width, height, radius, radius, radius, radius, blur, brightness);
 }
 
 QRgb ImageHandler::getMainColor(const QImage& image)
@@ -253,7 +261,8 @@ QImage ImageHandler::cvMatToQImage(const cv::Mat& inMat)
 	return QImage();
 }
 
-QImage ImageHandler::roundImage(const QImage& image, int radius)
+QImage ImageHandler::roundImage(const QImage& image, int radiusTL, int radiusTR
+	, int radiusBL, int radiusBR)
 {
 	QImage roundedImage(image.size(), QImage::Format_ARGB32_Premultiplied);
 	roundedImage.fill(Qt::transparent);
@@ -262,26 +271,32 @@ QImage ImageHandler::roundImage(const QImage& image, int radius)
 	painter.setRenderHint(QPainter::Antialiasing);
 
 	QPainterPath path;
-	path.addRoundedRect(roundedImage.rect(), radius, radius);
+	path.addRoundedRect(roundedImage.rect(), radiusTL, radiusTL);
+	//path.addRoundedRect(roundedImage.rect(), radiusTL, radiusTL, Qt::TopLeftCorner);
+	//path.addRoundedRect(roundedImage.rect(), radiusTR, radiusTR, Qt::TopRightCorner);
+	//path.addRoundedRect(roundedImage.rect(), radiusBL, radiusBL, Qt::BottomLeftCorner);
+	//path.addRoundedRect(roundedImage.rect(), radiusBR, radiusBR, Qt::BottomRightCorner);
+
 	painter.setClipPath(path);
 	painter.drawImage(roundedImage.rect(), image);
 
 	return roundedImage;
 }
 
-cv::Mat ImageHandler::roundCVMat(const cv::Mat& image, int radius)
+cv::Mat ImageHandler::roundCVMat(const cv::Mat& image, int radiusTL, int radiusTR
+	, int radiusBL, int radiusBR)
 {
 	// 创建遮罩层
 	cv::Mat mask(image.size(), CV_8UC1, cv::Scalar(0));
-	cv::Rect rectTopLeft(0, 0, 2 * radius, 2 * radius);
-	cv::Rect rectTopRight(image.cols - 2 * radius, 0, 2 * radius, 2 * radius);
-	cv::Rect rectBottomLeft(0, image.rows - 2 * radius, 2 * radius, 2 * radius);
-	cv::Rect rectBottomRight(image.cols - 2 * radius, image.rows - 2 * radius, 2 * radius, 2 * radius);
+	cv::Rect rectTopLeft(0, 0, 2 * radiusTL, 2 * radiusTL);
+	cv::Rect rectTopRight(image.cols - 2 * radiusTR, 0, 2 * radiusTR, 2 * radiusTR);
+	cv::Rect rectBottomLeft(0, image.rows - 2 * radiusBL, 2 * radiusBL, 2 * radiusBL);
+	cv::Rect rectBottomRight(image.cols - 2 * radiusBR, image.rows - 2 * radiusBR, 2 * radiusBR, 2 * radiusBR);
 
-	cv::circle(mask, rectTopLeft.tl() + cv::Point(radius, radius), radius, cv::Scalar(255), -1, cv::LINE_AA);
-	cv::circle(mask, rectTopRight.tl() + cv::Point(-radius, radius), radius, cv::Scalar(255), -1, cv::LINE_AA);
-	cv::circle(mask, rectBottomLeft.tl() + cv::Point(radius, -radius), radius, cv::Scalar(255), -1, cv::LINE_AA);
-	cv::circle(mask, rectBottomRight.tl() + cv::Point(-radius, -radius), radius, cv::Scalar(255), -1, cv::LINE_AA);
+	cv::circle(mask, rectTopLeft.tl() + cv::Point(radiusTL, radiusTL), radiusTL, cv::Scalar(255), -1, cv::LINE_AA);
+	cv::circle(mask, rectTopRight.tl() + cv::Point(-radiusTR, radiusTR), radiusTR, cv::Scalar(255), -1, cv::LINE_AA);
+	cv::circle(mask, rectBottomLeft.tl() + cv::Point(radiusBL, -radiusBL), radiusBL, cv::Scalar(255), -1, cv::LINE_AA);
+	cv::circle(mask, rectBottomRight.tl() + cv::Point(-radiusBR, -radiusBR), radiusBR, cv::Scalar(255), -1, cv::LINE_AA);
 
 	// 应用遮罩层
 	cv::Mat result;

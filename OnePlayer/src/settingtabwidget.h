@@ -26,6 +26,12 @@ const static QMap<PLAYER_MODE, QString> csmap_playerModeStr =
 	{NETEASE, "网易云模式"}
 };
 
+const static QMap<BG_MODE, QString> csmap_bgModeStr
+{
+	{ONLY_LEFT, "仅左侧"},
+	{FULL_WIDGET, "充满屏幕"}
+};
+
 class SettingTabWidget : public QWidget
 {
 	Q_OBJECT
@@ -42,6 +48,10 @@ signals:
 	void sig_btn_open_dir_download_clicked();
 	void sig_btn_change_dir_download_clicked();
 	void sig_cmb_mode_currentIndexChanged(int index);
+	void sigBGModeChanged(BG_MODE bgMode);
+
+private slots:
+	void on_cmb_bg_mode_currentIndexChanged(int index);
 
 private:
 	Ui::SettingTabWidget ui;

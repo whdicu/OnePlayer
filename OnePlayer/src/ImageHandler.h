@@ -4,7 +4,11 @@
 
 namespace ImageHandler
 {
-	// 输入图片、需要的宽高、圆角、是否模糊，就把图片处理好并返回
+	// 输入图片、需要的宽高、四个圆角、是否模糊，就把图片处理好并返回
+	QPixmap cutImage(const QImage& image, int width, int height, int radiusTL
+		, int radiusTR, int radiusBL, int radiusBR, bool blur, double brightness);
+
+	// 与上同，但四个圆角相等
 	QPixmap cutImage(const QImage& image, int width, int height, int radius, bool blur, double brightness);
 
 	QRgb getMainColor(const QImage& image);
@@ -15,9 +19,11 @@ namespace ImageHandler
 
 	QImage cvMatToQImage(const cv::Mat& inMat);
 	
-	QImage roundImage(const QImage& image, int radius);
+	QImage roundImage(const QImage& image, int radiusTL, int radiusTR
+		, int radiusBL, int radiusBR);
 	
-	cv::Mat roundCVMat(const cv::Mat& image, int radius);
+	cv::Mat roundCVMat(const cv::Mat& image, int radiusTL, int radiusTR
+		, int radiusBL, int radiusBR);
 
 	QImage downloadImage(const QString& url);
 }

@@ -93,11 +93,17 @@ enum PLAY_MODE
 	RANDOM
 };
 
+enum BG_MODE
+{
+	ONLY_LEFT,
+	FULL_WIDGET
+};
+
 struct SettingStruct
 {
 	SettingStruct() : playMode(AGAIN), musicDir(QString()), volume(0.0f)
 		, playListName(QString("Null")), musicPosition(0), playerMode(LOCAL)
-		, downloadDir(QString()), playListMap(QMap<QString, DList<QUrl>>()) {}
+		, bgMode(ONLY_LEFT), downloadDir(QString()), playListMap(QMap<QString, DList<QUrl>>()) {}
 
 	PLAY_MODE                       playMode;
 	QString                         musicDir;
@@ -105,6 +111,7 @@ struct SettingStruct
 	QString                         playListName;
 	qint64                          musicPosition;
 	PLAYER_MODE                     playerMode;
+	BG_MODE							bgMode;
 	QString                         downloadDir;
 	QMap<QString, DList<QUrl>>		playListMap;
 };

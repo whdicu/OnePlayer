@@ -278,6 +278,12 @@ void Widget::slotLocalMusicBtnClicked(DSizeType musicIndex)
 	player_->playCurrentIndex();
 }
 
+void Widget::slotBGModeChanged(BG_MODE bgMode)
+{
+	MusicInfo musicInfo = player_->getMusicInfo();
+	refreshImageWidget(musicInfo);
+}
+
 void Widget::setListener()
 {
     // 菜单失去焦点，判断是否需要隐藏
@@ -444,6 +450,9 @@ void Widget::setListener()
         ui->btn_more->setIcon(QIcon(":/svgs/back.svg"));
         ui->stacked_widget->setCurrentIndex(1);
     });
+
+	/****************** 设置页中的一些信号 ********************/
+	connect(ui->setting_tab_widget, &SettingTabWidget::sigBGModeChanged, this, &Widget::slotBGModeChanged);
 }
 
 void Widget::refreshMusicBtns()
@@ -1090,8 +1099,24 @@ void Widget::refreshImageWidget(const MusicInfo& info)
     // 设置专辑名
     ui->music_info_widget->setAlbumName(info.album.isEmpty() ? "未知专辑" : info.album);
 
+	const static QImage default_image(":/images/music.png");
+
 	// 画图片
-	ui->music_info_widget->drawImage(info.image);
+	QImage image = info.image.isNull() ? default_image : info.image;
+	switch (SETTING_HANDLER->getStruct().bgMode)
+	{
+	case ONLY_LEFT:
+		break;
+	case FULL_WIDGET:
+		ui->label_bg_image->setPixmap(ImageHandler::cutImage(image, ui->label_bg_image->width()
+			, ui->label_bg_image->height(), 40, 40, 0, 0, true, 0.7));
+		break;
+	default:
+		break;
+	}
+
+	// 画图片
+	ui->music_info_widget->drawImage(image);
 	ui->music_info_widget->animationShow();
 }
 

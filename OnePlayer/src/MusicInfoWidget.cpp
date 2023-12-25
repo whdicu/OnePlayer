@@ -24,10 +24,12 @@ MusicInfoWidget::~MusicInfoWidget()
 
 void MusicInfoWidget::drawImage(QImage image)
 {
-    static QImage default_image(":/images/music.png");
-    if (image.isNull())
-        image = default_image;
-    
+	if (image.isNull())
+	{
+		DWarning << "image is null!";
+		return;
+	}
+
     ui.label_image->setPixmap(ImageHandler::cutImage(image, ui.label_image->width()
         , ui.label_image->height(), 20, false, 1.0));
 

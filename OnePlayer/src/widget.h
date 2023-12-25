@@ -61,6 +61,7 @@ private slots:
     void slotMusicIndexChanged(DSizeType oldIndex, DSizeType newIndex);
 	void slotMenuBtnClicked(const QString& text);
 	void slotLocalMusicBtnClicked(DSizeType musicIndex);
+	void slotBGModeChanged(BG_MODE bgMode);
      
 signals:
 	void sigChangeSystemIconToolTip(const QString& tip);

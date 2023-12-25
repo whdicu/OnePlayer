@@ -272,6 +272,7 @@ void SettingHandler::readAll()
     setMusicIndex(obj["musicIndex"].toVariant().toULongLong());
     setting_.musicPosition = obj["musicPosition"].toVariant().toLongLong();
     setting_.playerMode = (PLAYER_MODE)obj["playerMode"].toInt();
+    setting_.bgMode = (BG_MODE)obj["bgMode"].toInt();
     setting_.downloadDir = obj["downloadDir"].toString();
 
     // 读取播放列表
@@ -292,6 +293,7 @@ void SettingHandler::writeAll()
     wholeObject.insert("musicIndex", QString::number(getMusicIndex()));
     wholeObject.insert("musicPosition", setting_.musicPosition);
     wholeObject.insert("playerMode", setting_.playerMode);
+    wholeObject.insert("bgMode", setting_.bgMode);
     wholeObject.insert("downloadDir", setting_.downloadDir);
     
     writePlayList();

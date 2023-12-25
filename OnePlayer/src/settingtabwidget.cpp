@@ -42,6 +42,14 @@ SettingTabWidget::SettingTabWidget(QWidget *parent)
 	int index = ui.cmb_mode->findData(SETTING_HANDLER->getStruct().playerMode);
 	ui.cmb_mode->setCurrentIndex(index);
 
+	// 初始化背景图片显示模式
+	for (auto it = csmap_bgModeStr.begin(); it != csmap_bgModeStr.end(); ++it)
+	{
+		ui.cmb_bg_mode->addItem(it.value(), it.key());
+	}
+	int index2 = ui.cmb_bg_mode->findData(SETTING_HANDLER->getStruct().bgMode);
+	ui.cmb_bg_mode->setCurrentIndex(index2);
+
 	//ui.btn_open_dir->setIcon(QIcon(":/svgs/goto.svg"));
 	//ui.btn_open_dir_download->setIcon(QIcon(":/svgs/goto.svg"));
 	ui.btn_change_dir->setIcon(QIcon(":/svgs/folder.svg"));
@@ -71,6 +79,16 @@ void SettingTabWidget::setMusicDir(const QString& dir)
 void SettingTabWidget::setDownloadDir(const QString& dir)
 {
 	ui.btn_open_dir_download->setText(dir);
+}
+
+void SettingTabWidget::on_cmb_bg_mode_currentIndexChanged(int index)
+{
+	// 防止 cmb_workbench 在初始化时写入文件
+	if (ui.cmb_bg_mode->count() != csmap_bgModeStr.size())
+		return;
+
+	SETTING_HANDLER->getStruct().bgMode = (BG_MODE)ui.cmb_bg_mode->itemData(index).toInt();
+	emit sigBGModeChanged(SETTING_HANDLER->getStruct().bgMode);
 }
 
 // 屏蔽鼠标滚动
