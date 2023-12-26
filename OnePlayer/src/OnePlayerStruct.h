@@ -30,11 +30,15 @@ const static int PORT = 9002;
 const static int MAIN_WIDGET_WIDTH = 920;
 const static int MAIN_WIDGET_HEIGHT = 520;
 
+// 左侧音乐信息Widget的大小
+const static int MUSIC_INFO_WIDGET_WIDTH = 400;
+const static int MUSIC_INFO_WIDGET_HEIGHT = 400;
+
 // 右侧按钮框的位置大小
 const static int MORE_BTN_WIDGET_X = 420;
 const static int MORE_BTN_WIDGET_Y = 0;
 const static int MORE_BTN_WIDGET_WIDTH = 40;
-const static int MORE_BTN_WIDGET_HEIGHT = 400;
+const static int MORE_BTN_WIDGET_HEIGHT = 420;
 
 // 音乐按钮控件大小
 const static int STACKED_MUSIC_BTN_WIDTH = 400;

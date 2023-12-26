@@ -1,5 +1,6 @@
 #pragma once
 
+#include "opencv2/core.hpp"
 #include <QWidget>
 #include "ui_MusicInfoWidget.h"
 
@@ -13,7 +14,8 @@ class MusicInfoWidget : public QWidget
 public:
 	MusicInfoWidget(QWidget *parent = nullptr);
 	~MusicInfoWidget();
-	void drawImage(QImage image);
+	void drawBGMat(const cv::Mat& image);
+	void drawMainMat(const cv::Mat& image);
 	void setMusicName(const QString& name) { ui.label_sound_name->setText(name); }
 	void setSingerName(const QString& name) { ui.label_singer->setText(name); }
 	void setAlbumName(const QString& name) { ui.label_album->setText(name); }

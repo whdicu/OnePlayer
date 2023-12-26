@@ -1103,20 +1103,32 @@ void Widget::refreshImageWidget(const MusicInfo& info)
 
 	// 画图片
 	QImage image = info.image.isNull() ? default_image : info.image;
+	cv::Mat originMat = ImageHandler::QImageToCvMat(image);
+	cv::Mat fitMat = originMat;
 	switch (SETTING_HANDLER->getStruct().bgMode)
 	{
 	case ONLY_LEFT:
+		ui->label_bg_image->clear();
 		break;
 	case FULL_WIDGET:
-		ui->label_bg_image->setPixmap(ImageHandler::cutImage(image, ui->label_bg_image->width()
-			, ui->label_bg_image->height(), 40, 40, 0, 0, true, 0.7));
+	{
+		fitMat = ImageHandler::fitImage(originMat, ui->label_bg_image->width()
+			, ui->label_bg_image->height());
+		cv::Mat blurMat = ImageHandler::blurImage(fitMat, 20);
+		cv::Mat lightMat = ImageHandler::lightImage(blurMat, 0.8);
+		QImage lightImage = ImageHandler::cvMatToQImage(lightMat);
+		QImage roundImage = ImageHandler::roundImage(lightImage, 40, true);
+
+		ui->label_bg_image->setPixmap(QPixmap::fromImage(roundImage));
 		break;
+	}
 	default:
 		break;
 	}
 
 	// 画图片
-	ui->music_info_widget->drawImage(image);
+	ui->music_info_widget->drawBGMat(fitMat);
+	ui->music_info_widget->drawMainMat(originMat);
 	ui->music_info_widget->animationShow();
 }
 

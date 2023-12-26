@@ -1,5 +1,6 @@
 #include "ImageHandler.h"
 #include "opencv2/imgproc.hpp"
+#include <opencv2/opencv.hpp>
 #include <QDebug>
 #include <QElapsedTimer>
 #include <QEventLoop>
@@ -9,39 +10,69 @@
 #include <QPainterPath>
 
 
-QPixmap ImageHandler::cutImage(const QImage& image, int width, int height, int radiusTL
-	, int radiusTR, int radiusBL, int radiusBR, bool blur, double brightness)
+cv::Mat ImageHandler::fitImage(const cv::Mat& image, int width, int height)
 {
-	cv::Mat origintMat = QImageToCvMat(image);
-
 	// 将mat裁剪
-	int widthByHeight = origintMat.cols * height / width;
+	int widthByHeight = image.cols * height / width;
 	double scale = 1.0;
-	if (origintMat.rows > widthByHeight)  // 竖直长条形
+	if (image.rows > widthByHeight)  // 竖直长条形
 	{
 		// 根据宽度缩放图像到指定大小
-		scale = static_cast<double>(width) / origintMat.cols;
+		scale = static_cast<double>(width) / image.cols;
 	}
 	else  // 横向长条形
 	{
 		// 根据高度缩放图像到指定大小
-		scale = static_cast<double>(height) / origintMat.rows;
+		scale = static_cast<double>(height) / image.rows;
 	}
 	cv::Mat resizedImage;
-	cv::resize(origintMat, resizedImage, cv::Size(), scale, scale, cv::INTER_AREA);
+	cv::resize(image, resizedImage, cv::Size(), scale, scale, cv::INTER_AREA);
 
 	// 裁剪到与label相同大小
-	cv::Rect roi((resizedImage.cols - width) / 2, (resizedImage.rows - height) / 2, width, height);
-	cv::Mat croppedImage = resizedImage(roi);
+	QRect roi((resizedImage.cols - width) / 2, (resizedImage.rows - height) / 2, width, height);
+	return cutImage(resizedImage, roi);
+}
+
+cv::Mat ImageHandler::blurImage(const cv::Mat& image, int blurRadius)
+{
+	cv::Mat blurredMat;
+	cv::stackBlur(image, blurredMat, cv::Size(blurRadius * 2 + 1, blurRadius * 2 + 1));
+	return blurredMat;
+}
+
+cv::Mat ImageHandler::lightImage(const cv::Mat& image, double brightness)
+{
+	cv::Mat trasMat;
+	if (image.type() == CV_8UC4)
+		cv::cvtColor(image, trasMat, cv::COLOR_RGBA2RGB);
+	return brightness * trasMat;
+}
+
+cv::Mat ImageHandler::cutImage(const cv::Mat& image, const QRect& rect)
+{
+	if (rect.x() + rect.width() > image.cols
+		|| rect.y() + rect.height() > image.rows)
+		return image;
+
+	cv::Rect roi(rect.x(), rect.y(), rect.width(), rect.height());
+	return image(roi);
+}
+
+QImage ImageHandler::dealImage(const QImage& image, int width, int height, int radius, bool blur, int blurRadius, double brightness, bool onlyTop)
+{
+	cv::Mat origintMat = QImageToCvMat(image);
+
+	cv::Mat croppedImage = fitImage(origintMat, width, height);
 
 	cv::Mat blurredMat;
-	if (blur)
+	if (blur && blurRadius >= 0)
 	{
 		//QElapsedTimer time;
 		//time.start();
 		//cv::GaussianBlur(resizedImage, blurredMat, cv::Size(101, 101), 18);  // 31 8
 		//cv::blur(resizedImage, blurredMat, cv::Size(31, 31));
-		cv::stackBlur(croppedImage, blurredMat, cv::Size(61, 61));
+		//cv::stackBlur(croppedImage, blurredMat, cv::Size(61, 61));
+		cv::stackBlur(croppedImage, blurredMat, cv::Size(blurRadius * 2 + 1, blurRadius * 2 + 1));
 		//qDebug() << "GaussianBlur:" << time.elapsed();
 	}
 	else
@@ -56,7 +87,7 @@ QPixmap ImageHandler::cutImage(const QImage& image, int width, int height, int r
 	//qDebug() << labelWidth << labelHeight;
 
 	QImage aaa = cvMatToQImage(darkened_image);
-	return QPixmap::fromImage(roundImage(aaa, radiusTL, radiusTR, radiusBL, radiusBR));
+	return roundImage(aaa, radius, onlyTop);
 
 	//cv::Mat roundMat = roundCVMat(darkened_image, radiusTL, radiusTR, radiusBL, radiusBR);
 	//return QPixmap::fromImage(cvMatToQImage(roundMat));
@@ -76,33 +107,36 @@ QPixmap ImageHandler::cutImage(const QImage& image, int width, int height, int r
 	
 }
 
-QPixmap ImageHandler::cutImage(const QImage& image, int width, int height, int radius, bool blur, double brightness)
-{
-	return cutImage(image, width, height, radius, radius, radius, radius, blur, brightness);
-}
-
-QRgb ImageHandler::getMainColor(const QImage& image)
+QRgb ImageHandler::getMainColor(const cv::Mat& image)
 {
 	unsigned long long r = 0, g = 0, b = 0, a = 0;
 	unsigned long long cnt = 0;
-	for (int i = 0; i < image.width(); i += 4)
+	for (int i = 0; i < image.cols; i += 4)
 	{
 		// 原来只采样图片下半部分
 		//for (int j = image.height() / 2; j < image.height(); j += 4)
-		for (int j = 0; j < image.height(); j += 4)
+		for (int j = 0; j < image.rows; j += 4)
 		{
-			QRgb pix = image.pixel(i, j);
-			r += qRed(pix);
-			g += qGreen(pix);
-			b += qBlue(pix);
-			a += qAlpha(pix);
+			cv::Vec3b pixel = image.at<cv::Vec3b>(j, i);
+
+			// 分别输出RGB值
+			b += pixel[0];
+			g += pixel[1];
+			r += pixel[2];
+
+
+			//QRgb pix = image.pixel(i, j);
+			//r += qRed(pix);
+			//g += qGreen(pix);
+			//b += qBlue(pix);
+			//a += qAlpha(pix);
 			++cnt;
 		}
 	}
 	return qRgba(r / cnt, g / cnt, b / cnt, a / cnt);
 }
 
-QString ImageHandler::getTextColor(const QImage& image)
+QString ImageHandler::getTextColor(const cv::Mat& image)
 {
 	QRgb c3 = getMainColor(image);
 
@@ -261,17 +295,30 @@ QImage ImageHandler::cvMatToQImage(const cv::Mat& inMat)
 	return QImage();
 }
 
-QImage ImageHandler::roundImage(const QImage& image, int radiusTL, int radiusTR
-	, int radiusBL, int radiusBR)
+QImage ImageHandler::roundImage(const QImage& image, int radius, bool onlyTop)
 {
-	QImage roundedImage(image.size(), QImage::Format_ARGB32_Premultiplied);
+	QImage roundedImage(image.size(), QImage::Format_ARGB32);
 	roundedImage.fill(Qt::transparent);
 
 	QPainter painter(&roundedImage);
 	painter.setRenderHint(QPainter::Antialiasing);
 
 	QPainterPath path;
-	path.addRoundedRect(roundedImage.rect(), radiusTL, radiusTL);
+	
+	if (onlyTop)
+		path.addRoundedRect(0, 0, image.width(), image.height() + radius, radius, radius);
+	else
+		path.addRoundedRect(roundedImage.rect(), radius, radius);
+
+	//path.addRect(0, radiusTL, image.width(), image.height() - radiusTL);
+
+	// 四个角
+	//path.addRoundedRect(0, 0, radiusTL * 2, radiusTL * 2, radiusTL, radiusTL);
+	//path.addRoundedRect(image.width() - 2 * radiusTR, 0, radiusTR * 2, radiusTR * 2, radiusTR, radiusTR);
+	//path.addRoundedRect(0, image.height() - 2 * radiusBL, radiusBL * 2, radiusBL * 2, radiusBL, radiusBL);
+	//path.addRoundedRect(image.width() - 2 * radiusBR, image.height() - 2 * radiusBR, radiusBR * 2, radiusBR * 2, radiusBR, radiusBR);
+	
+	//path.addRoundedRect(roundedImage.rect(), radiusTL, radiusTL);
 	//path.addRoundedRect(roundedImage.rect(), radiusTL, radiusTL, Qt::TopLeftCorner);
 	//path.addRoundedRect(roundedImage.rect(), radiusTR, radiusTR, Qt::TopRightCorner);
 	//path.addRoundedRect(roundedImage.rect(), radiusBL, radiusBL, Qt::BottomLeftCorner);

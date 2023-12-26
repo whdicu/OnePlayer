@@ -5,6 +5,7 @@
 #include <QElapsedTimer>
 #include <QGraphicsOpacityEffect>
 #include <QPropertyAnimation>
+#include "settinghandler.h"
 
 
 MusicInfoWidget::MusicInfoWidget(QWidget *parent)
@@ -22,24 +23,49 @@ MusicInfoWidget::~MusicInfoWidget()
 	
 }
 
-void MusicInfoWidget::drawImage(QImage image)
+void MusicInfoWidget::drawBGMat(const cv::Mat& image)
 {
-	if (image.isNull())
+	if (image.empty())
 	{
-		DWarning << "image is null!";
+		DWarning << "image is empty!";
 		return;
 	}
 
-    ui.label_image->setPixmap(ImageHandler::cutImage(image, ui.label_image->width()
-        , ui.label_image->height(), 20, false, 1.0));
+	cv::Mat originImage;
+	switch (SETTING_HANDLER->getStruct().bgMode)
+	{
+	case FULL_WIDGET:  // 全屏背景图时，传进来的是背景图一样大的图片
+	{
+		// 从背景图中提取需要的部分，贴合效果
+		QRect r(x(), y(), MUSIC_INFO_WIDGET_WIDTH, MUSIC_INFO_WIDGET_HEIGHT);
+		originImage = ImageHandler::cutImage(image, r);
+		break;
+	}
+	default:
+		originImage = ImageHandler::fitImage(image, MUSIC_INFO_WIDGET_WIDTH, MUSIC_INFO_WIDGET_HEIGHT);
+		break;
+	}
 
-	ui.label_background->setPixmap(ImageHandler::cutImage(image, ui.label_background->width()
-        , ui.label_background->height(), 20, true, 0.85));
+	cv::Mat blurMat = ImageHandler::blurImage(originImage, 35);
+	cv::Mat lightMat = ImageHandler::lightImage(blurMat, 0.9);
+	QImage lightImage = ImageHandler::cvMatToQImage(lightMat);
+	QImage roundImage = ImageHandler::roundImage(lightImage, 20);
 
-    QString text_color = ImageHandler::getTextColor(image);
-    //setStyleSheet(QString("QLabel{color: %1;}").arg(text_color));
+    ui.label_background->setPixmap(QPixmap::fromImage(roundImage));
+
+    QString text_color = ImageHandler::getTextColor(originImage);
     setStyleSheet(QString("QLabel{ color: rgba(%1, 0.8); }").arg(text_color));
     //ui->lyrics_widget->set_color(text_color == "#5c5c66");
+}
+
+void MusicInfoWidget::drawMainMat(const cv::Mat& image)
+{
+	cv::Mat fitMat = ImageHandler::fitImage(image, ui.label_image->width()
+		, ui.label_image->height());
+	QImage fitImage = ImageHandler::cvMatToQImage(fitMat);
+	QImage retImage = ImageHandler::roundImage(fitImage, 20);
+
+	ui.label_image->setPixmap(QPixmap::fromImage(retImage));
 }
 
 void MusicInfoWidget::animationHide()
