@@ -272,7 +272,7 @@ void SettingHandler::readAll()
     setMusicIndex(obj["musicIndex"].toVariant().toULongLong());
     setting_.musicPosition = obj["musicPosition"].toVariant().toLongLong();
     setting_.playerMode = (PLAYER_MODE)obj["playerMode"].toInt();
-    setting_.bgMode = (BG_MODE)obj["bgMode"].toInt();
+    setting_.bgMode = (BG_MODE)obj["bgMode"].toInt(FULL_WIDGET);  // 默认背景图全屏
     setting_.downloadDir = obj["downloadDir"].toString();
 
     // 读取播放列表

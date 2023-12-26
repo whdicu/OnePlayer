@@ -16,9 +16,6 @@ namespace ImageHandler
 	// 裁剪图片
 	cv::Mat cutImage(const cv::Mat& image, const QRect& rect);
 
-	// 输入图片、需要的宽高、圆角、是否模糊，模糊半径，亮度，是否只画上圆角，就把图片处理好并返回
-	QImage dealImage(const QImage& image, int width, int height, int radius, bool blur, int blurRadius, double brightness, bool onlyTop = false);
-
 	QRgb getMainColor(const cv::Mat& image);
 
 	QString getTextColor(const cv::Mat& image);

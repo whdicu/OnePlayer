@@ -46,8 +46,8 @@ void MusicInfoWidget::drawBGMat(const cv::Mat& image)
 		break;
 	}
 
-	cv::Mat blurMat = ImageHandler::blurImage(originImage, 35);
-	cv::Mat lightMat = ImageHandler::lightImage(blurMat, 0.9);
+	cv::Mat blurMat = ImageHandler::blurImage(originImage, 40);
+	cv::Mat lightMat = ImageHandler::lightImage(blurMat, 0.85);
 	QImage lightImage = ImageHandler::cvMatToQImage(lightMat);
 	QImage roundImage = ImageHandler::roundImage(lightImage, 20);
 

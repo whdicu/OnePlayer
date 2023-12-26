@@ -4,6 +4,7 @@
 DProgressBar::DProgressBar(QWidget *parent)
 	: QSlider(parent)
 {
+	
 }
 
 DProgressBar::~DProgressBar()

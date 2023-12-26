@@ -207,6 +207,7 @@ void Widget::slotPositionChanged(qint64 pos)
 
 void Widget::slotSearchEditClose()
 {
+	grabKeyboard();
     ui->find_widget->animationHide();
     animationStackedLocalBtnsLong();
     ui->find_widget->setEditText("");
@@ -453,6 +454,8 @@ void Widget::setListener()
 
 	/****************** 设置页中的一些信号 ********************/
 	connect(ui->setting_tab_widget, &SettingTabWidget::sigBGModeChanged, this, &Widget::slotBGModeChanged);
+	connect(ui->setting_tab_widget, &SettingTabWidget::sigPlayerModeChanged, this, &Widget::slotPlayerModeChanged);
+
 }
 
 void Widget::refreshMusicBtns()
@@ -1019,12 +1022,14 @@ void Widget::keyPressEvent(QKeyEvent *event)
         {
             if (ui->find_widget->isAnimateHide())
             {
+				releaseKeyboard();
                 ui->find_widget->animationShow();
 				animationStackedLocalBtnsShort();
                 ui->find_widget->setEditFocus();
             }
             else
             {
+				grabKeyboard();
                 slotSearchEditClose();
             }
         }
@@ -1115,7 +1120,7 @@ void Widget::refreshImageWidget(const MusicInfo& info)
 		fitMat = ImageHandler::fitImage(originMat, ui->label_bg_image->width()
 			, ui->label_bg_image->height());
 		cv::Mat blurMat = ImageHandler::blurImage(fitMat, 20);
-		cv::Mat lightMat = ImageHandler::lightImage(blurMat, 0.8);
+		cv::Mat lightMat = ImageHandler::lightImage(blurMat, 0.65);
 		QImage lightImage = ImageHandler::cvMatToQImage(lightMat);
 		QImage roundImage = ImageHandler::roundImage(lightImage, 40, true);
 
@@ -1465,28 +1470,27 @@ void Widget::on_btn_music_name_clicked()
 //    //ui->label_dir_download->setText(str_dir);
 //    SETTING_HANDLER->set_download_dir(str_dir);
 //}
-//
-//void Widget::slot_cmb_mode_currentIndexChanged(int index)
-//{
-//    PLAYER_MODE newMode = static_cast<PLAYER_MODE>(index);
-//    switch (newMode)
-//    {
-//    case LOCAL:
-//        init_local();
-//        break;
-//    case MYSITE:
-//        init_mysite();
-//        break;
-//    case ONLINE:
-//        init_online();
-//        break;
-//    case NETEASE:
-//        init_netease();
-//        break;
-//    }
-//    SETTING_HANDLER->set_player_mode(newMode);
-//}
-//
+
+void Widget::slotPlayerModeChanged(PLAYER_MODE playerMode)
+{
+    switch (playerMode)
+    {
+    case LOCAL:
+    //    init_local();
+        break;
+    case MYSITE:
+    //    init_mysite();
+        break;
+    case ONLINE:
+    //    init_online();
+        break;
+    case NETEASE:
+    //    init_netease();
+        break;
+    }
+    SETTING_HANDLER->getStruct().playerMode = playerMode;
+}
+
 
 //void Widget::on_btn_search_clicked()
 //{
@@ -1590,12 +1594,11 @@ void Widget::on_btn_music_name_clicked()
 ////        break;
 ////    }
 //}
-//
+
 //void Widget::set_setting_tab_listener()
 //{
 //	connect(ui->setting_tab_widget, &SettingTabWidget::sig_btn_open_dir_clicked, this, &Widget::slot_btn_open_dir_clicked);
 //	connect(ui->setting_tab_widget, &SettingTabWidget::sig_btn_change_dir_clicked, this, &Widget::slot_btn_change_dir_clicked);
 //	connect(ui->setting_tab_widget, &SettingTabWidget::sig_btn_open_dir_download_clicked, this, &Widget::slot_btn_open_dir_download_clicked);
 //	connect(ui->setting_tab_widget, &SettingTabWidget::sig_btn_change_dir_download_clicked, this, &Widget::slot_btn_change_dir_download_clicked);
-//	connect(ui->setting_tab_widget, &SettingTabWidget::sig_cmb_mode_currentIndexChanged, this, &Widget::slot_cmb_mode_currentIndexChanged);
 //}

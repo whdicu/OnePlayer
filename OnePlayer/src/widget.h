@@ -53,7 +53,7 @@ private slots:
 //	void slot_btn_change_dir_clicked();
 //	void slot_btn_open_dir_download_clicked();
 //	void slot_btn_change_dir_download_clicked();
-//    void slot_cmb_mode_currentIndexChanged(int index);
+    void slotPlayerModeChanged(PLAYER_MODE playerMode);
 
     void slotKeyPressed(DWORD key);
     void slotPositionChanged(qint64 pos);

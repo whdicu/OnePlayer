@@ -36,7 +36,13 @@ cv::Mat ImageHandler::fitImage(const cv::Mat& image, int width, int height)
 cv::Mat ImageHandler::blurImage(const cv::Mat& image, int blurRadius)
 {
 	cv::Mat blurredMat;
+	//QElapsedTimer time;
+	//time.start();
+	//cv::GaussianBlur(resizedImage, blurredMat, cv::Size(101, 101), 18);  // 31 8
+	//cv::blur(resizedImage, blurredMat, cv::Size(31, 31));
+	//cv::stackBlur(croppedImage, blurredMat, cv::Size(61, 61));
 	cv::stackBlur(image, blurredMat, cv::Size(blurRadius * 2 + 1, blurRadius * 2 + 1));
+	//qDebug() << "GaussianBlur:" << time.elapsed();
 	return blurredMat;
 }
 
@@ -56,55 +62,6 @@ cv::Mat ImageHandler::cutImage(const cv::Mat& image, const QRect& rect)
 
 	cv::Rect roi(rect.x(), rect.y(), rect.width(), rect.height());
 	return image(roi);
-}
-
-QImage ImageHandler::dealImage(const QImage& image, int width, int height, int radius, bool blur, int blurRadius, double brightness, bool onlyTop)
-{
-	cv::Mat origintMat = QImageToCvMat(image);
-
-	cv::Mat croppedImage = fitImage(origintMat, width, height);
-
-	cv::Mat blurredMat;
-	if (blur && blurRadius >= 0)
-	{
-		//QElapsedTimer time;
-		//time.start();
-		//cv::GaussianBlur(resizedImage, blurredMat, cv::Size(101, 101), 18);  // 31 8
-		//cv::blur(resizedImage, blurredMat, cv::Size(31, 31));
-		//cv::stackBlur(croppedImage, blurredMat, cv::Size(61, 61));
-		cv::stackBlur(croppedImage, blurredMat, cv::Size(blurRadius * 2 + 1, blurRadius * 2 + 1));
-		//qDebug() << "GaussianBlur:" << time.elapsed();
-	}
-	else
-		blurredMat = croppedImage;
-
-	// ½µµÍÍ¼Æ¬ÁÁ¶È
-	if (blurredMat.type() == CV_8UC4)
-		cv::cvtColor(blurredMat, blurredMat, cv::COLOR_RGBA2RGB);
-	cv::Mat darkened_image = brightness * blurredMat;
-
-	//qDebug() << blurredMat.cols << blurredMat.rows;
-	//qDebug() << labelWidth << labelHeight;
-
-	QImage aaa = cvMatToQImage(darkened_image);
-	return roundImage(aaa, radius, onlyTop);
-
-	//cv::Mat roundMat = roundCVMat(darkened_image, radiusTL, radiusTR, radiusBL, radiusBR);
-	//return QPixmap::fromImage(cvMatToQImage(roundMat));
-
-
-	// ½«matÌí¼ÓÔ²½Ç
-	//cv::Mat mask(resizedImage.size(), CV_8UC1, cv::Scalar(255));
-	//cv::rectangle(mask, roi, cv::Scalar(0), radius, cv::LINE_8);
-	//cv::Mat result;
-	//resizedImage.copyTo(result, mask);
-	//return QPixmap::fromImage(cvMatToQImage(result));
-	//
-	//QImage blurredImage = cvMatToQImage(blurredMat);
-	//QImage scaledImage = blurredImage.scaled(ui.label_background->size(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation);
-	//
-	//qDebug() << ui.label_background->size() << scaledImage.size();
-	
 }
 
 QRgb ImageHandler::getMainColor(const cv::Mat& image)

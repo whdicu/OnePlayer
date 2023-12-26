@@ -47,10 +47,11 @@ signals:
 	void sig_btn_change_dir_clicked();
 	void sig_btn_open_dir_download_clicked();
 	void sig_btn_change_dir_download_clicked();
-	void sig_cmb_mode_currentIndexChanged(int index);
+	void sigPlayerModeChanged(PLAYER_MODE playerMode);
 	void sigBGModeChanged(BG_MODE bgMode);
 
 private slots:
+	void on_cmb_mode_currentIndexChanged(int index);
 	void on_cmb_bg_mode_currentIndexChanged(int index);
 
 private:
