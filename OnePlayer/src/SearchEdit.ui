@@ -27,6 +27,7 @@
 
 #le_find
 {
+	background-color: transparent;
 	color: #5c5c66;
 	border: none;
 }</string>

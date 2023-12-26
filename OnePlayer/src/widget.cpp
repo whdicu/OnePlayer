@@ -184,6 +184,12 @@ void Widget::slotPositionChanged(qint64 pos)
 {
     if (!movingProgress_)  // 如果没有手动拖动进度条，才根据音乐进度改变进度条
     {
+        if (nullptr == ui->label_now)
+        {
+            DWarning << "ui->label_now is nullptr!";
+            return;
+        }
+
         if (pos > 0)
         {
             SETTING_HANDLER->getStruct().musicPosition = pos;
