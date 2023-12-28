@@ -11,9 +11,9 @@
 
 PlayerQt::PlayerQt(QObject* parent)
 	: PlayerBase(parent)
-	, player_(new QMediaPlayer(this))
+	, player_(new QMediaPlayer)
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-	, audioOutput_(new QAudioOutput(this))
+	, audioOutput_(new QAudioOutput)
 #endif
 	, startPos_(0)
 	, dataBuffer_(nullptr)
@@ -80,6 +80,8 @@ PlayerQt::PlayerQt(QObject* parent)
 PlayerQt::~PlayerQt()
 {
 	player_->stop();
+	delete player_;
+	delete audioOutput_;
 }
 
 bool PlayerQt::playOrPause()
