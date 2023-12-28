@@ -96,15 +96,12 @@ Widget::Widget(const QString& filepath, QWidget *parent)
 
     stackedMusicBtnAnimation_ = new QPropertyAnimation(ui->stacked_music_btn, "geometry");
     stackedMusicBtnAnimation_->setDuration(MORE_BTN_WIDGET_ANIMATION_TIME);
-    stackedMusicBtnAnimation_->setEasingCurve(QEasingCurve::OutCubic);
 
 	stackedMusicBtnAnimationSub1_ = new QPropertyAnimation(ui->find_widget, "geometry");
 	stackedMusicBtnAnimationSub1_->setDuration(MORE_BTN_WIDGET_ANIMATION_TIME);
-	stackedMusicBtnAnimationSub1_->setEasingCurve(QEasingCurve::OutCubic);
 
 	stackedLocalBtnsAnimation_ = new QPropertyAnimation(ui->stacked_local_btns, "geometry");
 	stackedLocalBtnsAnimation_->setDuration(MORE_BTN_WIDGET_ANIMATION_TIME);
-	stackedLocalBtnsAnimation_->setEasingCurve(QEasingCurve::OutCubic);
 
 //    ui->stacked_widget->setCurrentIndex(2);
 //
@@ -892,14 +889,17 @@ void Widget::animationStackedMusicBtnSmall()
     int nowWidth = ui->stacked_music_btn->width();
     int nowHeight = ui->stacked_music_btn->height();
 
+	stackedMusicBtnAnimation_->setEasingCurve(STACKED_MUSIC_BTN_SMALL);
     stackedMusicBtnAnimation_->setStartValue(QRect(nowX, nowY, nowWidth, nowHeight));
     stackedMusicBtnAnimation_->setEndValue(QRect(nowX, nowY, STACKED_MUSIC_BTN_WIDTH, nowHeight));
     stackedMusicBtnAnimation_->start();
 
+	stackedMusicBtnAnimationSub1_->setEasingCurve(STACKED_MUSIC_BTN_SMALL);
 	stackedMusicBtnAnimationSub1_->setStartValue(QRect(0, ui->find_widget->y(), ui->find_widget->width(), ui->find_widget->height()));
 	stackedMusicBtnAnimationSub1_->setEndValue(QRect(0, ui->find_widget->y(), STACKED_MUSIC_BTN_WIDTH, ui->find_widget->height()));
 	stackedMusicBtnAnimationSub1_->start();
 	
+	stackedLocalBtnsAnimation_->setEasingCurve(STACKED_MUSIC_BTN_SMALL);
 	stackedLocalBtnsAnimation_->setStartValue(QRect(0, ui->stacked_local_btns->y(), ui->stacked_local_btns->width(), ui->stacked_local_btns->height()));
 	stackedLocalBtnsAnimation_->setEndValue(QRect(0, ui->stacked_local_btns->y(), STACKED_MUSIC_BTN_WIDTH, ui->stacked_local_btns->height()));
 	stackedLocalBtnsAnimation_->start();
@@ -916,14 +916,17 @@ void Widget::animationStackedMusicBtnBig()
     int oldWidth = ui->stacked_music_btn->width();
     int oldHeight = ui->stacked_music_btn->height();
 
+	stackedMusicBtnAnimation_->setEasingCurve(STACKED_MUSIC_BTN_BIG);
     stackedMusicBtnAnimation_->setStartValue(QRect(oldX, oldY, oldWidth, oldHeight));
     stackedMusicBtnAnimation_->setEndValue(QRect(oldX, oldY, ui->multi_func_widget->width(), oldHeight));
     stackedMusicBtnAnimation_->start();
 
+	stackedMusicBtnAnimationSub1_->setEasingCurve(STACKED_MUSIC_BTN_BIG);
 	stackedMusicBtnAnimationSub1_->setStartValue(QRect(0, ui->find_widget->y(), ui->find_widget->width(), ui->find_widget->height()));
 	stackedMusicBtnAnimationSub1_->setEndValue(QRect(0, ui->find_widget->y(), ui->multi_func_widget->width(), ui->find_widget->height()));
 	stackedMusicBtnAnimationSub1_->start();
 
+	stackedLocalBtnsAnimation_->setEasingCurve(STACKED_MUSIC_BTN_BIG);
 	stackedLocalBtnsAnimation_->setStartValue(QRect(0, ui->stacked_local_btns->y(), ui->stacked_local_btns->width(), ui->stacked_local_btns->height()));
 	stackedLocalBtnsAnimation_->setEndValue(QRect(0, ui->stacked_local_btns->y(), ui->multi_func_widget->width(), ui->stacked_local_btns->height()));
 	stackedLocalBtnsAnimation_->start();
@@ -1356,6 +1359,7 @@ void Widget::on_btn_more_clicked()
                 stackedMusicBtnAnimationTimer_ = nullptr;
                 ui->multi_btn_widget->animationShow();
             });
+			stackedMusicBtnAnimationTimer_->start(MORE_BTN_WIDGET_ANIMATION_TIME / 3);
         }
         else
         {
@@ -1366,8 +1370,9 @@ void Widget::on_btn_more_clicked()
                 stackedMusicBtnAnimationTimer_ = nullptr;
                 animationStackedMusicBtnBig();
             });
+			stackedMusicBtnAnimationTimer_->start(MORE_BTN_WIDGET_ANIMATION_TIME / 3);
         }
-        stackedMusicBtnAnimationTimer_->start(MORE_BTN_WIDGET_ANIMATION_TIME / 2);
+
         break;
     case 1:  // 处于设置页
         ui->btn_more->setIcon(QIcon(":/svgs/more.svg"));

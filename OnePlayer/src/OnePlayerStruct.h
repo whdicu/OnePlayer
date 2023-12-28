@@ -58,6 +58,8 @@ const static int MORE_BTN_WIDGET_ANIMATION_TIME = 300;
 const static int MUSIC_INFO_WIDGET_ANIMATION_TIME = 150;
 const static QEasingCurve MUSIC_INFO_WIDGET_SHOW_EASING = QEasingCurve::InQuad;
 const static QEasingCurve MUSIC_INFO_WIDGET_HIDE_EASING = QEasingCurve::OutQuad;
+const static QEasingCurve STACKED_MUSIC_BTN_BIG = MUSIC_INFO_WIDGET_SHOW_EASING;
+const static QEasingCurve STACKED_MUSIC_BTN_SMALL = MUSIC_INFO_WIDGET_HIDE_EASING;
 
 // 搜索框过渡动画时间
 const static int SEARCH_EDIT_ANIMATION_TIME = 200;
