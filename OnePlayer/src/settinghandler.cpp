@@ -19,10 +19,10 @@ QByteArray readFile(const QString& filePath)
     QFile file(filePath);
     if (!file.exists())
     {
-        qWarning() << filePath << "not exist";
+		DWarning << filePath << "not exist";
         bool ret = file.open(QIODevice::WriteOnly);
         if (!ret)
-            qWarning() << filePath << "create failed";
+			DWarning << filePath << "create failed";
         else
             file.close();
         return data;
@@ -31,7 +31,7 @@ QByteArray readFile(const QString& filePath)
     bool ok = file.open(QIODevice::ReadOnly | QIODevice::Text);
     if (!ok)
     {
-        qWarning() << "File" << filePath << "open failed";
+		DWarning << "File" << filePath << "open failed";
         return data;
     }
 
@@ -48,9 +48,9 @@ SettingHandler* SettingHandler::getInstance()
     return setting_handler;
 }
 
-void SettingHandler::addPlayList(const QString& name, const DList<QUrl>& list)
+void SettingHandler::addPlayList(const QString& playListName, const DList<QUrl>& list)
 {
-    QString uniqueName = checkPlayListName(name);
+    QString uniqueName = checkPlayListName(playListName);
     setting_.playListMap.insert(uniqueName, list);
     writeAll();
 }
@@ -256,7 +256,7 @@ void SettingHandler::readAll()
     QByteArray data = readFile(strFile);
     if (0 == data.size())
     {
-        qWarning() << "File" << filePath << "is empty";
+        DWarning << "File" << filePath << "is empty";
         return;
     }
 
@@ -264,7 +264,7 @@ void SettingHandler::readAll()
     QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &parseError);
     if (QJsonParseError::NoError != parseError.error)
     {
-        qWarning() << "File" << filePath << "analyze failed";
+        DWarning << "File" << filePath << "analyze failed";
         return;
     }
 
@@ -294,7 +294,8 @@ void SettingHandler::writeAll()
     wholeObject.insert("playMode", setting_.playMode);
     wholeObject.insert("musicDir", setting_.musicDir);
     wholeObject.insert("volume", setting_.volume);
-    wholeObject.insert("playListName", setting_.playListName);
+	if (TEMP_PLAY_LIST_NAME != setting_.playListName)
+		wholeObject.insert("playListName", setting_.playListName);
     wholeObject.insert("musicIndex", QString::number(getMusicIndex()));
     wholeObject.insert("musicPosition", setting_.musicPosition);
     wholeObject.insert("playerMode", setting_.playerMode);
@@ -318,7 +319,7 @@ void SettingHandler::writeAll()
     }
     else
     {
-        qWarning() << "File" << strFile << "open failed!";
+        DWarning << "File" << strFile << "open failed!";
     }
 }
 
@@ -344,11 +345,19 @@ void SettingHandler::readPlayList()
         if (str.isEmpty())
         {
             //QFile().remove(basePath + fileName);
-            qWarning() << "File is empty! File:" << (basePath + fileName);
+            DWarning << "File is empty! File:" << (basePath + fileName);
             continue;
         }
         QStringList strList = str.split('\n');
         QString playListName = fileName.mid(0, fileName.indexOf('.'));
+
+		// 与临时播放列表同名的，不添加
+		if (playListName == TEMP_PLAY_LIST_NAME)
+		{
+			DDebug << "Play list name is the same as TEMP_PLAY_LIST! It would be ignore.";
+			continue;
+		}
+
 		DList<QUrl> ret;
 		for (const QString& str : strList)
 		{
@@ -378,6 +387,10 @@ void SettingHandler::writePlayList()
 
     for (auto it = setting_.playListMap.cbegin(); it != setting_.playListMap.cend(); ++it)
     {
+		// 临时播放列表不写入
+		if (TEMP_PLAY_LIST_NAME == it.key())
+			continue;
+
         // 如果路径中有不存在的文件夹则创建
         QString strFile = basePath.arg(it.key());
         QFileInfo fileInfo(strFile);
@@ -387,7 +400,7 @@ void SettingHandler::writePlayList()
         bool ok = file.open(QIODevice::WriteOnly);
 		if (!ok)
 		{
-			qWarning() << "File" << strFile << "open failed!";
+			DWarning << "File" << strFile << "open failed!";
 			continue;
 		}
 

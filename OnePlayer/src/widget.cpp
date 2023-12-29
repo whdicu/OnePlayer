@@ -116,28 +116,7 @@ Widget::Widget(const QString& filepath, QWidget *parent)
 
 //	NeteaseHandler::getInstance();
 
-    if (filepath.isEmpty())  // 没有指定打开的歌曲则打开默认文件夹
-    {
-        switch (SETTING_HANDLER->getStruct().playerMode)
-        {
-        case LOCAL:
-        {
-            refreshMusicBtns();
-            //init_local();
-            break;
-        }
-        case MYSITE:
-            //init_mysite();
-            break;
-        case ONLINE:
-            //init_online();
-            break;
-        case NETEASE:
-            //init_netease();
-            break;
-        }
-    }
-    else
+    if (!filepath.isEmpty())  // 有指定打开的歌曲
     {
 		QString type = filepath.section('.', -1);
 		if (!TYPE_LIST.contains(type))
@@ -146,13 +125,30 @@ Widget::Widget(const QString& filepath, QWidget *parent)
 			initSuccess_ = false;
 			return;
 		}
-//        SETTING_HANDLER->set_player_mode(LOCAL);
-//        ui->stacked_widget->setCurrentIndex(0);
-//        QUrl url = QUrl::fromLocalFile(filepath);
-//        add_music(url);
-//        now_music_index_ = 0;
-//        play_music(0);
+
+		SETTING_HANDLER->addPlayList(TEMP_PLAY_LIST_NAME, { QUrl::fromLocalFile(filepath) });
+		SETTING_HANDLER->getStruct().playListName = TEMP_PLAY_LIST_NAME;
+		SETTING_HANDLER->setMusicIndex(0);
     }
+
+	switch (SETTING_HANDLER->getStruct().playerMode)
+	{
+	case LOCAL:
+	{
+		refreshMusicBtns();
+		//init_local();
+		break;
+	}
+	case MYSITE:
+		//init_mysite();
+		break;
+	case ONLINE:
+		//init_online();
+		break;
+	case NETEASE:
+		//init_netease();
+		break;
+	}
 
 	setPlayMode(SETTING_HANDLER->getStruct().playMode);
 }
@@ -1248,7 +1244,11 @@ void Widget::init()
 	refreshImageWidget(info);
 
 	// 播放之前上次关闭时放的歌
-	player_->playCurrentIndex(SETTING_HANDLER->getStruct().musicPosition);
+	if (SETTING_HANDLER->getStruct().playListName == TEMP_PLAY_LIST_NAME)
+		player_->playCurrentIndex();
+	else
+		player_->playCurrentIndex(SETTING_HANDLER->getStruct().musicPosition);
+
 	slotMusicIndexChanged(SETTING_HANDLER->getMusicIndex(), SETTING_HANDLER->getMusicIndex());  // 初始化被播放的那个音乐按钮样式
 }
 
