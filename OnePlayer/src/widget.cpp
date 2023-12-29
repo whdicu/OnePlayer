@@ -112,7 +112,6 @@ Widget::Widget(const QString& filepath, QWidget *parent)
 //    //ui->label_dir_download->setText(SETTING_HANDLER->get_download_dir());
 
     setListener();
-//	set_setting_tab_listener();
 
 //	NeteaseHandler::getInstance();
 
@@ -429,7 +428,6 @@ void Widget::setListener()
         movingProgress_ = false;
     });
 
-
     // 搜索框文字改变
     connect(ui->find_widget, &SearchEdit::focusOnBtnAt, this, [this](DSizeType index)
     {
@@ -452,7 +450,6 @@ void Widget::setListener()
 	/****************** 设置页中的一些信号 ********************/
 	connect(ui->setting_tab_widget, &SettingTabWidget::sigBGModeChanged, this, &Widget::slotBGModeChanged);
 	connect(ui->setting_tab_widget, &SettingTabWidget::sigPlayerModeChanged, this, &Widget::slotPlayerModeChanged);
-
 }
 
 void Widget::refreshMusicBtns()
@@ -473,112 +470,7 @@ void Widget::refreshMusicBtns()
         btn->setMusicIndex(index);
         ++index;
     }
-//    if (list.size() > 0)
-//    {
-//        // 先排个序
-//        auto coll = QCollator(QLocale(QLocale::Chinese));
-//        std::sort(list.begin(), list.end(), coll);
-//
-//        for (const auto &url_str : list)
-//        {
-//            if (MYSITE == SETTING_HANDLER->get_player_mode())
-//            {
-//                addMusicBtn(QString("http://%1:%2/%3").arg(IP).arg(PORT).arg(url_str));
-//            }
-//            else
-//            {
-//                addMusicBtn(QUrl::fromLocalFile(SETTING_HANDLER->get_music_dir() + '/' + url_str));
-//            }
-//        }
-//
-//        // 如果上次播放的音乐也在这个文件夹中
-//        DSizeType newMusicIndex = btn_list_.size();
-//        for (DSizeType i = 0; i < btn_list_.size(); ++i)
-//        {
-//            if (btn_list_.at(i)->get_url() == SETTING_HANDLER->get_last_music())
-//            {
-//                newMusicIndex = i;
-//                break;
-//            }
-//        }
-//
-//        if (newMusicIndex == btn_list_.size())  // 如果上次播放的音乐不在这个文件夹中，则从头开始播放
-//        {
-//            qDebug() << play_mode;
-//            if (play_mode == RANDOM)
-//            {
-//                random_index_list_.clear();
-//                random_index_ = 0;
-//#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-//                newMusicIndex = QRandomGenerator64::global()->bounded(0, (int)btn_list_.size());
-//#else
-//				newMusicIndex = qrand() % btn_list_.size();
-//#endif
-//				random_index_list_.pushBack(newMusicIndex);
-//            }
-//            else
-//                newMusicIndex = 0;
-//        }
-//        play_music(newMusicIndex);
-//    }
 }
-
-//void Widget::next_music()
-//{
-//    DSizeType newMusicIndex = now_music_index_;
-//    if (play_mode == RANDOM)  // 随机播放
-//    {
-//        ++random_index_;
-//        if (random_index_ == random_index_list_.size())
-//        {
-//#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-//            DSizeType music_index = QRandomGenerator64::global()->bounded(0, (int)btn_list_.size());
-//#else
-//			DSizeType music_index =  qrand() % btn_list_.size();
-//#endif
-//			random_index_list_.pushBack(music_index);
-//        }
-//        newMusicIndex = random_index_list_.at(random_index_);
-//    }
-//    else
-//    {
-//        ++newMusicIndex;
-//        if (newMusicIndex == btn_list_.size())
-//            newMusicIndex = 0;
-//    }
-//
-//    play_music(newMusicIndex);
-//}
-//
-//void Widget::previous_music()
-//{
-//    DSizeType newMusicIndex = now_music_index_;
-//    if (play_mode == RANDOM)
-//    {
-//        if (random_index_ > 0)
-//            --random_index_;
-//        else
-//        {
-//#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-//            DSizeType music_index = QRandomGenerator64::global()->bounded(0, (int)btn_list_.size());
-//#else
-//			DSizeType music_index = qrand() % btn_list_.size();
-//#endif
-//			random_index_list_.pushFront(music_index);
-//        }
-//
-//        newMusicIndex = random_index_list_.at(random_index_);
-//    }
-//    else
-//    {
-//        if (newMusicIndex == 0)
-//            newMusicIndex = btn_list_.size() - 1;
-//        else
-//            --newMusicIndex;
-//
-//    }
-//    play_music(newMusicIndex);
-//}
 
 BaseMusicButton* Widget::addLocalMusicBtn(const QUrl& url)
 {
@@ -815,15 +707,14 @@ void Widget::dragEnterEvent(QDragEnterEvent *event)
 
 void Widget::dropEvent(QDropEvent *event)
 {
-    // 在设置页不接受拖入事件
-    //if (ui->stacked_widget->currentIndex() == 1)
-    //    return;
+    // 在别的页不接受拖入事件
+    if (ui->stacked_widget->currentIndex() != 0)
+        return;
 
     QPoint stackedWidgetPoint = ui->stacked_local_btns->mapTo(this, QPoint(0, 0));
     QRect rect(stackedWidgetPoint, ui->stacked_local_btns->size());
     if (!rect.contains(event->pos()))
         return;
-
 
     //if (SETTING_HANDLER->get_player_mode() != LOCAL)
     //{
@@ -842,7 +733,6 @@ void Widget::dropEvent(QDropEvent *event)
     {
         QString type = url.toLocalFile().section('.', -1);
 
-        //if (TYPE_LIST.indexOf(type) != -1)
         if (TYPE_LIST.contains(type))
             list.pushBack(url);
     }
@@ -861,15 +751,8 @@ void Widget::dropEvent(QDropEvent *event)
 	refreshMusicBtns();
 
 
-    //// 重新设置滚动条的数值
+    // 重新设置滚动条的数值
     //ui->scrollArea->verticalScrollBar()->setMaximum(btn_list_.size());
-
-    //// 说明本来没有歌曲在播放列表中
-    //if (play && ! btn_list_.isEmpty())
-    //{
-    //    ui->stacked_widget->setCurrentIndex(0);
-    //    play_music(0);
-    //}
 }
 
 void Widget::animationStackedMusicBtnSmall()
@@ -1058,22 +941,6 @@ void Widget::keyReleaseEvent(QKeyEvent *event)
         break;
     }
 }
-
-//void Widget::clear_button(QVBoxLayout* layout)
-//{
-//    QLayoutItem* child;
-//    while (true)
-//    {
-//        child = layout->itemAt(0);
-//        if (nullptr == child)
-//            break;
-//
-//        layout->removeItem(child);
-//        if (child->widget())
-//            delete child->widget();
-//    }
-//    btn_list_.clear();
-//}
 
 void Widget::initMultiFuncWidget()
 {
@@ -1514,100 +1381,4 @@ void Widget::slotPlayerModeChanged(PLAYER_MODE playerMode)
 //    {
 //        add_online_music(info);
 //    }
-//}
-
-//void Widget::play_music(DSizeType musicIndex)
-//{
-//    // 重新设置旧的歌曲按钮的颜色
-//    btn_list_.at(now_music_index_)->setNormalStyle();
-//
-//    if (musicIndex >= btn_list_.size())
-//    {
-////        player_->setSource(QUrl());
-//        qWarning() << "play music index error, index =" << musicIndex << ", btn_list_.size() = " << btn_list_.size();
-//        return;
-//    }
-//
-//    now_music_index_ = musicIndex;
-//    BaseMusicButton* btn = btn_list_.at(musicIndex);
-//
-//    if (SETTING_HANDLER->get_player_mode() == ONLINE)
-//    {
-//        OnlineMusicButton* online_btn = static_cast<OnlineMusicButton*>(btn);
-//
-//        MusicInfo& info = online_btn->get_info();
-//        OnlineHandler::getInstance()->get_music_info(info);
-//        QImage image = OnlineHandler::getInstance()->get_image(info.image_url_);
-//
-//        ui->label_sound_name_online->setText(QString("%1  %2").arg(info.name_).arg(info.singer_));
-//        ui->lyrics_widget->set_lyrics(info.lyrics_);
-//    }
-//
-//    qDebug() << "播放->" << btn->get_url();
-//
-//    btn->setPlayingStyle();
-//#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-//	player_->setSource(btn->get_url());
-//#else
-//	player_->setMedia(btn->get_url());
-//#endif
-//    
-////    qDebug() << btn->get_url();
-//    player_->play();
-////    switch (SETTING_HANDLER->get_player_mode())
-////    {
-////    case LOCAL:
-////    case MYSITE:
-////        player_->setSource(url);
-////        break;
-////    case ONLINE:
-//////        QString href = QString("http://%1:%2/%3").arg(IP).arg(PORT).arg(url.fileName());
-//////        qDebug() << href;
-//////        QString href = "https://cg-sycdn.kuwo.cn/a71666ddcb12ecafa60ef1256a455121/6419a985/resource/n1/25/27/278719973.mp3";
-//////        qDebug() << href;
-//////        player_->setSource(href);
-//
-//
-//
-//////        QTcpSocket* socket = new QTcpSocket(this);
-//////        socket->connectToHost(IP, PORT);
-//////        socket->write(QString("@C2,%1").arg(url.fileName()).toUtf8());
-//////        socket->waitForReadyRead();
-//////        player_->setSourceDevice(socket);
-//////            QByteArray data = socket->readAll();
-//////            qDebug() << data.size();
-//////            QString request_text = QString(data);
-//
-//////            int at_index = request_text.indexOf('@');
-//////            if (-1 == at_index)
-//////            {
-//////                qDebug() << "接收的消息中没有找到@:\n" << request_text;
-//////                return;
-//////            }
-//
-//////            int index1 = request_text.indexOf(',');
-//////            if (-1 == index1)
-//////            {
-//////                qDebug() << "接收的消息中没找到逗号:\n" << request_text;
-//////                return;
-//////            }
-//
-//////            QString cmd = request_text.mid(at_index+1, index1-1);
-//////            if ("C1" == cmd)
-//////            {
-//////    //            int index1 = request_text.indexOf(',', index1+1);
-//////                QStringList file_list = request_text.mid(index1+1).split(',');
-//////                load_music_list(file_list);
-//////                socket->close();
-//////            }
-////        break;
-////    }
-//}
-
-//void Widget::set_setting_tab_listener()
-//{
-//	connect(ui->setting_tab_widget, &SettingTabWidget::sig_btn_open_dir_clicked, this, &Widget::slot_btn_open_dir_clicked);
-//	connect(ui->setting_tab_widget, &SettingTabWidget::sig_btn_change_dir_clicked, this, &Widget::slot_btn_change_dir_clicked);
-//	connect(ui->setting_tab_widget, &SettingTabWidget::sig_btn_open_dir_download_clicked, this, &Widget::slot_btn_open_dir_download_clicked);
-//	connect(ui->setting_tab_widget, &SettingTabWidget::sig_btn_change_dir_download_clicked, this, &Widget::slot_btn_change_dir_download_clicked);
 //}

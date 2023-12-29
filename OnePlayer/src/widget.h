@@ -45,9 +45,6 @@ private slots:
     void on_btn_more_clicked();
     void on_btn_min_clicked();
     void on_btn_music_name_clicked();
-//    void on_btn_left_clicked();
-//    void on_btn_right_clicked();
-//    void on_btn_search_clicked();
 
 //	void slot_btn_open_dir_clicked();
 //	void slot_btn_change_dir_clicked();
@@ -92,17 +89,12 @@ private:
     void keyPressEvent(QKeyEvent *);
     void keyReleaseEvent(QKeyEvent *);
 
-//    void clear_button(QVBoxLayout* layout);
     // 初始化右侧控件
     void initMultiFuncWidget();
 
     void refreshImageWidget(const MusicInfo& info);
-	//    void play_music(DSizeType musicIndex);
 	void setListener();
-	//    void set_setting_tab_listener();
 	void refreshMusicBtns();
-	//    void next_music();
-	//    void previous_music();
 	BaseMusicButton* addLocalMusicBtn(const QUrl& url);
 	//    void add_online_music(const MusicInfo& music);
 	//    void init_local();
