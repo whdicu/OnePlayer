@@ -1,5 +1,6 @@
 #include "SearchEdit.h"
 #include "OnePlayerStruct.h"
+#include <QKeyEvent>
 #include <QPropertyAnimation>
 #include <QRegularExpression>
 #include "settinghandler.h"
@@ -122,7 +123,7 @@ bool SearchEdit::eventFilter(QObject* obj, QEvent* event)
 {
 	if (event->type() == QEvent::KeyPress)
 	{
-		QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
+		QKeyEvent* keyEvent = reinterpret_cast<QKeyEvent*>(event);
 		if (nullptr == ui->le_find)
 			return QObject::eventFilter(obj, event);
 		
