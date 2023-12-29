@@ -29,6 +29,7 @@ public:
 signals:
 	void focusOnBtnAt(DSizeType index);
 	void sigBtnCloseClicked();
+	void sigKeyEnterClicked(DSizeType index);
 
 private slots:
 	void on_btn_left_clicked();
@@ -37,6 +38,7 @@ private slots:
 
 private:
 	void findMusic(const QString& word);
+	bool eventFilter(QObject* obj, QEvent* event) override;
 
 	Ui::SearchEditClass *ui;
 	QPropertyAnimation* animation_;

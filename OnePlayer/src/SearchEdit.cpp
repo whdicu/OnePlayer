@@ -15,6 +15,7 @@ SearchEdit::SearchEdit(QWidget *parent)
 	animation_->setDuration(SEARCH_EDIT_ANIMATION_TIME);
 	animation_->setEasingCurve(QEasingCurve::InOutQuad);
 
+	ui->le_find->installEventFilter(this);
 	connect(ui->le_find, &QLineEdit::textChanged, this, &SearchEdit::findMusic);
 }
 
@@ -105,4 +106,33 @@ void SearchEdit::findMusic(const QString& word)
 		ui->label_count->setText(QString("%1/%2").arg(findIndex_ + 1).arg(findIndexList_.size()));
 		emit focusOnBtnAt(findIndexList_.at(findIndex_));
 	}
+}
+
+bool SearchEdit::eventFilter(QObject* obj, QEvent* event)
+{
+	if (event->type() == QEvent::KeyPress)
+	{
+		QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
+		if (nullptr == ui->le_find)
+			return QObject::eventFilter(obj, event);
+
+		switch (keyEvent->key())
+		{
+		case Qt::Key_Return:
+		case Qt::Key_Enter:
+			if (findIndex_ < findIndexList_.size())
+				emit sigKeyEnterClicked(findIndexList_.at(findIndex_));
+			return true;
+		case Qt::Key_Up:
+			on_btn_left_clicked();
+			return true;
+		case Qt::Key_Down:
+			on_btn_right_clicked();
+			return true;
+		default:
+			break;
+		}
+	}
+
+	return QObject::eventFilter(obj, event);
 }

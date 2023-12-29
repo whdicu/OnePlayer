@@ -437,6 +437,9 @@ void Widget::setListener()
     // 点击搜索框内关闭按钮
     connect(ui->find_widget, &SearchEdit::sigBtnCloseClicked, this, &Widget::slotSearchEditClose);
 
+	// 在搜索框按下了回车，等同于按下当前搜索到的音乐按钮
+	connect(ui->find_widget, &SearchEdit::sigKeyEnterClicked, this, &Widget::slotLocalMusicBtnClicked);
+
     // 音乐下标改变
     connect(SETTING_HANDLER, &SettingHandler::sigMusicIndexChanged, this, &Widget::slotMusicIndexChanged);
 
