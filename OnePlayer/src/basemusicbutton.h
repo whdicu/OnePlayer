@@ -13,6 +13,7 @@ public:
     ~BaseMusicButton() {}
     virtual void setNormalStyle() = 0;
     virtual void setPlayingStyle() = 0;
+    virtual void setSelectStyle() = 0;
     DSizeType getMusicIndex() const { return musicIndex_; }
 	void setMusicIndex(DSizeType index) { musicIndex_ = index; }
 

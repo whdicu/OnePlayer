@@ -17,8 +17,9 @@ class LocalMusicButton : public BaseMusicButton
 public:
     LocalMusicButton(const QString& str, QWidget *parent = nullptr);
     ~LocalMusicButton();
-    virtual void setNormalStyle() {setStyleSheet(LOCAL_NORMAL_STYLE);}
-    virtual void setPlayingStyle() {setStyleSheet(LOCAL_PLAYING_STYLE);};
+    virtual void setNormalStyle() { setStyleSheet(LOCAL_NORMAL_STYLE); }
+    virtual void setPlayingStyle() { setStyleSheet(LOCAL_PLAYING_STYLE); }
+	virtual void setSelectStyle() { setStyleSheet(LOCAL_SELECT_STYLE); }
 
 private slots:
     void on_btn_name_clicked() { emit clicked(musicIndex_); }

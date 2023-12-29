@@ -19,7 +19,8 @@ public:
     ~OnlineMusicButton();
     virtual void setNormalStyle() {is_playing_ = false; setStyleSheet(ONLINE_NORMAL_STYLE);}
     virtual void setPlayingStyle() {is_playing_ = true; setStyleSheet(ONLINE_PLAYING_STYLE);};
-    OnlineMusicInfo& get_info() {return music_info_;}
+	virtual void setSelectStyle() {}
+	OnlineMusicInfo& get_info() {return music_info_;}
 
 private slots:
     void on_btn_name_clicked() {emit clicked(0);}

@@ -76,8 +76,9 @@ const static QStringList BUTTON_MENU_STR_LIST =
 
 /****************************** 样式 ******************************/
 // 本地音乐按钮样式
-static const QString LOCAL_NORMAL_STYLE = "QPushButton {color: #5c5c66;background-color: rgba(182, 209, 200, 0.25);border-radius: 20px; padding-left: 10px; padding-right: 10px;} QPushButton:hover {background-color: rgba(182, 209, 200, 0.5);}";
-static const QString LOCAL_PLAYING_STYLE = "QPushButton {color: #5c5c66;background-color: rgb(182, 209, 200);border-radius: 20px; padding-left: 10px; padding-right: 10px;}";
+static const QString LOCAL_NORMAL_STYLE = "QPushButton { color: #5c5c66; background-color: rgba(182, 209, 200, 0.25); border-radius: 20px; padding-left: 10px; padding-right: 10px; } QPushButton:hover {background-color: rgba(182, 209, 200, 0.5);}";
+static const QString LOCAL_PLAYING_STYLE = "QPushButton { color: #5c5c66; background-color: rgb(182, 209, 200);border-radius: 20px; padding-left: 10px; padding-right: 10px; }";
+static const QString LOCAL_SELECT_STYLE = "QPushButton { color: #5c5c66; background-color: rgba(182, 209, 200, 0.5); border-radius: 20px; padding-left: 10px; padding-right: 10px; }";
 
 // 在线音乐按钮样式
 static const QString ONLINE_NORMAL_STYLE = "QPushButton {color: #5c5c66;background-color: rgba(182, 209, 200, 0.25);border-radius: 0px;} #btn_name{text-align : left;padding-left: 10px;border-top-left-radius: 20px;border-bottom-left-radius: 20px;}#btn_singer{text-align : left;}#btn_download{color: #1473e6;border-top-right-radius: 20px;border-bottom-right-radius: 20px;}";

@@ -19,6 +19,7 @@ public:
 	~SearchEdit();
 	void setEditFocus() { ui->le_find->setFocus(); }
 	void setEditText(const QString& text) { ui->le_find->setText(text); }
+	DSizeType nowFocusIndex();
 	void animationHide();
 	void animationShow();
 	// 直接move到Hide位置
@@ -27,7 +28,7 @@ public:
 	bool isAnimateHide() { return isAnimateHide_; }
 
 signals:
-	void focusOnBtnAt(DSizeType index);
+	void focusOnBtnAt(DSizeType oldFocusIndex, DSizeType newFocusIndex);
 	void sigBtnCloseClicked();
 	void sigKeyEnterClicked(DSizeType index);
 

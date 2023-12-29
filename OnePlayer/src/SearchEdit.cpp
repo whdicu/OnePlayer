@@ -24,6 +24,14 @@ SearchEdit::~SearchEdit()
 	delete ui;
 }
 
+DSizeType SearchEdit::nowFocusIndex()
+{
+	if (findIndex_ < findIndexList_.size())
+		return findIndexList_.at(findIndex_);
+	else
+		return 0;
+}
+
 void SearchEdit::animationHide()
 {
 	isAnimateHide_ = true;
@@ -54,12 +62,13 @@ void SearchEdit::on_btn_left_clicked()
 	if (findIndexList_.isEmpty())
 		return;
 
+	DSizeType oldFocusIndex = findIndex_;
 	--findIndex_;
 	if (findIndex_ >= findIndexList_.size())
 		findIndex_ = findIndexList_.size() - 1;
 
 	ui->label_count->setText(QString("%1/%2").arg(findIndex_ + 1).arg(findIndexList_.size()));
-	emit focusOnBtnAt(findIndexList_.at(findIndex_));
+	emit focusOnBtnAt(findIndexList_.at(oldFocusIndex), findIndexList_.at(findIndex_));
 }
 
 // 查找框内下一个按钮
@@ -68,12 +77,13 @@ void SearchEdit::on_btn_right_clicked()
 	if (findIndexList_.isEmpty())
 		return;
 
+	DSizeType oldFocusIndex = findIndex_;
 	++findIndex_;
 	if (findIndex_ >= findIndexList_.size())
 		findIndex_ = 0;
 
 	ui->label_count->setText(QString("%1/%2").arg(findIndex_ + 1).arg(findIndexList_.size()));
-	emit focusOnBtnAt(findIndexList_.at(findIndex_));
+	emit focusOnBtnAt(findIndexList_.at(oldFocusIndex), findIndexList_.at(findIndex_));
 }
 
 void SearchEdit::on_btn_close_clicked()
@@ -104,7 +114,7 @@ void SearchEdit::findMusic(const QString& word)
 	if (findIndexList_.size() > 0)
 	{
 		ui->label_count->setText(QString("%1/%2").arg(findIndex_ + 1).arg(findIndexList_.size()));
-		emit focusOnBtnAt(findIndexList_.at(findIndex_));
+		emit focusOnBtnAt(findIndexList_.at(findIndex_), findIndexList_.at(findIndex_));
 	}
 }
 
@@ -115,7 +125,7 @@ bool SearchEdit::eventFilter(QObject* obj, QEvent* event)
 		QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
 		if (nullptr == ui->le_find)
 			return QObject::eventFilter(obj, event);
-
+		
 		switch (keyEvent->key())
 		{
 		case Qt::Key_Return:

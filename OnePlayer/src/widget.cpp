@@ -209,6 +209,9 @@ void Widget::slotSearchEditClose()
     ui->find_widget->animationHide();
     animationStackedLocalBtnsLong();
     ui->find_widget->setEditText("");
+	// 还原按钮样式
+	if (SETTING_HANDLER->getMusicIndex() != ui->find_widget->nowFocusIndex())
+		setMusicBtnStyle(ui->find_widget->nowFocusIndex(), &BaseMusicButton::setNormalStyle);
 }
 
 void Widget::slotMusicIndexChanged(DSizeType oldIndex, DSizeType newIndex)
@@ -428,11 +431,13 @@ void Widget::setListener()
         movingProgress_ = false;
     });
 
-    // 搜索框文字改变
-    connect(ui->find_widget, &SearchEdit::focusOnBtnAt, this, [this](DSizeType index)
-    {
-		showMusicBtnAt(index);
-    });
+    // 搜索框搜歌曲
+	connect(ui->find_widget, &SearchEdit::focusOnBtnAt, this, [this](DSizeType oldFocusIndex, DSizeType newFocusIndex)
+	{
+		if (SETTING_HANDLER->getMusicIndex() != oldFocusIndex)
+			setMusicBtnStyle(oldFocusIndex, &BaseMusicButton::setNormalStyle);
+		showMusicBtnAt(newFocusIndex);
+	});
 
     // 点击搜索框内关闭按钮
     connect(ui->find_widget, &SearchEdit::sigBtnCloseClicked, this, &Widget::slotSearchEditClose);
@@ -561,6 +566,9 @@ void Widget::showMusicBtnAt(DSizeType index)
 		int margin = (ui->scrollArea->height() - child->widget()->height()) / 2;
 		ui->scrollArea->ensureWidgetVisible(child->widget(), 0, margin);
 	}
+
+	if (SETTING_HANDLER->getMusicIndex() != index)
+		setMusicBtnStyle(index, &BaseMusicButton::setSelectStyle);
 }
 
 //void Widget::add_online_music(const MusicInfo& music)
