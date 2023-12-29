@@ -81,7 +81,9 @@ PlayerQt::~PlayerQt()
 {
 	player_->stop();
 	delete player_;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 	delete audioOutput_;
+#endif
 }
 
 bool PlayerQt::playOrPause()

@@ -107,22 +107,15 @@ void SettingHandler::insertToRandomPlayList(DSizeType musicIndex)
 	if (randomIndex_ > randomIndexList_.size())
 		randomIndex_ = randomIndexList_.size();
 
-	if (randomIndex_ == randomIndexList_.size())
+	if (randomIndex_ >= randomIndexList_.size() - 1)
 	{
 		randomIndexList_.pushBack(musicIndex);
-		--randomIndex_;
-		return;
+		randomIndex_ = randomIndexList_.size() - 2;
 	}
-
-    if (randomIndex_ == randomIndexList_.size() - 1)
+    else if (randomIndexList_.at(randomIndex_ + 1) != musicIndex)
     {
-        randomIndexList_.pushBack(musicIndex);
-    }
-    else
-    {
-        // 下一首已经是它了，就不再添加
-        if (randomIndexList_.at(randomIndex_ + 1) != musicIndex)
-            randomIndexList_.insert(randomIndex_ + 1, musicIndex);
+		// 下一首已经是它了，就不再添加
+        randomIndexList_.insert(randomIndex_ + 1, musicIndex);
     }
 }
 

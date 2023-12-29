@@ -247,8 +247,6 @@ void Widget::slotMenuBtnClicked(const QString& text)
 		QString path = url.toLocalFile();
         path.replace("/", "\\");
 
-		//QProcess process;
-		//process.startDetached("explorer.exe", { "/select,", path });
         QProcess::startDetached("explorer.exe", { "/select,", path });
 		break;
 	}
