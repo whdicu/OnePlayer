@@ -23,6 +23,9 @@ public:
 	// 添加一些音乐到当前播放列表，会排除已存在的歌曲
 	void addList2CurrentPlayList(const DList<QUrl>& list);
 
+    // 从当前播放列表中移除歌曲
+    void removeMusicFromCurrentPlayList(DSizeType musicIndex) { removeMusic(setting_.playListName, musicIndex); }
+
 	// 查看播放列表是否存在
 	bool isPlayListExists(const QString& playListName);
 
@@ -58,6 +61,9 @@ private:
 
     // 检查播放链表的名字，如果有重复则在尾部添加 "_新"
     QString checkPlayListName(const QString& name);
+
+    // 从播放列表中移除歌曲
+    void removeMusic(const QString& playListName, DSizeType musicIndex);
 
     void readAll();
     void writeAll();

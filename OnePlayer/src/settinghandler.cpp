@@ -73,6 +73,15 @@ void SettingHandler::addList2CurrentPlayList(const DList<QUrl>& list)
 	}
 
 	setting_.playListMap[setting_.playListName].insert(0, onlyList);
+
+    // 如果是随机播放，则修改下标列表中的值
+    if (setting_.playMode == RANDOM)
+    {
+        for (DSizeType& index : randomIndexList_)
+        {
+            index += onlyList.size();
+        }
+    }
 }
 
 bool SettingHandler::isPlayListExists(const QString& playListName)
@@ -245,6 +254,17 @@ QString SettingHandler::checkPlayListName(const QString& name)
     if (setting_.playListMap.contains(name))
         return checkPlayListName(name + "_新");
     return name;
+}
+
+void SettingHandler::removeMusic(const QString& playListName, DSizeType musicIndex)
+{
+    if (!setting_.playListMap.contains(playListName))
+    {
+        DWarning << "play list not exist:" << playListName;
+        return;
+    }
+
+    setting_.playListMap[playListName].removeAt(musicIndex);
 }
 
 void SettingHandler::readAll()

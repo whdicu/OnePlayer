@@ -250,10 +250,31 @@ void Widget::slotMenuBtnClicked(const QString& text)
 	}
 	case 2:  // 从列表中移除
 	{
+        SETTING_HANDLER->removeMusicFromCurrentPlayList(musicIndex);
+        refreshMusicBtns();
 		break;
 	}
 	case 3:  // 删除
 	{
+        QUrl musicUrl = SETTING_HANDLER->currentPlayList().at(musicIndex);
+
+        int ret = OneMessageBox::information(nullptr, tr("提示"), tr("确认要删除歌曲%1吗，该操作会将歌曲从硬盘中删除。").arg(musicUrl.fileName()), ALL_BTN);
+        if (QDialog::Accepted == ret)
+        {
+            SETTING_HANDLER->removeMusicFromCurrentPlayList(musicIndex);
+            refreshMusicBtns();
+            
+            QFile file(musicUrl.toLocalFile());
+            if (file.exists() && file.remove())
+            {
+                DDebug << "文件删除成功";
+            }
+            else
+            {
+                DDebug << "文件删除失败";
+                OneMessageBox::information(nullptr, tr("警告"), tr("歌曲删除%1失败").arg(musicUrl.fileName()));
+            }
+        }
 		break;
 	}
 	}
