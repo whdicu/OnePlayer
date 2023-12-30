@@ -14,7 +14,7 @@ enum TAB_BUTTON_TYPE
 
 const static QMap<TAB_BUTTON_TYPE, QString> csmap_tabButtonTypeStr =
 {
-	{BASE_BTN, "基础设置"},
+	//{BASE_BTN, "基础设置"},
 	{THEME_BTN, "主题设置"}
 };
 

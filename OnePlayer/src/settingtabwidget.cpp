@@ -17,13 +17,13 @@ SettingTabWidget::SettingTabWidget(QWidget *parent)
 	for (auto it = csmap_tabButtonTypeStr.begin(); it != csmap_tabButtonTypeStr.end(); ++it, ++i)
 	{
 		QPushButton* btn = new QPushButton(it.value(), this);
-		connect(btn, &QPushButton::clicked, this, [this, i]()
-		{
-			int old_index = ui.stacked_widget->currentIndex();
-			btn_list_.at(old_index)->setStyleSheet("");
-			btn_list_.at(i)->setStyleSheet(CHECHED_BTN_STYLE);
-			ui.stacked_widget->setCurrentIndex(i);
-		});
+		//connect(btn, &QPushButton::clicked, this, [this, i]()
+		//{
+		//	int old_index = ui.stacked_widget->currentIndex();
+		//	btn_list_.at(old_index)->setStyleSheet("");
+		//	btn_list_.at(i)->setStyleSheet(CHECHED_BTN_STYLE);
+		//	ui.stacked_widget->setCurrentIndex(i);
+		//});
 		btn->setFont(QFont("Microsoft YaHei UI"));
 		btn->setMinimumSize(80, 36);
 		btn->setMaximumSize(80, 36);
@@ -31,7 +31,7 @@ SettingTabWidget::SettingTabWidget(QWidget *parent)
 		btn_list_.append(btn);
 	}
 	static_cast<QHBoxLayout*>(ui.btn_widget->layout())->addStretch();
-	ui.stacked_widget->setCurrentIndex(0);
+	ui.stacked_widget->setCurrentIndex(1);
 	btn_list_.at(0)->setStyleSheet(CHECHED_BTN_STYLE);
 
 	// 初始化播放器模式下拉框
