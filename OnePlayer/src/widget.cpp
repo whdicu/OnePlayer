@@ -759,27 +759,20 @@ void Widget::dropEvent(QDropEvent *event)
 
     //bool play = btn_list_.isEmpty();
 
+    DList<QUrl> currentPlayList = SETTING_HANDLER->currentPlayList();
 	DList<QUrl> list;
 	QList<QUrl> all = event->mimeData()->urls();
     for (const QUrl& url : all)
     {
         QString type = url.toLocalFile().section('.', -1);
 
-        if (TYPE_LIST.contains(type))
+        // 已经存在的歌也不添加
+        if (TYPE_LIST.contains(type) && !currentPlayList.contains(url))
             list.pushBack(url);
     }
 
-    // 去除播放列表中已存在的歌曲
-    DSizeType addCount = 0;
-    DList<QUrl> currentPlayList = SETTING_HANDLER->currentPlayList();
-    for (const QUrl& url : list)
-    {
-        if (!currentPlayList.contains(url))
-            ++addCount;
-    }
-
 	int ret = OneMessageBox::information(nullptr, tr("提示"),
-		tr("把这%1首歌添加到歌单%2?").arg(addCount).arg(SETTING_HANDLER->getStruct().playListName), ALL_BTN);
+		tr("把这%1首歌添加到歌单%2?").arg(list.size()).arg(SETTING_HANDLER->getStruct().playListName), ALL_BTN);
 
 	if (QDialog::Accepted == ret)
 	{
