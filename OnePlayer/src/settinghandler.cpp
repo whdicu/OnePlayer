@@ -1,4 +1,4 @@
-#include "settinghandler.h"
+ï»¿#include "settinghandler.h"
 #include "HDCore/HD2QT.hpp"
 #include <QApplication>
 #include <QDir>
@@ -63,7 +63,7 @@ void SettingHandler::addList2CurrentPlayList(const DList<QUrl>& list)
 		return;
 	}
 
-	// È¥³ı²¥·ÅÁĞ±íÖĞÒÑ´æÔÚµÄ¸èÇú
+	// å»é™¤æ’­æ”¾åˆ—è¡¨ä¸­å·²å­˜åœ¨çš„æ­Œæ›²
 	DList<QUrl> onlyList;
 	for (const QUrl& url : list)
 	{
@@ -74,7 +74,7 @@ void SettingHandler::addList2CurrentPlayList(const DList<QUrl>& list)
 
 	setting_.playListMap[setting_.playListName].insert(0, onlyList);
 
-    // Èç¹ûÊÇËæ»ú²¥·Å£¬ÔòĞŞ¸ÄÏÂ±êÁĞ±íÖĞµÄÖµ
+    // å¦‚æœæ˜¯éšæœºæ’­æ”¾ï¼Œåˆ™ä¿®æ”¹ä¸‹æ ‡åˆ—è¡¨ä¸­çš„å€¼
     if (setting_.playMode == RANDOM)
     {
         for (DSizeType& index : randomIndexList_)
@@ -82,6 +82,23 @@ void SettingHandler::addList2CurrentPlayList(const DList<QUrl>& list)
             index += onlyList.size();
         }
     }
+}
+
+void SettingHandler::removeMusicFromCurrentPlayList(DSizeType musicIndex)
+{
+	// å¦‚æœæ˜¯éšæœºæ’­æ”¾ï¼Œåˆ™ä¿®æ”¹ä¸‹æ ‡åˆ—è¡¨ä¸­çš„å€¼
+	if (setting_.playMode == RANDOM)
+	{
+		DSizeType removeCount = randomIndexList_.removeAll(musicIndex);
+
+		for (DSizeType& index : randomIndexList_)
+		{
+			if (index > musicIndex)
+				--index;
+		}
+	}
+
+	removeMusic(setting_.playListName, musicIndex);
 }
 
 bool SettingHandler::isPlayListExists(const QString& playListName)
@@ -123,7 +140,7 @@ void SettingHandler::insertToRandomPlayList(DSizeType musicIndex)
 	}
     else if (randomIndexList_.at(randomIndex_ + 1) != musicIndex)
     {
-		// ÏÂÒ»Ê×ÒÑ¾­ÊÇËüÁË£¬¾Í²»ÔÙÌí¼Ó
+		// ä¸‹ä¸€é¦–å·²ç»æ˜¯å®ƒäº†ï¼Œå°±ä¸å†æ·»åŠ 
         randomIndexList_.insert(randomIndex_ + 1, musicIndex);
     }
 }
@@ -153,7 +170,7 @@ DSizeType SettingHandler::nextMusicIndex()
         break;
 	default:
 	{
-		// ÔÚ²Ëµ¥ÖĞµã¹ıÏÂÒ»Ê×²¥·Å
+		// åœ¨èœå•ä¸­ç‚¹è¿‡ä¸‹ä¸€é¦–æ’­æ”¾
 		if (nextIndexTemp_ != -1)
 		{
 			setMusicIndex(nextIndexTemp_);
@@ -252,7 +269,7 @@ SettingHandler::SettingHandler()
 QString SettingHandler::checkPlayListName(const QString& name)
 {
     if (setting_.playListMap.contains(name))
-        return checkPlayListName(name + "_ĞÂ");
+        return checkPlayListName(name + "_æ–°");
     return name;
 }
 
@@ -297,10 +314,10 @@ void SettingHandler::readAll()
     setMusicIndex(obj["musicIndex"].toVariant().toULongLong());
     setting_.musicPosition = obj["musicPosition"].toVariant().toLongLong();
     setting_.playerMode = (PLAYER_MODE)obj["playerMode"].toInt();
-    setting_.bgMode = (BG_MODE)obj["bgMode"].toInt(FULL_WIDGET);  // Ä¬ÈÏ±³¾°Í¼È«ÆÁ
+    setting_.bgMode = (BG_MODE)obj["bgMode"].toInt(FULL_WIDGET);  // é»˜è®¤èƒŒæ™¯å›¾å…¨å±
     setting_.downloadDir = obj["downloadDir"].toString();
 
-    // ¶ÁÈ¡²¥·ÅÁĞ±í
+    // è¯»å–æ’­æ”¾åˆ—è¡¨
     readPlayList();
 }
 
@@ -324,7 +341,7 @@ void SettingHandler::writeAll()
     
     writePlayList();
 
-    // Èç¹ûÂ·¾¶ÖĞÓĞ²»´æÔÚµÄÎÄ¼ş¼ĞÔò´´½¨
+    // å¦‚æœè·¯å¾„ä¸­æœ‰ä¸å­˜åœ¨çš„æ–‡ä»¶å¤¹åˆ™åˆ›å»º
     QFileInfo fileInfo(strFile);
     QDir().mkpath(fileInfo.absolutePath());
 
@@ -356,7 +373,7 @@ void SettingHandler::readPlayList()
         directory.mkpath(fileInfo.absolutePath());
     }
 
-    directory.setFilter(QDir::Files | QDir::NoDotAndDotDot); // Ö»¹ıÂËÎÄ¼ş£¬²»°üÀ¨"."ºÍ".."
+    directory.setFilter(QDir::Files | QDir::NoDotAndDotDot); // åªè¿‡æ»¤æ–‡ä»¶ï¼Œä¸åŒ…æ‹¬"."å’Œ".."
     directory.setNameFilters({"*.oned"});
     QStringList fileList = directory.entryList();
     for (const QString& fileName : fileList)
@@ -371,7 +388,7 @@ void SettingHandler::readPlayList()
         QStringList strList = str.split('\n');
         QString playListName = fileName.mid(0, fileName.indexOf('.'));
 
-		// ÓëÁÙÊ±²¥·ÅÁĞ±íÍ¬ÃûµÄ£¬²»Ìí¼Ó
+		// ä¸ä¸´æ—¶æ’­æ”¾åˆ—è¡¨åŒåçš„ï¼Œä¸æ·»åŠ 
 		if (playListName == TEMP_PLAY_LIST_NAME)
 		{
 			DDebug << "Play list name is the same as TEMP_PLAY_LIST! It would be ignore.";
@@ -407,11 +424,11 @@ void SettingHandler::writePlayList()
 
     for (auto it = setting_.playListMap.cbegin(); it != setting_.playListMap.cend(); ++it)
     {
-		// ÁÙÊ±²¥·ÅÁĞ±í²»Ğ´Èë
+		// ä¸´æ—¶æ’­æ”¾åˆ—è¡¨ä¸å†™å…¥
 		if (TEMP_PLAY_LIST_NAME == it.key())
 			continue;
 
-        // Èç¹ûÂ·¾¶ÖĞÓĞ²»´æÔÚµÄÎÄ¼ş¼ĞÔò´´½¨
+        // å¦‚æœè·¯å¾„ä¸­æœ‰ä¸å­˜åœ¨çš„æ–‡ä»¶å¤¹åˆ™åˆ›å»º
         QString strFile = basePath.arg(it.key());
         QFileInfo fileInfo(strFile);
         QDir().mkpath(fileInfo.absolutePath());

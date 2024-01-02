@@ -24,7 +24,7 @@ public:
 	void addList2CurrentPlayList(const DList<QUrl>& list);
 
     // 从当前播放列表中移除歌曲
-    void removeMusicFromCurrentPlayList(DSizeType musicIndex) { removeMusic(setting_.playListName, musicIndex); }
+	void removeMusicFromCurrentPlayList(DSizeType musicIndex);
 
 	// 查看播放列表是否存在
 	bool isPlayListExists(const QString& playListName);

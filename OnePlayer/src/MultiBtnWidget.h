@@ -25,12 +25,12 @@ signals:
 private:
 	Ui::MultiBtnWidgetClass ui;
 	// 内部按钮动画
-	QPropertyAnimation* animationAdd_;
-	QPropertyAnimation* animationPlayList_;
-	QPropertyAnimation* animationSetting2_;
-	QPropertyAnimation* animationSetting3_;
-	QPropertyAnimation* animationSetting4_;
-	QPropertyAnimation* animationSetting5_;
-	QPropertyAnimation* animationSetting_;
+	QPropertyAnimation* animation1_;
+	QPropertyAnimation* animation2_;
+	QPropertyAnimation* animation3_;
+	QPropertyAnimation* animation4_;
+	QPropertyAnimation* animation5_;
+	QPropertyAnimation* animation6_;
+	QPropertyAnimation* animation7_;
 	bool isAnimateHide_;
 };
