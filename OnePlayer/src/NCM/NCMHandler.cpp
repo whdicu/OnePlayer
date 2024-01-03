@@ -1,5 +1,6 @@
 ﻿#include "NCMHandler.h"
 #include "ImageHandler.h"
+#include "OnePlayerStruct.h"
 #include <QDebug>
 #include <QEventLoop>
 #include <QFile>
@@ -80,7 +81,8 @@ CPPMusicData NCMHandler::dealNCM(const QString& filename)
 
 	if (obj.contains("albumPic"))
 	{
-		QString url = obj["albumPic"].toString();
+		QString url = obj["albumPic"].toString()
+			+ QString("?param=%1y%2").arg(MUSIC_INFO_WIDGET_WIDTH).arg(MUSIC_INFO_WIDGET_HEIGHT);
 		ret.image = ImageHandler::downloadImage(url);
 	}
 
