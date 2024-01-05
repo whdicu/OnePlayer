@@ -55,7 +55,7 @@ QPushButton:hover
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>0</y>
+        <y>60</y>
         <width>40</width>
         <height>40</height>
        </rect>
@@ -96,7 +96,7 @@ QPushButton:hover
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>60</y>
+        <y>120</y>
         <width>40</width>
         <height>40</height>
        </rect>
@@ -133,11 +133,11 @@ QPushButton:hover
        <bool>false</bool>
       </property>
      </widget>
-     <widget class="QPushButton" name="btn_setting_2">
+     <widget class="QPushButton" name="btn_netease">
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>120</y>
+        <y>0</y>
         <width>40</width>
         <height>40</height>
        </rect>
@@ -162,7 +162,7 @@ QPushButton:hover
       </property>
       <property name="icon">
        <iconset resource="../res/res.qrc">
-        <normaloff>:/svgs/jia.svg</normaloff>:/svgs/jia.svg</iconset>
+        <normaloff>:/svgs/netease.svg</normaloff>:/svgs/netease.svg</iconset>
       </property>
       <property name="iconSize">
        <size>

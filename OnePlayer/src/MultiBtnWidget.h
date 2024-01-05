@@ -20,6 +20,7 @@ public:
 	bool isAnimateHide() { return isAnimateHide_; }
 
 signals:
+	void sigBtnNeteaseClicked();
 	void sigBtnSettingClicked();
 
 private:

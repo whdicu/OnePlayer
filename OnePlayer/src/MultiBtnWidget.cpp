@@ -11,13 +11,13 @@ MultiBtnWidget::MultiBtnWidget(QWidget *parent)
 	ui.setupUi(this);
 
 	// 内部按钮的动画
-	animation1_ = new QPropertyAnimation(ui.btn_add, "pos");
+	animation1_ = new QPropertyAnimation(ui.btn_netease, "pos");
 	animation1_->setDuration(MORE_BTN_WIDGET_ANIMATION_TIME * 44 / 44);
 
-	animation2_ = new QPropertyAnimation(ui.btn_play_list, "pos");
+	animation2_ = new QPropertyAnimation(ui.btn_add, "pos");
 	animation2_->setDuration(MORE_BTN_WIDGET_ANIMATION_TIME * 38 / 44);
 
-	animation3_ = new QPropertyAnimation(ui.btn_setting_2, "pos");
+	animation3_ = new QPropertyAnimation(ui.btn_play_list, "pos");
 	animation3_->setDuration(MORE_BTN_WIDGET_ANIMATION_TIME * 32 / 44);
 
 	animation4_ = new QPropertyAnimation(ui.btn_setting_3, "pos");
@@ -32,6 +32,7 @@ MultiBtnWidget::MultiBtnWidget(QWidget *parent)
 	animation7_ = new QPropertyAnimation(ui.btn_setting, "pos");
 	animation7_->setDuration(MORE_BTN_WIDGET_ANIMATION_TIME * 8 / 44);
 
+	connect(ui.btn_netease, &QPushButton::clicked, this, &MultiBtnWidget::sigBtnNeteaseClicked);
 	connect(ui.btn_setting, &QPushButton::clicked, this, &MultiBtnWidget::sigBtnSettingClicked);
 }
 
@@ -50,15 +51,15 @@ void MultiBtnWidget::animationHide()
 	animation7_->stop();
 
 	QPoint endPoint(0, MORE_BTN_WIDGET_HEIGHT + 40);
-	animation1_->setStartValue(QPoint(ui.btn_add->x(), ui.btn_add->y()));
+	animation1_->setStartValue(QPoint(ui.btn_netease->x(), ui.btn_netease->y()));
 	animation1_->setEndValue(endPoint);
 	animation1_->setEasingCurve(QEasingCurve::InCubic);
 
-	animation2_->setStartValue(QPoint(ui.btn_play_list->x(), ui.btn_play_list->y()));
+	animation2_->setStartValue(QPoint(ui.btn_add->x(), ui.btn_add->y()));
 	animation2_->setEndValue(endPoint);
 	animation2_->setEasingCurve(QEasingCurve::InCubic);
 
-	animation3_->setStartValue(QPoint(ui.btn_setting_2->x(), ui.btn_setting_2->y()));
+	animation3_->setStartValue(QPoint(ui.btn_play_list->x(), ui.btn_play_list->y()));
 	animation3_->setEndValue(endPoint);
 	animation3_->setEasingCurve(QEasingCurve::InCubic);
 
@@ -130,15 +131,15 @@ void MultiBtnWidget::animationShow()
 
 	move(MORE_BTN_WIDGET_X, MORE_BTN_WIDGET_Y);
 
-	animation1_->setStartValue(QPoint(ui.btn_add->x(), ui.btn_add->y()));
+	animation1_->setStartValue(QPoint(ui.btn_netease->x(), ui.btn_netease->y()));
 	animation1_->setEndValue(QPoint(0, 0));
 	animation1_->setEasingCurve(QEasingCurve::OutCubic);
 
-	animation2_->setStartValue(QPoint(ui.btn_play_list->x(), ui.btn_play_list->y()));
+	animation2_->setStartValue(QPoint(ui.btn_add->x(), ui.btn_add->y()));
 	animation2_->setEndValue(QPoint(0, 60));
 	animation2_->setEasingCurve(QEasingCurve::OutCubic);
 
-	animation3_->setStartValue(QPoint(ui.btn_setting_2->x(), ui.btn_setting_2->y()));
+	animation3_->setStartValue(QPoint(ui.btn_play_list->x(), ui.btn_play_list->y()));
 	animation3_->setEndValue(QPoint(0, 120));
 	animation3_->setEasingCurve(QEasingCurve::OutCubic);
 
@@ -173,9 +174,9 @@ void MultiBtnWidget::moveToHide()
 	move(MORE_BTN_WIDGET_X, MORE_BTN_WIDGET_Y + MORE_BTN_WIDGET_HEIGHT);
 
 	QPoint endPoint(0, MORE_BTN_WIDGET_HEIGHT + 40);
+	ui.btn_netease->move(endPoint);
 	ui.btn_add->move(endPoint);
 	ui.btn_play_list->move(endPoint);
-	ui.btn_setting_2->move(endPoint);
 	ui.btn_setting_3->move(endPoint);
 	ui.btn_setting_4->move(endPoint);
 	ui.btn_setting_5->move(endPoint);
