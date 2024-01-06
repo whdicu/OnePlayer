@@ -101,7 +101,7 @@ void SearchEdit::findMusic(const QString& word)
 	if (word == "")
 		return;
 	
-	DList<QUrl> playList = SETTING_HANDLER->currentPlayList();
+	DVector<QUrl> playList = SETTING_HANDLER->currentPlayList();
 	for (DSizeType i = 0; i < playList.size(); ++i)
 	{
 		QRegularExpression reg(".*" + word + ".*", QRegularExpression::CaseInsensitiveOption);

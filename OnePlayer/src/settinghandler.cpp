@@ -48,14 +48,14 @@ SettingHandler* SettingHandler::getInstance()
     return setting_handler;
 }
 
-void SettingHandler::addPlayList(const QString& playListName, const DList<QUrl>& list)
+void SettingHandler::addPlayList(const QString& playListName, const DVector<QUrl>& list)
 {
     QString uniqueName = checkPlayListName(playListName);
     setting_.playListMap.insert(uniqueName, list);
     writeAll();
 }
 
-void SettingHandler::addList2CurrentPlayList(const DList<QUrl>& list)
+void SettingHandler::adDVector2CurrentPlayList(const DVector<QUrl>& list)
 {
 	if (!setting_.playListMap.contains(setting_.playListName))
 	{
@@ -64,7 +64,7 @@ void SettingHandler::addList2CurrentPlayList(const DList<QUrl>& list)
 	}
 
 	// 去除播放列表中已存在的歌曲
-	DList<QUrl> onlyList;
+	DVector<QUrl> onlyList;
 	for (const QUrl& url : list)
 	{
 		if (setting_.playListMap.value(setting_.playListName).contains(url))
@@ -111,7 +111,7 @@ bool SettingHandler::notExistPlayList()
 	return setting_.playListMap.isEmpty();
 }
 
-const DList<QUrl> SettingHandler::currentPlayList()
+const DVector<QUrl> SettingHandler::currentPlayList()
 {
 	if ((setting_.playListName.isEmpty() || setting_.playListName == "Null")
 		&& !setting_.playListMap.isEmpty())
@@ -395,7 +395,7 @@ void SettingHandler::readPlayList()
 			continue;
 		}
 
-		DList<QUrl> ret;
+		DVector<QUrl> ret;
 		for (const QString& str : strList)
 		{
 			ret.pushBack(QUrl::fromLocalFile(str));
@@ -407,7 +407,7 @@ void SettingHandler::readPlayList()
     //QStringList playList = playListObject.keys();
     //for (const QString& listName : playList)
     //{
-    //    DList<QString> oneList;
+    //    DVector<QString> oneList;
     //    QJsonArray musicArray = playListObject[listName].toArray();
     //    for (const QJsonValue& musicUrl : musicArray)
     //    {

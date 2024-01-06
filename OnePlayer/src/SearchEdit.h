@@ -1,6 +1,6 @@
 #pragma once
 
-#include "HDBase/DList.hpp"
+#include "HDBase/DVector.hpp"
 #include <QWidget>
 #include "ui_SearchEdit.h"
 
@@ -46,5 +46,5 @@ private:
 	bool isAnimateHide_;
 
 	DSizeType findIndex_;
-	DList<DSizeType> findIndexList_;
+	DVector<DSizeType> findIndexList_;
 };

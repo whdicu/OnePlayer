@@ -18,10 +18,10 @@ public:
 	void save() { writeAll(); }
 
 	// 添加一些音乐到新的播放列表
-    void addPlayList(const QString& playListName, const DList<QUrl>& list);
+    void addPlayList(const QString& playListName, const DVector<QUrl>& list);
 
 	// 添加一些音乐到当前播放列表，会排除已存在的歌曲
-	void addList2CurrentPlayList(const DList<QUrl>& list);
+	void adDVector2CurrentPlayList(const DVector<QUrl>& list);
 
     // 从当前播放列表中移除歌曲
 	void removeMusicFromCurrentPlayList(DSizeType musicIndex);
@@ -33,7 +33,7 @@ public:
 	bool notExistPlayList();
 
     // 获取当前歌单下的歌曲，随机播放时 不是 返回随机播放歌曲Index列表
-	const DList<QUrl> currentPlayList();
+	const DVector<QUrl> currentPlayList();
     void clearRandomPlayList();
 	void insertToRandomPlayList(DSizeType musicIndex);
 
@@ -57,7 +57,7 @@ private:
     SettingHandler();
     ~SettingHandler() = default;
 
-    const DList<QUrl> getPlayList(const QString& name) { return setting_.playListMap.value(name); }
+    const DVector<QUrl> getPlayList(const QString& name) { return setting_.playListMap.value(name); }
 
     // 检查播放链表的名字，如果有重复则在尾部添加 "_新"
     QString checkPlayListName(const QString& name);
@@ -76,7 +76,7 @@ private:
 	DSizeType nextIndexTemp_;  // 点击菜单中的下一首播放，会将index暂存到这里
 
     DSizeType randomIndex_;
-    DList<DSizeType> randomIndexList_;
+    DVector<DSizeType> randomIndexList_;
 };
 
 #define SETTING_HANDLER SettingHandler::getInstance()

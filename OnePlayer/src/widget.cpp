@@ -1,7 +1,7 @@
 ﻿#include "widget.h"
 #include "ui_widget.h"
 
-#include "HDBase/DList.hpp"
+#include "HDBase/DVector.hpp"
 #include "HDCore/HD2QT.hpp"
 #include "hook.h"
 #include "ImageHandler.h"
@@ -491,7 +491,7 @@ void Widget::refreshMusicBtns()
             delete child->widget();
     }
 
-    DList<QUrl> playList = SETTING_HANDLER->currentPlayList();
+    DVector<QUrl> playList = SETTING_HANDLER->currentPlayList();
     DSizeType index = 0;
     for (const QUrl& musicUrl : playList)
     {
@@ -759,8 +759,8 @@ void Widget::dropEvent(QDropEvent *event)
 
     //bool play = btn_list_.isEmpty();
 
-    DList<QUrl> currentPlayList = SETTING_HANDLER->currentPlayList();
-	DList<QUrl> list;
+    DVector<QUrl> currentPlayList = SETTING_HANDLER->currentPlayList();
+	DVector<QUrl> list;
 	QList<QUrl> all = event->mimeData()->urls();
     for (const QUrl& url : all)
     {
@@ -779,7 +779,7 @@ void Widget::dropEvent(QDropEvent *event)
 		if (SETTING_HANDLER->notExistPlayList())
 			SETTING_HANDLER->addPlayList("新播放列表", list);
 		else
-			SETTING_HANDLER->addList2CurrentPlayList(list);
+			SETTING_HANDLER->adDVector2CurrentPlayList(list);
 	}
 
 	refreshMusicBtns();
@@ -1410,7 +1410,7 @@ void Widget::slotPlayerModeChanged(PLAYER_MODE playerMode)
 //
 //    clear_button(ui->music_layout_online);
 //
-//    DList<MusicInfo> list = OnlineHandler::getInstance()->search_online_music(word);
+//    DVector<MusicInfo> list = OnlineHandler::getInstance()->search_online_music(word);
 //    for (const MusicInfo& info : list)
 //    {
 //        add_online_music(info);
