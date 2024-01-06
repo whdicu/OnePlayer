@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "HDBase/DList.hpp"
+#include "HDBase/DVector.hpp"
 #include <QEasingCurve>
 #include <QImage>
 #include <QMap>
@@ -111,7 +111,7 @@ struct SettingStruct
 {
 	SettingStruct() : playMode(AGAIN), musicDir(QString()), volume(0.0f)
 		, playListName(QString("Null")), musicPosition(0), playerMode(LOCAL)
-		, bgMode(ONLY_LEFT), downloadDir(QString()), playListMap(QMap<QString, DList<QUrl>>()) {}
+		, bgMode(ONLY_LEFT), downloadDir(QString()), playListMap(QMap<QString, DVector<QUrl>>()) {}
 
 	PLAY_MODE                       playMode;
 	QString                         musicDir;
@@ -121,7 +121,7 @@ struct SettingStruct
 	PLAYER_MODE                     playerMode;
 	BG_MODE							bgMode;
 	QString                         downloadDir;
-	QMap<QString, DList<QUrl>>		playListMap;
+	QMap<QString, DVector<QUrl>>		playListMap;
 };
 
 struct MusicInfo
