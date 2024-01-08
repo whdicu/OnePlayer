@@ -1,9 +1,10 @@
-#pragma once
+ï»¿#pragma once
 #pragma execution_character_set("utf-8")
 #include <QObject>
 #include <QProcess>
 #include <QNetworkAccessManager>
 #include "HDMemory/DSharedPointer.hpp"
+
 
 class NeteaseHandler : public QObject
 {
@@ -11,25 +12,35 @@ class NeteaseHandler : public QObject
 
 public:
 	static NeteaseHandler* getInstance();
-	void deleteThis();
 
-	// ÊÖ»úºÅµÇÂ¼
+	// å¯åŠ¨ç½‘æ˜“äº‘APIçš„exeç¨‹åº
+	void startApiExe();
+	void stopApiExe();
+
+	// æ‰‹æœºå·ç™»å½•
 	bool loginPhone(const QString& phone, const QString& password);
 
-	// ÓÊÏäµÇÂ¼
+	// å‘é€éªŒè¯ç 
+	bool sendCaptcha(const QString& phone);
+
+	// éªŒè¯ç ç™»å½•
+	bool loginCaptcha(const QString& phone, const QString& captcha);
+
+	// é‚®ç®±ç™»å½•
 	bool loginEmail(const QString& email, const QString& password);
 
+	// æ£€æŸ¥ç™»å½•çŠ¶æ€
+	int checkLoginStatus();
+
+signals:
+	// ä¸‹è½½äº†æ–°å¤´åƒ
+	void sigAvatarImgChanged(const QImage& img);
 
 private:
 	NeteaseHandler(QObject *parent=nullptr);
 	~NeteaseHandler();
 
-	// Æô¶¯ÍøÒ×ÔÆAPIµÄexe³ÌĞò
-	void startApiExe();
-	void stopApiExe();
-
-
-	// ×èÈûÊ½POST£¬·şÎñÆ÷·µ»Ø½á¹ûºóº¯Êı²Å»á·µ»Ø
+	// é˜»å¡å¼POSTï¼ŒæœåŠ¡å™¨è¿”å›ç»“æœåå‡½æ•°æ‰ä¼šè¿”å›
 	DSharedPointer<QJsonObject> execPost(const QString& url, const QString& content);
 
 	void printJsonObject(const QJsonObject& obj, int space=0);
@@ -37,3 +48,7 @@ private:
 	QProcess* apiProcess_;
 	QNetworkAccessManager* networkManager_;
 };
+
+#ifndef NETEASE_HANDLER
+#define NETEASE_HANDLER NeteaseHandler::getInstance()
+#endif

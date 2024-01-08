@@ -107,11 +107,18 @@ enum BG_MODE
 	FULL_WIDGET
 };
 
+// 网易云相关设置信息
+struct NeteaseInfo
+{
+	QString cookie;
+};
+
 struct SettingStruct
 {
 	SettingStruct() : playMode(AGAIN), musicDir(QString()), volume(0.0f)
 		, playListName(QString("Null")), musicPosition(0), playerMode(LOCAL)
-		, bgMode(ONLY_LEFT), downloadDir(QString()), playListMap(QMap<QString, DList<QUrl>>()) {}
+		, bgMode(ONLY_LEFT), downloadDir(QString()), playListMap(QMap<QString, DList<QUrl>>())
+		, neteaseInfo() {}
 
 	PLAY_MODE                       playMode;
 	QString                         musicDir;
@@ -122,6 +129,7 @@ struct SettingStruct
 	BG_MODE							bgMode;
 	QString                         downloadDir;
 	QMap<QString, DList<QUrl>>		playListMap;
+	NeteaseInfo						neteaseInfo;
 };
 
 struct MusicInfo

@@ -15,6 +15,7 @@ class SettingHandler : public QObject
 public:
     static SettingHandler* getInstance();
     SettingStruct& getStruct() { return setting_; }
+	NeteaseInfo& getNeteaseInfo() { return setting_.neteaseInfo; }
 	void save() { writeAll(); }
 
 	// 添加一些音乐到新的播放列表

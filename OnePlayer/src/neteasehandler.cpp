@@ -1,4 +1,5 @@
 ﻿#include "neteasehandler.h"
+#include "ImageHandler.h"
 #include <QCryptographicHash>
 #include <QDebug>
 #include <QEventLoop>
@@ -6,6 +7,7 @@
 #include <QJsonParseError>
 #include <QMessageBox>
 #include <QNetworkReply>
+#include "settinghandler.h"
 #include "windows.h"
 
 
@@ -17,11 +19,6 @@ NeteaseHandler* NeteaseHandler::getInstance()
 	if (nullptr == netease_handler)
 		netease_handler = new NeteaseHandler;
 	return netease_handler;
-}
-
-void NeteaseHandler::deleteThis()
-{
-	stopApiExe();
 }
 
 bool NeteaseHandler::loginPhone(const QString& phone, const QString& password)
@@ -45,9 +42,40 @@ bool NeteaseHandler::loginPhone(const QString& phone, const QString& password)
 	case 502:
 		QMessageBox::warning(nullptr, tr("登陆失败"), message);
 		return false;
+	case 200:
+		QJsonObject accountObj = jo->value("account").toObject();
+		QJsonObject profileObj = jo->value("profile").toObject();
+		QString avatarUrl = profileObj.value("avatarUrl").toString();
+		QString cookie = jo->value("cookie").toString();
+
+		QImage avatarImg = ImageHandler::downloadImage(avatarUrl);
+		emit sigAvatarImgChanged(avatarImg);
+		break;
 	}
 	qDebug() << *jo;
 	return true;
+}
+
+bool NeteaseHandler::sendCaptcha(const QString& phone)
+{
+	QString url = QString("/captcha/sent");
+	QString content = QString("phone=%1").arg(phone);
+	DSharedPointer<QJsonObject> jo = execPost(url, content);
+	return false;
+}
+
+bool NeteaseHandler::loginCaptcha(const QString& phone, const QString& captcha)
+{
+	qint64 nowTime = QDateTime::currentMSecsSinceEpoch();
+	QString url = QString("/login/cellphone?timestamp=%3").arg(nowTime);
+	QString content = QString("phone=%1&captcha=%2").arg(phone).arg(captcha);
+	DSharedPointer<QJsonObject> jo = execPost(url, content);
+
+
+	QString cookie = jo->value("cookie").toString();
+
+	checkLoginStatus();
+	return false;
 }
 
 bool NeteaseHandler::loginEmail(const QString& email, const QString& password)
@@ -66,7 +94,6 @@ bool NeteaseHandler::loginEmail(const QString& email, const QString& password)
 
 	int code = jo->value("code").toInt();
 	QString message = jo->value("message").toString();
-
 	switch (code)
 	{
 	case 502:
@@ -75,6 +102,15 @@ bool NeteaseHandler::loginEmail(const QString& email, const QString& password)
 	}
 	qDebug() << *jo;
 	return true;
+}
+
+int NeteaseHandler::checkLoginStatus()
+{
+	qint64 nowTime = QDateTime::currentMSecsSinceEpoch();
+	QString url = QString("/login/status?timestamp=%1").arg(nowTime);
+	QString content = QString("cookie:") + SETTING_HANDLER->getNeteaseInfo().cookie;
+	DSharedPointer<QJsonObject> jo = execPost(url, content);
+	return 0;
 }
 
 DSharedPointer<QJsonObject> NeteaseHandler::execPost(const QString& url, const QString& content)
@@ -105,6 +141,7 @@ DSharedPointer<QJsonObject> NeteaseHandler::execPost(const QString& url, const Q
 		{
 			// 处理错误情况
 			reply->deleteLater();
+			qWarning() << "errType:" << reply->error() << "errStr:" << reply->errorString();
 		}
 		loop.quit();
 	});
@@ -118,19 +155,18 @@ NeteaseHandler::NeteaseHandler(QObject *parent)
 	, apiProcess_(new QProcess(this))
 	, networkManager_(new QNetworkAccessManager(this))
 {
-	//loginPhone("15557539750", "Whd2001129");
-	startApiExe();
+
 }
 
 NeteaseHandler::~NeteaseHandler()
 {
-	deleteThis();
+	
 }
 
 void NeteaseHandler::startApiExe()
 {
 	//apiThread_->start();
-	apiProcess_->start("NeteaseCloudMusicApi-win.exe");
+	apiProcess_->start("NeteaseCloudMusicApi.exe");
 	//if (!ret)
 	//{
 	//	QMessageBox::warning(nullptr, tr("警告"), tr("启动网易云API程序失败"));

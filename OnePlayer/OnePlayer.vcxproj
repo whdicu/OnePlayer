@@ -120,6 +120,7 @@
     <ClCompile Include="src\NCM\ncmToMp3.c" />
     <ClCompile Include="src\neteasehandler.cpp" />
     <ClCompile Include="src\neteasewidget.cpp" />
+    <ClCompile Include="src\NetLoginDialog.cpp" />
     <ClCompile Include="src\OneMessageBox.cpp" />
     <ClCompile Include="src\onlinehandler.cpp" />
     <ClCompile Include="src\onlinemusicbutton.cpp" />
@@ -147,6 +148,7 @@
     <QtUic Include="src\LocalMusicButton.ui" />
     <QtUic Include="src\MusicInfoWidget.ui" />
     <QtUic Include="src\neteasewidget.ui" />
+    <QtUic Include="src\NetLoginDialog.ui" />
     <QtUic Include="src\OneMessageBox.ui" />
     <QtUic Include="src\onlinemusicbutton.ui" />
     <QtUic Include="src\SearchEdit.ui" />
@@ -173,6 +175,7 @@
     <ClInclude Include="src\NCM\cJSON.h" />
     <ClInclude Include="src\NCM\NCMHandler.h" />
     <ClInclude Include="src\NCM\ncmToMp3.h" />
+    <QtMoc Include="src\NetLoginDialog.h" />
     <ClInclude Include="src\OnePlayerStruct.h" />
     <ClInclude Include="src\onlinehandler.h" />
     <QtMoc Include="src\SearchEdit.h" />

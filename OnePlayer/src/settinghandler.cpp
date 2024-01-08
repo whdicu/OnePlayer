@@ -317,6 +317,10 @@ void SettingHandler::readAll()
     setting_.bgMode = (BG_MODE)obj["bgMode"].toInt(FULL_WIDGET);  // 默认背景图全屏
     setting_.downloadDir = obj["downloadDir"].toString();
 
+	// 读取网易云相关信息
+	QJsonObject neteaseObject = obj["neteaseInfo"].toObject();
+	setting_.neteaseInfo.cookie = neteaseObject.value("cookie").toString();
+
     // 读取播放列表
     readPlayList();
 }
@@ -339,6 +343,11 @@ void SettingHandler::writeAll()
     wholeObject.insert("bgMode", setting_.bgMode);
     wholeObject.insert("downloadDir", setting_.downloadDir);
     
+	// 写入网易云相关信息
+	QJsonObject neteaseObject;
+	neteaseObject.insert("cookie", setting_.neteaseInfo.cookie);
+	wholeObject.insert("neteaseInfo", neteaseObject);
+
     writePlayList();
 
     // 如果路径中有不存在的文件夹则创建

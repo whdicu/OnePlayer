@@ -7,6 +7,7 @@
 #include "ImageHandler.h"
 #include "LocalMusicButton.h"
 #include "neteasehandler.h"
+#include "NetLoginDialog.h"
 #include "onlinemusicbutton.h"
 #include "PlayerFFmpeg.h"
 #include "PlayerQt.h"
@@ -71,8 +72,6 @@ Widget::Widget(const QString& filepath, QWidget *parent)
     grabKeyboard();
 
     setAcceptDrops(true);
-	Hook::getInstance()->installHook();
-    connect(Hook::getInstance(), &Hook::sendKeyType, this, &Widget::slotKeyPressed, Qt::QueuedConnection);
 	
     // 动画创建
     animation_ = new QPropertyAnimation(this, "geometry");
@@ -470,6 +469,12 @@ void Widget::setListener()
     connect(SETTING_HANDLER, &SettingHandler::sigMusicIndexChanged, this, &Widget::slotMusicIndexChanged);
 
     // 右侧按钮Widget
+	connect(ui->multi_btn_widget, &MultiBtnWidget::sigBtnNeteaseClicked, this, [this]()
+	{
+		releaseKeyboard();
+		NET_LOGIN_DIALOG->exec();
+		grabKeyboard();
+	});
     connect(ui->multi_btn_widget, &MultiBtnWidget::sigBtnSettingClicked, this, [this]()
     {
         ui->btn_more->setIcon(QIcon(":/svgs/back.svg"));
@@ -1128,12 +1133,14 @@ void Widget::animateHide()
 Widget::~Widget()
 {
     delete ui;
-	NeteaseHandler::getInstance()->deleteThis();
-	Hook::getInstance()->unInstallHook();
 }
 
 void Widget::init()
 {
+	NETEASE_HANDLER->startApiExe();
+	Hook::getInstance()->installHook();
+	connect(Hook::getInstance(), &Hook::sendKeyType, this, &Widget::slotKeyPressed, Qt::QueuedConnection);
+
 	// 初始化界面
 	initMultiFuncWidget();
 
@@ -1151,10 +1158,15 @@ void Widget::init()
 		player_->playCurrentIndex(SETTING_HANDLER->getStruct().musicPosition);
 
 	slotMusicIndexChanged(SETTING_HANDLER->getMusicIndex(), SETTING_HANDLER->getMusicIndex());  // 初始化被播放的那个音乐按钮样式
+
+	// 检查网易云登陆状态
+	//NETEASE_HANDLER->checkLoginStatus();
 }
 
 void Widget::uninit()
 {
+	NETEASE_HANDLER->stopApiExe();
+	Hook::getInstance()->unInstallHook();
 	SETTING_HANDLER->save();
 }
 
