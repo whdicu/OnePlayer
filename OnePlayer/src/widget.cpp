@@ -348,6 +348,13 @@ void Widget::setListener()
     connect(player_, &PlayerBase::sourceChanged, this, [this](const QUrl& media)
     {
         MusicInfo musicInfo = player_->getMusicInfo();
+
+		if (musicInfo.title.isEmpty())
+		{
+			QString filename = SETTING_HANDLER->currentMusicUrl().fileName();
+			musicInfo.title = filename.mid(0, filename.indexOf('.'));
+		}
+
 		refreshImageWidget(musicInfo);
 
 		emit sigChangeSystemIconToolTip(QString("OnePlayer\n正在播放：%1\n歌手：%2\n专辑：%3")
