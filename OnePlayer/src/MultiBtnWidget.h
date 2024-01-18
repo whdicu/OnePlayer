@@ -19,8 +19,11 @@ public:
 
 	bool isAnimateHide() { return isAnimateHide_; }
 
+	void setBtnPlayListIcon(const QIcon& icon);
+
 signals:
 	void sigBtnNeteaseClicked();
+	void sigBtnPlayListClicked();
 	void sigBtnSettingClicked();
 
 private:

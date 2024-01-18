@@ -11,6 +11,7 @@
 #include "onlinemusicbutton.h"
 #include "PlayerFFmpeg.h"
 #include "PlayerQt.h"
+#include "PlayListButton.h"
 #include "OneMessageBox.h"
 #include <QAudioOutput>
 #include <QCollator>
@@ -134,6 +135,7 @@ Widget::Widget(const QString& filepath, QWidget *parent)
 	case LOCAL:
 	{
 		refreshMusicBtns();
+		refreshPlayListBtns();
 		//init_local();
 		break;
 	}
@@ -435,22 +437,6 @@ void Widget::setListener()
         movingProgress_ = true;
     });
 
-//    connect(ui->progress, &QSlider::actionTriggered, this, [this](int action)
-//    {
-//        qDebug() << action;
-//        switch (action)
-//        {
-//        case 0:
-//            player_->setPosition(ui->progress->value());
-//            movingProgress_ = false;
-//            break;
-//        case 3:
-//        case 4:
-//            movingProgress_ = true;
-//            break;
-//        }
-//    });
-
     // 松开进度条，改变音乐进度
     connect(ui->progress, &DProgressBar::sigMouseReleased, this, [this](int val)
     {
@@ -482,6 +468,19 @@ void Widget::setListener()
 		NET_LOGIN_DIALOG->exec();
 		grabKeyboard();
 	});
+	connect(ui->multi_btn_widget, &MultiBtnWidget::sigBtnPlayListClicked, this, [this]()
+	{
+		if (2 == ui->stacked_music_btn->currentIndex())
+		{
+			ui->multi_btn_widget->setBtnPlayListIcon(QIcon(":/svgs/play_list.svg"));
+			ui->stacked_music_btn->setCurrentIndex(0);
+		}
+		else
+		{
+			ui->multi_btn_widget->setBtnPlayListIcon(QIcon(":/svgs/back.svg"));
+			ui->stacked_music_btn->setCurrentIndex(2);
+		}
+	});
     connect(ui->multi_btn_widget, &MultiBtnWidget::sigBtnSettingClicked, this, [this]()
     {
         ui->btn_more->setIcon(QIcon(":/svgs/back.svg"));
@@ -511,6 +510,36 @@ void Widget::refreshMusicBtns()
         btn->setMusicIndex(index);
         ++index;
     }
+}
+
+void Widget::refreshPlayListBtns()
+{
+	QLayoutItem* child;
+	while (child = ui->play_list_layout->itemAt(0))
+	{
+		ui->play_list_layout->removeItem(child);
+		if (child->widget())
+			delete child->widget();
+	}
+
+	QStringList playListNames = SETTING_HANDLER->getStruct().playListMap.keys();
+	//DSizeType index = 0;
+	for (const QString& playListName : playListNames)
+	{
+		//QString filename = url.fileName();
+		//QString str = filename.mid(0, filename.indexOf('.'));
+		PlayListButton* btn = new PlayListButton(playListName, this);
+		btn->setContextMenuPolicy(Qt::CustomContextMenu);
+		//connect(btn, &LocalMusicButton::clicked, this, &Widget::slotLocalMusicBtnClicked);
+		//connect(btn, &QPushButton::customContextMenuRequested, this, [btn](const QPoint& pos)
+		//	{
+		//		DMenu* menu = DMenu::getButtonMenu();
+		//		menu->show(btn->getMusicIndex());
+		//	});
+		ui->play_list_layout->addWidget(btn);
+	//	btn->setMusicIndex(index);
+	//	++index;
+	}
 }
 
 BaseMusicButton* Widget::addLocalMusicBtn(const QUrl& url)
@@ -1144,6 +1173,8 @@ Widget::~Widget()
 
 void Widget::init()
 {
+	ui->stacked_music_btn->setCurrentIndex(0);
+
 	NETEASE_HANDLER->startApiExe();
 	Hook::getInstance()->installHook();
 	connect(Hook::getInstance(), &Hook::sendKeyType, this, &Widget::slotKeyPressed, Qt::QueuedConnection);

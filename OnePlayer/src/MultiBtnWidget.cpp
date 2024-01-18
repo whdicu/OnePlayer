@@ -33,6 +33,7 @@ MultiBtnWidget::MultiBtnWidget(QWidget *parent)
 	animation7_->setDuration(MORE_BTN_WIDGET_ANIMATION_TIME * 8 / 44);
 
 	connect(ui.btn_netease, &QPushButton::clicked, this, &MultiBtnWidget::sigBtnNeteaseClicked);
+	connect(ui.btn_play_list, &QPushButton::clicked, this, &MultiBtnWidget::sigBtnPlayListClicked);
 	connect(ui.btn_setting, &QPushButton::clicked, this, &MultiBtnWidget::sigBtnSettingClicked);
 }
 
@@ -181,4 +182,9 @@ void MultiBtnWidget::moveToHide()
 	ui.btn_setting_4->move(endPoint);
 	ui.btn_setting_5->move(endPoint);
 	ui.btn_setting->move(endPoint);
+}
+
+void MultiBtnWidget::setBtnPlayListIcon(const QIcon & icon)
+{
+	ui.btn_play_list->setIcon(icon);
 }

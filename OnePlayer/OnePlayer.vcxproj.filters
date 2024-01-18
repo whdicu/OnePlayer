@@ -99,6 +99,9 @@
     <QtMoc Include="src\NetLoginDialog.h">
       <Filter>widgets</Filter>
     </QtMoc>
+    <QtMoc Include="src\PlayListButton.h">
+      <Filter>widgets</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\hook.cpp">
@@ -185,6 +188,9 @@
     <ClCompile Include="src\NetLoginDialog.cpp">
       <Filter>widgets</Filter>
     </ClCompile>
+    <ClCompile Include="src\PlayListButton.cpp">
+      <Filter>widgets</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="src\lyricswidget.ui">
@@ -221,6 +227,9 @@
       <Filter>widgets</Filter>
     </QtUic>
     <QtUic Include="src\NetLoginDialog.ui">
+      <Filter>widgets</Filter>
+    </QtUic>
+    <QtUic Include="src\PlayListButton.ui">
       <Filter>widgets</Filter>
     </QtUic>
   </ItemGroup>

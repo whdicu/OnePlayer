@@ -95,6 +95,7 @@ private:
     void refreshImageWidget(const MusicInfo& info);
 	void setListener();
 	void refreshMusicBtns();
+	void refreshPlayListBtns();
 	BaseMusicButton* addLocalMusicBtn(const QUrl& url);
 	//    void add_online_music(const MusicInfo& music);
 	//    void init_local();
