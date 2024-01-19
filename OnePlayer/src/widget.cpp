@@ -523,22 +523,62 @@ void Widget::refreshPlayListBtns()
 	}
 
 	QStringList playListNames = SETTING_HANDLER->getStruct().playListMap.keys();
-	//DSizeType index = 0;
 	for (const QString& playListName : playListNames)
 	{
 		//QString filename = url.fileName();
 		//QString str = filename.mid(0, filename.indexOf('.'));
 		PlayListButton* btn = new PlayListButton(playListName, this);
 		btn->setContextMenuPolicy(Qt::CustomContextMenu);
-		//connect(btn, &LocalMusicButton::clicked, this, &Widget::slotLocalMusicBtnClicked);
+		if (SETTING_HANDLER->getStruct().playListName == playListName)
+			btn->setChoosed();
+
+		connect(btn, &PlayListButton::sigPlayListClicked, this, [btn, this](const QString& playListName)
+		{
+			SETTING_HANDLER->getStruct().playListName = playListName;
+			//SETTING_HANDLER->getStruct().musicPosition = 0;
+			SETTING_HANDLER->setMusicIndex(0);
+
+			switch (SETTING_HANDLER->getStruct().playMode)
+			{
+			case RANDOM:
+				SETTING_HANDLER->clearRandomPlayList();
+				break;
+			}
+
+			refreshMusicBtns();
+			player_->playCurrentIndex();
+
+			slotMusicIndexChanged(SETTING_HANDLER->getMusicIndex(), SETTING_HANDLER->getMusicIndex());  // 初始化被播放的那个音乐按钮样式
+		});
+		connect(btn, &PlayListButton::sigDeleteClicked, this, [this](const QString& playListName)
+		{
+			if (playListName == SETTING_HANDLER->getStruct().playListName)
+			{
+				OneMessageBox::warning(this, tr("警告"), tr("正在播放的列表不可删除！"));
+				return;
+			}
+
+			QString filePath = QCoreApplication::applicationDirPath();
+			filePath += "/config/play_lists/" + playListName + ".oned";
+
+			QFile file(filePath);
+			if (!file.exists())
+			{
+				OneMessageBox::warning(this, tr("警告"), tr("文件 %1 不存在！").arg(filePath));
+				return;
+			}
+			file.remove();
+
+			SETTING_HANDLER->refreshPlayList();
+			refreshPlayListBtns();
+		});
+		
 		//connect(btn, &QPushButton::customContextMenuRequested, this, [btn](const QPoint& pos)
 		//	{
 		//		DMenu* menu = DMenu::getButtonMenu();
 		//		menu->show(btn->getMusicIndex());
 		//	});
 		ui->play_list_layout->addWidget(btn);
-	//	btn->setMusicIndex(index);
-	//	++index;
 	}
 }
 

@@ -51,6 +51,8 @@ public:
 
 	void plusRandomIndex() { ++randomIndex_; }
 
+	void refreshPlayList() { readPlayList(); }
+
 signals:
     void sigMusicIndexChanged(DSizeType oldIndex, DSizeType newIndex);
 

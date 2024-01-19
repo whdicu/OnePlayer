@@ -4,7 +4,7 @@
 #include "basemusicbutton.h"
 #include "OnePlayerStruct.h"
 #include "onlinehandler.h"
-#include <QWidget>
+
 
 namespace Ui {
 class OnlineMusicButton;

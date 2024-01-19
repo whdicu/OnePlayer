@@ -24,5 +24,6 @@
         <file>svgs/play_list.svg</file>
         <file>svgs/setting.svg</file>
         <file>svgs/netease.svg</file>
+        <file>svgs/delete.svg</file>
     </qresource>
 </RCC>

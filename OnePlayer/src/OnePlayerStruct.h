@@ -81,9 +81,88 @@ static const QString LOCAL_PLAYING_STYLE = "QPushButton { color: #5c5c66; backgr
 static const QString LOCAL_SELECT_STYLE = "QPushButton { color: #5c5c66; background-color: rgba(182, 209, 200, 0.5); border-radius: 20px; padding-left: 10px; padding-right: 10px; }";
 
 // 在线音乐按钮样式
-static const QString ONLINE_NORMAL_STYLE = "QPushButton {color: #5c5c66;background-color: rgba(182, 209, 200, 0.25);border-radius: 0px;} #btn_name{text-align : left;padding-left: 10px;border-top-left-radius: 20px;border-bottom-left-radius: 20px;}#btn_singer{text-align : left;}#btn_download{color: #1473e6;border-top-right-radius: 20px;border-bottom-right-radius: 20px;}";
-static const QString ONLINE_PLAYING_STYLE = "QPushButton {color: #5c5c66;background-color: rgb(182, 209, 200);border-radius: 0px;} #btn_name{text-align : left;padding-left: 10px;border-top-left-radius: 20px;border-bottom-left-radius: 20px;}#btn_singer{text-align : left;}#btn_download{color: #1473e6;border-top-right-radius: 20px;border-bottom-right-radius: 20px;}";
-static const QString ONLINE_HOVER_STYLE = "QPushButton {color: #5c5c66;background-color: rgba(182, 209, 200, 0.5);border-radius: 0px;} #btn_name{text-align : left;padding-left: 10px;border-top-left-radius: 20px;border-bottom-left-radius: 20px;}#btn_singer{text-align : left;}#btn_download{color: #1473e6;border-top-right-radius: 20px;border-bottom-right-radius: 20px;}";
+static const QString ONLINE_NORMAL_STYLE =
+"QPushButton { \
+	color: #5c5c66; \
+	background-color: rgba(182, 209, 200, 0.25); \
+	border-radius: 0px; \
+} #btn_name { \
+	text-align: left; \
+	padding-left: 10px; \
+	border-top-left-radius: 20px; \
+	border-bottom-left-radius: 20px; \
+} #btn_singer { \
+	text-align: left; \
+} #btn_download { \
+	color: #1473e6; \
+	border-top-right-radius: 20px; \
+	border-bottom-right-radius: 20px; \
+}";
+
+static const QString ONLINE_PLAYING_STYLE =
+"QPushButton { \
+	color: #5c5c66; \
+	background-color: rgb(182, 209, 200); \
+	border-radius: 0px; \
+} #btn_name { \
+	text-align: left; \
+	padding-left: 10px; \
+	border-top-left-radius: 20px; \
+	border-bottom-left-radius: 20px; \
+} #btn_singer { \
+	text-align: left; \
+} #btn_download { \
+	color: #1473e6; \
+	border-top-right-radius: 20px; \
+	border-bottom-right-radius: 20px; \
+}";
+
+static const QString ONLINE_HOVER_STYLE = 
+"QPushButton { \
+	color: #5c5c66; \
+	background-color: rgba(182, 209, 200, 0.5); \
+	border-radius: 0px; \
+} #btn_name { \
+	text-align: left; \
+	padding-left: 10px; \
+	border-top-left-radius: 20px; \
+	border-bottom-left-radius: 20px; \
+} #btn_singer { \
+	text-align: left; \
+} #btn_download { \
+	color: #1473e6; \
+	border-top-right-radius: 20px; \
+	border-bottom-right-radius: 20px; \
+}";
+
+static const QString PLAY_LIST_NORMAL_STYLE =
+"#widget_bg { \
+	background-color: rgba(182, 209, 200, 0.25); \
+	border-radius: 20px; \
+}";
+
+static const QString PLAY_LIST_PLAYING_STYLE =
+"#widget_bg { \
+	background-color: rgb(182, 209, 200); \
+	border-radius: 20px; \
+}";
+
+static const QString PLAY_LIST_HOVER_STYLE =
+"#widget_bg { \
+	background-color: rgba(182, 209, 200, 0.5); \
+	border-radius: 20px; \
+}";
+
+static const QString PLAY_LIST_BTNS_STYLE =
+"#btn_name { \
+	color: #5c5c66; \
+	background-color: transparent; \
+	padding-left: 10px; \
+	padding-right: 10px; \
+} #btn_delete { \
+	color: #5c5c66; \
+	background-color: transparent; \
+}";
 
 
 enum PLAYER_MODE
