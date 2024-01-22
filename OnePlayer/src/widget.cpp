@@ -12,6 +12,7 @@
 #include "PlayerFFmpeg.h"
 #include "PlayerQt.h"
 #include "PlayListButton.h"
+#include "PlayListEdit.h"
 #include "OneMessageBox.h"
 #include <QAudioOutput>
 #include <QCollator>
@@ -521,6 +522,10 @@ void Widget::refreshPlayListBtns()
 		if (child->widget())
 			delete child->widget();
 	}
+
+	// 创建开头的添加框
+	PlayListEdit* edit = new PlayListEdit(this);
+	ui->play_list_layout->addWidget(edit);
 
 	QStringList playListNames = SETTING_HANDLER->getStruct().playListMap.keys();
 	for (const QString& playListName : playListNames)

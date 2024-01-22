@@ -102,6 +102,9 @@
     <QtMoc Include="src\PlayListButton.h">
       <Filter>widgets</Filter>
     </QtMoc>
+    <QtMoc Include="src\PlayListEdit.h">
+      <Filter>widgets</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\hook.cpp">
@@ -191,6 +194,9 @@
     <ClCompile Include="src\PlayListButton.cpp">
       <Filter>widgets</Filter>
     </ClCompile>
+    <ClCompile Include="src\PlayListEdit.cpp">
+      <Filter>widgets</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="src\lyricswidget.ui">
@@ -230,6 +236,9 @@
       <Filter>widgets</Filter>
     </QtUic>
     <QtUic Include="src\PlayListButton.ui">
+      <Filter>widgets</Filter>
+    </QtUic>
+    <QtUic Include="src\PlayListEdit.ui">
       <Filter>widgets</Filter>
     </QtUic>
   </ItemGroup>

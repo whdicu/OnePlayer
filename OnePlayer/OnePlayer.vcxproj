@@ -128,6 +128,7 @@
     <ClCompile Include="src\PlayerFFmpeg.cpp" />
     <ClCompile Include="src\PlayerQt.cpp" />
     <ClCompile Include="src\PlayListButton.cpp" />
+    <ClCompile Include="src\PlayListEdit.cpp" />
     <ClCompile Include="src\SearchEdit.cpp" />
     <ClCompile Include="src\settinghandler.cpp" />
     <ClCompile Include="src\settingtabwidget.cpp" />
@@ -153,6 +154,7 @@
     <QtUic Include="src\OneMessageBox.ui" />
     <QtUic Include="src\onlinemusicbutton.ui" />
     <QtUic Include="src\PlayListButton.ui" />
+    <QtUic Include="src\PlayListEdit.ui" />
     <QtUic Include="src\SearchEdit.ui" />
     <QtUic Include="src\settingtabwidget.ui" />
     <QtUic Include="src\widget.ui" />
@@ -164,6 +166,7 @@
     <QtMoc Include="src\LocalMusicButton.h" />
   </ItemGroup>
   <ItemGroup>
+    <QtMoc Include="src\PlayListEdit.h" />
     <QtMoc Include="src\PlayListButton.h" />
     <QtMoc Include="src\neteasehandler.h" />
     <QtMoc Include="src\neteasewidget.h" />
