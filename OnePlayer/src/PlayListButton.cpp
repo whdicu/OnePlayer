@@ -38,7 +38,11 @@ void PlayListButton::on_btn_delete_clicked()
 	emit sigDeleteClicked(str);
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+void PlayListButton::enterEvent(QEnterEvent*)
+#else
 void PlayListButton::enterEvent(QEvent*)
+#endif
 {
 	if (SETTING_HANDLER->getStruct().playListName != ui->btn_name->text())
 		setStyleSheet(PLAY_LIST_HOVER_STYLE + PLAY_LIST_BTNS_STYLE);

@@ -28,6 +28,12 @@ private slots:
 	void on_btn_delete_clicked();
 
 private:
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+	void enterEvent(QEnterEvent*);
+#else
+	void enterEvent(QEvent*);
+#endif
+
 	void enterEvent(QEvent*);
 	void leaveEvent(QEvent*);
 

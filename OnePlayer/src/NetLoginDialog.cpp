@@ -1,6 +1,7 @@
-#include "NetLoginDialog.h"
+ï»¿#include "NetLoginDialog.h"
 #include "neteasehandler.h"
 #include <QMessageBox>
+#include <QRegularExpression>
 
 
 static NetLoginDialog* net_login_dialog = nullptr;
@@ -17,13 +18,13 @@ void NetLoginDialog::on_btn_sign_up_clicked()
 	unsigned long long i = phone.toULongLong();
 	if (i < 10000000000ul || i > 19999999999ul)
 	{
-		QMessageBox::warning(this, tr("ÊÖ»úºÅ´íÎó"), tr("ÇëÊäÈëÕıÈ·µÄÊÖ»úºÅ"));
+		QMessageBox::warning(this, tr("æ‰‹æœºå·é”™è¯¯"), tr("è¯·è¾“å…¥æ­£ç¡®çš„æ‰‹æœºå·"));
 		return;
 	}
 
 	if (NETEASE_HANDLER->sendCaptcha(phone))
 	{
-		// ÑéÖ¤Âë·¢ËÍ³É¹¦
+		// éªŒè¯ç å‘é€æˆåŠŸ
 	}
 }
 
@@ -39,13 +40,13 @@ void NetLoginDialog::on_btn_login_clicked()
 
 		if (!match.hasMatch())
 		{
-			QMessageBox::warning(this, tr("ÓÊÏä´íÎó"), tr("ÇëÊäÈëÕıÈ·µÄÓÊÏä"));
+			QMessageBox::warning(this, tr("é‚®ç®±é”™è¯¯"), tr("è¯·è¾“å…¥æ­£ç¡®çš„é‚®ç®±"));
 			return;
 		}
 
 		if (NETEASE_HANDLER->loginEmail(phoneOrEmail, password))
 		{
-			// µÇÂ½³É¹¦
+			// ç™»é™†æˆåŠŸ
 		}
 	}
 	else
@@ -53,14 +54,14 @@ void NetLoginDialog::on_btn_login_clicked()
 		unsigned long long i = phoneOrEmail.toULongLong();
 		if (i < 10000000000ul || i > 19999999999ul)
 		{
-			QMessageBox::warning(this, tr("ÊÖ»úºÅ´íÎó"), tr("ÇëÊäÈëÕıÈ·µÄÊÖ»úºÅ"));
+			QMessageBox::warning(this, tr("æ‰‹æœºå·é”™è¯¯"), tr("è¯·è¾“å…¥æ­£ç¡®çš„æ‰‹æœºå·"));
 			return;
 		}
 
 		//if (NETEASE_HANDLER->loginPhone(phoneOrEmail, password))
 		if (NETEASE_HANDLER->loginCaptcha(phoneOrEmail, password))
 		{
-			// µÇÂ½³É¹¦
+			// ç™»é™†æˆåŠŸ
 		}
 	}
 }
