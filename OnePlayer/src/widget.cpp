@@ -41,6 +41,11 @@
 #include <QPropertyAnimation>
 #include <QProcess>
 
+#include <QtWinExtras/QWinThumbnailToolBar>
+#include <QtWinExtras/QWinThumbnailToolButton>
+#include <QtWinExtras>
+#include <QWindow>
+
 
 bool pointInWidget(QWidget* widget, QPoint pos)
 {
@@ -152,6 +157,42 @@ Widget::Widget(const QString& filepath, QWidget *parent)
 	}
 
 	setPlayMode(SETTING_HANDLER->getStruct().playMode);
+
+
+
+	QWindow * menu = new QWindow();
+	//if (QtWin::isCompositionEnabled()) {
+	//	QtWin::enableBlurBehindWindow(menu);
+	//}
+	//else {
+		QtWin::disableBlurBehindWindow(menu);
+		//menu->hide();
+	//}
+
+	QWinThumbnailToolBar* thumbnailToolBar = new QWinThumbnailToolBar(this);
+	thumbnailToolBar->setWindow(windowHandle());
+
+	QWinThumbnailToolButton* playToolButton = new QWinThumbnailToolButton(thumbnailToolBar);
+	playToolButton->setEnabled(false);
+	playToolButton->setToolTip(tr("Play"));
+	playToolButton->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
+	//connect(playToolButton, SIGNAL(clicked()), this, SLOT(togglePlayback()));
+
+	QWinThumbnailToolButton* forwardToolButton = new QWinThumbnailToolButton(thumbnailToolBar);
+	forwardToolButton->setEnabled(false);
+	forwardToolButton->setToolTip(tr("Fast forward"));
+	forwardToolButton->setIcon(style()->standardIcon(QStyle::SP_MediaSeekForward));
+	//connect(forwardToolButton, SIGNAL(clicked()), this, SLOT(seekForward()));
+
+	QWinThumbnailToolButton* backwardToolButton = new QWinThumbnailToolButton(thumbnailToolBar);
+	backwardToolButton->setEnabled(false);
+	backwardToolButton->setToolTip(tr("Rewind"));
+	backwardToolButton->setIcon(style()->standardIcon(QStyle::SP_MediaSeekBackward));
+	//connect(backwardToolButton, SIGNAL(clicked()), this, SLOT(seekBackward()));
+
+	thumbnailToolBar->addButton(backwardToolButton);
+	thumbnailToolBar->addButton(playToolButton);
+	thumbnailToolBar->addButton(forwardToolButton);
 }
 
 void Widget::slotKeyPressed(DWORD key)
