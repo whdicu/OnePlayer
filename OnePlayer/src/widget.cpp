@@ -526,6 +526,11 @@ void Widget::refreshPlayListBtns()
 	// 创建开头的添加框
 	PlayListEdit* edit = new PlayListEdit(this);
 	ui->play_list_layout->addWidget(edit);
+	connect(edit, &PlayListEdit::sigAdd, this, [this](const QString& playListName)
+	{
+		SETTING_HANDLER->addPlayList(playListName, DVector<QUrl>());
+		refreshPlayListBtns();
+	});
 
 	QStringList playListNames = SETTING_HANDLER->getStruct().playListMap.keys();
 	for (const QString& playListName : playListNames)
@@ -564,7 +569,7 @@ void Widget::refreshPlayListBtns()
 			}
 
 			QString filePath = QCoreApplication::applicationDirPath();
-			filePath += "/config/play_lists/" + playListName + ".oned";
+			filePath += "/config/play_lists/" + playListName + PLF_FORMAT;
 
 			QFile file(filePath);
 			if (!file.exists())

@@ -268,8 +268,14 @@ SettingHandler::SettingHandler()
 
 QString SettingHandler::checkPlayListName(const QString& name)
 {
-    if (setting_.playListMap.contains(name))
-        return checkPlayListName(name + "_新");
+	if (setting_.playListMap.contains(name))
+	{
+		int i = name.lastIndexOf('_');
+		int num = name.mid(i + 1).toInt();
+		QString newName = name.mid(0, i) + '_' + QString::number(num+1);
+		return checkPlayListName(newName);
+	}
+        
     return name;
 }
 
@@ -383,17 +389,11 @@ void SettingHandler::readPlayList()
     }
 
     directory.setFilter(QDir::Files | QDir::NoDotAndDotDot); // 只过滤文件，不包括"."和".."
-    directory.setNameFilters({"*.oned"});
+    directory.setNameFilters({"*" + PLF_FORMAT });
     QStringList fileList = directory.entryList();
     for (const QString& fileName : fileList)
     {
         QString str = readFile(basePath + fileName).trimmed();
-        if (str.isEmpty())
-        {
-            //QFile().remove(basePath + fileName);
-            DWarning << "File is empty! File:" << (basePath + fileName);
-            continue;
-        }
         QStringList strList = str.split('\n');
         QString playListName = fileName.mid(0, fileName.indexOf('.'));
 
@@ -429,7 +429,7 @@ void SettingHandler::readPlayList()
 void SettingHandler::writePlayList()
 {
     QString basePath = QCoreApplication::applicationDirPath();
-    basePath += "/config/play_lists/%1.oned";
+    basePath += "/config/play_lists/%1" + PLF_FORMAT;
 
     for (auto it = setting_.playListMap.cbegin(); it != setting_.playListMap.cend(); ++it)
     {

@@ -23,6 +23,7 @@ const static QStringList TYPE_LIST = { "mp3", "wav", "ogg", "acc", "ncm"};  // 5
 #endif
 
 
+const static QString PLF_FORMAT = ".oned";  // PlayList file format
 const static QString TEMP_PLAY_LIST_NAME = "TEMP_PLAY_LIST";  // 临时播放列表名，用来存右键打开的歌曲
 const static QString IP = "47.113.231.74";
 const static int PORT = 9002;

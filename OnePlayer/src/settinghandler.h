@@ -62,7 +62,7 @@ private:
 
     const DVector<QUrl> getPlayList(const QString& name) { return setting_.playListMap.value(name); }
 
-    // 检查播放链表的名字，如果有重复则在尾部添加 "_新"
+    // 检查播放链表的名字，如果有重复则在尾部添加 "_数字"
     QString checkPlayListName(const QString& name);
 
     // 从播放列表中移除歌曲

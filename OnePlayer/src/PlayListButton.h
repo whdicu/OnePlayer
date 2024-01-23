@@ -33,8 +33,6 @@ private:
 #else
 	void enterEvent(QEvent*);
 #endif
-
-	void enterEvent(QEvent*);
 	void leaveEvent(QEvent*);
 
     Ui::PlayListButton *ui;

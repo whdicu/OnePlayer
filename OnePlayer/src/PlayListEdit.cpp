@@ -1,4 +1,6 @@
 #include "PlayListEdit.h"
+#include <QKeyEvent>
+
 
 PlayListEdit::PlayListEdit(QWidget *parent)
 	: QWidget(parent)
@@ -8,4 +10,10 @@ PlayListEdit::PlayListEdit(QWidget *parent)
 
 PlayListEdit::~PlayListEdit()
 {
+}
+
+void PlayListEdit::on_btn_add_clicked()
+{
+	QString playListName = ui.le->text();
+	emit sigAdd(playListName);
 }

@@ -11,6 +11,12 @@ public:
 	PlayListEdit(QWidget *parent = Q_NULLPTR);
 	~PlayListEdit();
 
+signals:
+	void sigAdd(const QString& playListName);
+
+private slots:
+	void on_btn_add_clicked();
+
 private:
 	Ui::PlayListEdit ui;
 };
