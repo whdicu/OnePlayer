@@ -109,6 +109,15 @@ Widget::Widget(const QString& filepath, QWidget *parent)
 	stackedLocalBtnsAnimation_ = new QPropertyAnimation(ui->stacked_local_btns, "geometry");
 	stackedLocalBtnsAnimation_->setDuration(MORE_BTN_WIDGET_ANIMATION_TIME);
 
+	// 创建播放列表界面开头的添加框
+	PlayListEdit* edit = new PlayListEdit(this);
+	ui->play_list_layout->addWidget(edit);
+	connect(edit, &PlayListEdit::sigAdd, this, [this](const QString& playListName)
+	{
+		SETTING_HANDLER->addPlayList(playListName, DVector<QUrl>());
+		refreshPlayListBtns();
+	});
+
 //    ui->stacked_widget->setCurrentIndex(2);
 //
 //    ui->find_widget->hide();
@@ -516,11 +525,13 @@ void Widget::setListener()
 		{
 			ui->multi_btn_widget->setBtnPlayListIcon(QIcon(":/svgs/play_list.svg"));
 			ui->stacked_music_btn->setCurrentIndex(0);
+			grabKeyboard();
 		}
 		else
 		{
 			ui->multi_btn_widget->setBtnPlayListIcon(QIcon(":/svgs/back.svg"));
 			ui->stacked_music_btn->setCurrentIndex(2);
+			releaseKeyboard();
 		}
 	});
     connect(ui->multi_btn_widget, &MultiBtnWidget::sigBtnSettingClicked, this, [this]()
@@ -557,21 +568,12 @@ void Widget::refreshMusicBtns()
 void Widget::refreshPlayListBtns()
 {
 	QLayoutItem* child;
-	while (child = ui->play_list_layout->itemAt(0))
+	while (child = ui->play_list_layout->itemAt(1))
 	{
 		ui->play_list_layout->removeItem(child);
 		if (child->widget())
 			delete child->widget();
 	}
-
-	// 创建开头的添加框
-	PlayListEdit* edit = new PlayListEdit(this);
-	ui->play_list_layout->addWidget(edit);
-	connect(edit, &PlayListEdit::sigAdd, this, [this](const QString& playListName)
-	{
-		SETTING_HANDLER->addPlayList(playListName, DVector<QUrl>());
-		refreshPlayListBtns();
-	});
 
 	QStringList playListNames = SETTING_HANDLER->getStruct().playListMap.keys();
 	for (const QString& playListName : playListNames)

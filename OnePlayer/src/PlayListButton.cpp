@@ -14,6 +14,8 @@ PlayListButton::PlayListButton(const QString& str, QWidget *parent)
 
 PlayListButton::~PlayListButton()
 {
+	if (this == choosedBtn_)
+		choosedBtn_ = nullptr;
     delete ui;
 }
 
