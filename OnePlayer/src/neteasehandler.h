@@ -32,6 +32,12 @@ public:
 	// 检查登录状态
 	int checkLoginStatus();
 
+	// 获取所有歌单
+	void getPlayLists();
+
+	// 获取喜欢的歌曲列表
+	void getFavoriteSongs();
+
 signals:
 	// 下载了新头像
 	void sigAvatarImgChanged(const QImage& img);

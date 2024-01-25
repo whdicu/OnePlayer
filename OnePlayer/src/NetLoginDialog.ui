@@ -73,18 +73,18 @@
      <widget class="QPushButton" name="btn_sign_up">
       <property name="minimumSize">
        <size>
-        <width>36</width>
+        <width>100</width>
         <height>36</height>
        </size>
       </property>
       <property name="maximumSize">
        <size>
-        <width>36</width>
+        <width>100</width>
         <height>36</height>
        </size>
       </property>
       <property name="text">
-       <string>注册</string>
+       <string>发送验证码</string>
       </property>
      </widget>
     </item>

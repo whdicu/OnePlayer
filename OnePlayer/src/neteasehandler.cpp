@@ -73,6 +73,8 @@ bool NeteaseHandler::loginCaptcha(const QString& phone, const QString& captcha)
 
 
 	QString cookie = jo->value("cookie").toString();
+	QString avatarUrl = jo->value("avatarUrl").toString();
+	QString nickname = jo->value("nickname").toString();
 
 	checkLoginStatus();
 	return false;
@@ -111,6 +113,21 @@ int NeteaseHandler::checkLoginStatus()
 	QString content = QString("cookie:") + SETTING_HANDLER->getNeteaseInfo().cookie;
 	DSharedPointer<QJsonObject> jo = execPost(url, content);
 	return 0;
+}
+
+void NeteaseHandler::getPlayLists()
+{
+	QString url = QString("/user/playlist?uid=%1").arg(SETTING_HANDLER->getNeteaseInfo().userId);
+	QString content = QString("cookie:") + SETTING_HANDLER->getNeteaseInfo().cookie;
+	DSharedPointer<QJsonObject> jo = execPost(url, content);
+}
+
+void NeteaseHandler::getFavoriteSongs()
+{
+	qint64 nowTime = QDateTime::currentMSecsSinceEpoch();
+	QString url = QString("/user/subcount");
+	QString content = QString("cookie:") + SETTING_HANDLER->getNeteaseInfo().cookie;
+	DSharedPointer<QJsonObject> jo = execPost(url, content);
 }
 
 DSharedPointer<QJsonObject> NeteaseHandler::execPost(const QString& url, const QString& content)
