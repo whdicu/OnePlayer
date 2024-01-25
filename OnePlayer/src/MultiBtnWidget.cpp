@@ -1,4 +1,5 @@
 #include "MultiBtnWidget.h"
+#include "ImageHandler.h"
 #include "OnePlayerStruct.h"
 #include <QPropertyAnimation>
 #include <QTimer>
@@ -182,6 +183,19 @@ void MultiBtnWidget::moveToHide()
 	ui.btn_setting_4->move(endPoint);
 	ui.btn_setting_5->move(endPoint);
 	ui.btn_setting->move(endPoint);
+}
+
+void MultiBtnWidget::setBtnNeteaseInfo(const QImage& image, const QString& tips)
+{
+	cv::Mat mat = ImageHandler::QImageToCvMat(image);
+	cv::Mat fitMat = ImageHandler::fitImage(mat, ui.btn_netease->width(), ui.btn_netease->height());
+	QImage fitImage = ImageHandler::cvMatToQImage(fitMat);
+	QImage roundImage = ImageHandler::roundImage(fitImage, ui.btn_netease->height() / 2);
+
+	QIcon icon(QPixmap::fromImage(roundImage));
+	ui.btn_netease->setIconSize(ui.btn_netease->size());
+	ui.btn_netease->setIcon(icon);
+	ui.btn_netease->setToolTip(tips);
 }
 
 void MultiBtnWidget::setBtnPlayListIcon(const QIcon & icon)

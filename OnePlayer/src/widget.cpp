@@ -1291,7 +1291,15 @@ void Widget::init()
 	slotMusicIndexChanged(SETTING_HANDLER->getMusicIndex(), SETTING_HANDLER->getMusicIndex());  // 初始化被播放的那个音乐按钮样式
 
 	// 检查网易云登陆状态
-	//NETEASE_HANDLER->checkLoginStatus();
+	NETEASE_HANDLER->checkLoginStatus();
+	
+	if (true)  // 如果已经登陆了
+	{
+		QImage image = ImageHandler::downloadImage(SETTING_HANDLER->getNeteaseInfo().avatarUrl);
+		ui->multi_btn_widget->setBtnNeteaseInfo(image, SETTING_HANDLER->getNeteaseInfo().nickname);
+	
+		NETEASE_HANDLER->getPlayLists();
+	}
 }
 
 void Widget::uninit()

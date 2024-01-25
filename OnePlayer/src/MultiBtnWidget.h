@@ -19,6 +19,8 @@ public:
 
 	bool isAnimateHide() { return isAnimateHide_; }
 
+	void setBtnNeteaseInfo(const QImage& image, const QString& tips);
+
 	void setBtnPlayListIcon(const QIcon& icon);
 
 signals:
