@@ -73,6 +73,7 @@ bool NeteaseHandler::loginCaptcha(const QString& phone, const QString& captcha)
 	QString content = QString("phone=%1&captcha=%2").arg(phone).arg(captcha);
 	DSharedPointer<QJsonObject> jo = execPost(url, content);
 
+	SETTING_HANDLER->getNeteaseInfo().hasLogin = !jo->isEmpty();
 	if (jo->isEmpty())
 		return false;
 
@@ -123,6 +124,7 @@ bool NeteaseHandler::checkLoginStatus()
 
 	QJsonObject dataObj = jo->value("data").toObject();
 	
+	SETTING_HANDLER->getNeteaseInfo().hasLogin = !dataObj.value("profile").isNull();
 	if (dataObj.value("profile").isNull())
 		return false;
 
