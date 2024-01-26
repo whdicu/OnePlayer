@@ -132,6 +132,7 @@
     <ClCompile Include="src\SearchEdit.cpp" />
     <ClCompile Include="src\settinghandler.cpp" />
     <ClCompile Include="src\settingtabwidget.cpp" />
+    <ClCompile Include="src\Toast.cpp" />
     <ClCompile Include="src\widget.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -166,6 +167,7 @@
     <QtMoc Include="src\LocalMusicButton.h" />
   </ItemGroup>
   <ItemGroup>
+    <QtMoc Include="src\Toast.h" />
     <QtMoc Include="src\PlayListEdit.h" />
     <QtMoc Include="src\PlayListButton.h" />
     <QtMoc Include="src\neteasehandler.h" />
