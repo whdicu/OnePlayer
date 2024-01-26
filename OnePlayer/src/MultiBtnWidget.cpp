@@ -187,6 +187,8 @@ void MultiBtnWidget::moveToHide()
 
 void MultiBtnWidget::setBtnNeteaseInfo(const QImage& image, const QString& tips)
 {
+	if (image.isNull())
+		return;
 	cv::Mat mat = ImageHandler::QImageToCvMat(image);
 	cv::Mat fitMat = ImageHandler::fitImage(mat, ui.btn_netease->width(), ui.btn_netease->height());
 	QImage fitImage = ImageHandler::cvMatToQImage(fitMat);

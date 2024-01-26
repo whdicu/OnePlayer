@@ -11,7 +11,7 @@ public:
 	static NetLoginDialog* getInstance();
 
 private slots:
-	void on_btn_sign_up_clicked();
+	void on_btn_send_captcha_clicked();
 	void on_btn_login_clicked();
 
 private:

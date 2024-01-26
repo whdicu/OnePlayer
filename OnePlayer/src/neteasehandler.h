@@ -1,9 +1,11 @@
 ﻿#pragma once
 #pragma execution_character_set("utf-8")
+#include "OnePlayerStruct.h"
 #include <QObject>
 #include <QProcess>
 #include <QNetworkAccessManager>
 #include "HDMemory/DSharedPointer.hpp"
+#include "HDBase/DVector.hpp"
 
 
 class NeteaseHandler : public QObject
@@ -30,13 +32,15 @@ public:
 	bool loginEmail(const QString& email, const QString& password);
 
 	// 检查登录状态
-	int checkLoginStatus();
+	bool checkLoginStatus();
+
+	bool getUserDetail();
 
 	// 获取所有歌单
-	void getPlayLists();
+	DVector<NeteasePlayListInfo> getPlayLists();
 
-	// 获取喜欢的歌曲列表
-	void getFavoriteSongs();
+	// 获取一个歌单下的所有歌曲
+	DVector<NeteaseSongInfo> getSongsfromPlayList(qint64 id);
 
 signals:
 	// 下载了新头像

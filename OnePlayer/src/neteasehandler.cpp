@@ -3,6 +3,7 @@
 #include <QCryptographicHash>
 #include <QDebug>
 #include <QEventLoop>
+#include <QJsonArray>
 #include <QJsonObject>
 #include <QJsonParseError>
 #include <QMessageBox>
@@ -61,7 +62,8 @@ bool NeteaseHandler::sendCaptcha(const QString& phone)
 	QString url = QString("/captcha/sent");
 	QString content = QString("phone=%1").arg(phone);
 	DSharedPointer<QJsonObject> jo = execPost(url, content);
-	return false;
+	int code = jo->value("code").toInt();
+	return 200 == code;
 }
 
 bool NeteaseHandler::loginCaptcha(const QString& phone, const QString& captcha)
@@ -71,13 +73,18 @@ bool NeteaseHandler::loginCaptcha(const QString& phone, const QString& captcha)
 	QString content = QString("phone=%1&captcha=%2").arg(phone).arg(captcha);
 	DSharedPointer<QJsonObject> jo = execPost(url, content);
 
+	if (jo->isEmpty())
+		return false;
 
-	QString cookie = jo->value("cookie").toString();
-	QString avatarUrl = jo->value("avatarUrl").toString();
-	QString nickname = jo->value("nickname").toString();
+	SETTING_HANDLER->getNeteaseInfo().cookie = jo->value("cookie").toString();
+	SETTING_HANDLER->getNeteaseInfo().token = jo->value("token").toString();
+	QJsonObject profileObj = jo->value("profile").toObject();
+	SETTING_HANDLER->getNeteaseInfo().userId = profileObj.value("userId").toVariant().toLongLong();
+	SETTING_HANDLER->getNeteaseInfo().avatarUrl = profileObj.value("avatarUrl").toString();
+	SETTING_HANDLER->getNeteaseInfo().nickname = profileObj.value("nickname").toString();
+	SETTING_HANDLER->save();
 
-	checkLoginStatus();
-	return false;
+	return true;
 }
 
 bool NeteaseHandler::loginEmail(const QString& email, const QString& password)
@@ -106,28 +113,78 @@ bool NeteaseHandler::loginEmail(const QString& email, const QString& password)
 	return true;
 }
 
-int NeteaseHandler::checkLoginStatus()
+bool NeteaseHandler::checkLoginStatus()
 {
 	qint64 nowTime = QDateTime::currentMSecsSinceEpoch();
 	QString url = QString("/login/status?timestamp=%1").arg(nowTime);
-	QString content = QString("cookie:") + SETTING_HANDLER->getNeteaseInfo().cookie;
+	QString content = QString("cookie=") + SETTING_HANDLER->getNeteaseInfo().cookie;
+	//content += QString("&token=") + SETTING_HANDLER->getNeteaseInfo().token;
 	DSharedPointer<QJsonObject> jo = execPost(url, content);
-	return 0;
+
+	QJsonObject dataObj = jo->value("data").toObject();
+	
+	if (dataObj.value("profile").isNull())
+		return false;
+
+	QJsonObject profileObj = dataObj.value("profile").toObject();
+	SETTING_HANDLER->getNeteaseInfo().userId = profileObj.value("userId").toVariant().toLongLong();
+	SETTING_HANDLER->getNeteaseInfo().avatarUrl = profileObj.value("avatarUrl").toString();
+	SETTING_HANDLER->getNeteaseInfo().nickname = profileObj.value("nickname").toString();
+
+	return true;
 }
 
-void NeteaseHandler::getPlayLists()
+bool NeteaseHandler::getUserDetail()
 {
-	QString url = QString("/user/playlist?uid=%1").arg(SETTING_HANDLER->getNeteaseInfo().userId);
-	QString content = QString("cookie:") + SETTING_HANDLER->getNeteaseInfo().cookie;
+	QString url = QString("/user/detail");
+	QString content = QString("cookie=") + SETTING_HANDLER->getNeteaseInfo().cookie;
+	content += QString("&uid=%1").arg(SETTING_HANDLER->getNeteaseInfo().userId);
 	DSharedPointer<QJsonObject> jo = execPost(url, content);
+
+	return true;
 }
 
-void NeteaseHandler::getFavoriteSongs()
+DVector<NeteasePlayListInfo> NeteaseHandler::getPlayLists()
 {
-	qint64 nowTime = QDateTime::currentMSecsSinceEpoch();
-	QString url = QString("/user/subcount");
-	QString content = QString("cookie:") + SETTING_HANDLER->getNeteaseInfo().cookie;
+	QString url = QString("/user/playlist");
+	QString content = QString("cookie=") + SETTING_HANDLER->getNeteaseInfo().cookie;
+	content += QString("&uid=%1").arg(SETTING_HANDLER->getNeteaseInfo().userId);
 	DSharedPointer<QJsonObject> jo = execPost(url, content);
+	QJsonArray playlist = jo->value("playlist").toArray();
+
+	DVector<NeteasePlayListInfo> ret;
+	for (const auto& oneList : playlist)
+	{
+		NeteasePlayListInfo info;
+		QJsonObject listObj = oneList.toObject();
+		info.coverImgUrl = listObj.value("coverImgUrl").toString();
+		info.name = listObj.value("name").toString();
+		info.id = listObj.value("id").toVariant().toLongLong();
+		ret.pushBack(info);
+	}
+
+	return ret;
+}
+
+DVector<NeteaseSongInfo> NeteaseHandler::getSongsfromPlayList(qint64 id)
+{
+	QString url = QString("/playlist/track/all");
+	QString content = QString("cookie=") + SETTING_HANDLER->getNeteaseInfo().cookie;
+	content += QString("&id=%1").arg(id);
+	DSharedPointer<QJsonObject> jo = execPost(url, content);
+	QJsonArray songs = jo->value("songs").toArray();
+
+	DVector<NeteaseSongInfo> ret;
+	for (const auto& song : songs)
+	{
+		NeteaseSongInfo info;
+		QJsonObject songObj = song.toObject();
+		info.name = songObj.value("name").toString();
+		info.id = songObj.value("id").toVariant().toLongLong();
+		ret.pushBack(info);
+	}
+
+	return ret;
 }
 
 DSharedPointer<QJsonObject> NeteaseHandler::execPost(const QString& url, const QString& content)
@@ -142,6 +199,8 @@ DSharedPointer<QJsonObject> NeteaseHandler::execPost(const QString& url, const Q
 		if (reply->error() == QNetworkReply::NoError)
 		{
 			QByteArray responseData = reply->readAll();
+			//qDebug() << responseData.size();
+			//QString ss = responseData;
 			reply->deleteLater();
 			QJsonParseError parseError;
 			QJsonDocument jsonDoc = QJsonDocument::fromJson(responseData, &parseError);

@@ -633,6 +633,26 @@ void Widget::refreshPlayListBtns()
 		//	});
 		ui->play_list_layout->addWidget(btn);
 	}
+
+	if (SETTING_HANDLER->getNeteaseInfo().hasLogin)
+	{
+		auto allPlayLists = NETEASE_HANDLER->getPlayLists();
+		appendNeteasePlayListBtns(allPlayLists);
+	}
+}
+
+void Widget::appendNeteasePlayListBtns(const DVector<NeteasePlayListInfo>& infos)
+{
+	for (const auto& info : infos)
+	{
+		PlayListButton* btn = new PlayListButton(info.name, this);
+		btn->setPlayListId(info.id);
+		connect(btn, &PlayListButton::sigNeteasePlayListClicked, this, [btn, this](qint64 playListId)
+		{
+			auto songs = NETEASE_HANDLER->getSongsfromPlayList(playListId);
+		});
+		ui->play_list_layout->addWidget(btn);
+	}
 }
 
 BaseMusicButton* Widget::addLocalMusicBtn(const QUrl& url)
@@ -1291,14 +1311,13 @@ void Widget::init()
 	slotMusicIndexChanged(SETTING_HANDLER->getMusicIndex(), SETTING_HANDLER->getMusicIndex());  // 初始化被播放的那个音乐按钮样式
 
 	// 检查网易云登陆状态
-	NETEASE_HANDLER->checkLoginStatus();
-	
-	if (true)  // 如果已经登陆了
+	if (NETEASE_HANDLER->checkLoginStatus())
 	{
 		QImage image = ImageHandler::downloadImage(SETTING_HANDLER->getNeteaseInfo().avatarUrl);
 		ui->multi_btn_widget->setBtnNeteaseInfo(image, SETTING_HANDLER->getNeteaseInfo().nickname);
 	
-		NETEASE_HANDLER->getPlayLists();
+		auto allPlayLists = NETEASE_HANDLER->getPlayLists();
+		appendNeteasePlayListBtns(allPlayLists);
 	}
 }
 

@@ -6,96 +6,82 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>363</width>
-    <height>253</height>
+    <width>325</width>
+    <height>228</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>NetLoginDialog</string>
   </property>
-  <widget class="QWidget" name="widget_1" native="true">
+  <property name="styleSheet">
+   <string notr="true">QPushButton {
+	border-radius: 18px;
+	border: none;
+	background-color: #b6d1c8;
+}
+
+QLineEdit {
+	border-radius: 18px;
+	border: 3px solid #5c5c66;
+	padding-left: 10px;
+}</string>
+  </property>
+  <widget class="QPushButton" name="btn_send_captcha">
    <property name="geometry">
     <rect>
-     <x>60</x>
-     <y>60</y>
-     <width>231</width>
+     <x>70</x>
+     <y>150</y>
+     <width>90</width>
      <height>36</height>
     </rect>
    </property>
    <property name="minimumSize">
     <size>
-     <width>0</width>
+     <width>90</width>
      <height>36</height>
     </size>
    </property>
    <property name="maximumSize">
     <size>
-     <width>16777215</width>
+     <width>90</width>
      <height>36</height>
     </size>
    </property>
-   <layout class="QHBoxLayout" name="horizontalLayout_2">
-    <property name="spacing">
-     <number>10</number>
-    </property>
-    <property name="leftMargin">
-     <number>0</number>
-    </property>
-    <property name="topMargin">
-     <number>0</number>
-    </property>
-    <property name="rightMargin">
-     <number>0</number>
-    </property>
-    <property name="bottomMargin">
-     <number>0</number>
-    </property>
-    <item>
-     <widget class="QLineEdit" name="edit_phone_email">
-      <property name="minimumSize">
-       <size>
-        <width>0</width>
-        <height>36</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>16777215</width>
-        <height>36</height>
-       </size>
-      </property>
-      <property name="placeholderText">
-       <string>手机号或邮箱</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QPushButton" name="btn_sign_up">
-      <property name="minimumSize">
-       <size>
-        <width>100</width>
-        <height>36</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>100</width>
-        <height>36</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>发送验证码</string>
-      </property>
-     </widget>
-    </item>
-   </layout>
+   <property name="text">
+    <string>发送验证码</string>
+   </property>
   </widget>
-  <widget class="QWidget" name="widget_2" native="true">
+  <widget class="QPushButton" name="btn_login">
    <property name="geometry">
     <rect>
-     <x>60</x>
-     <y>120</y>
-     <width>231</width>
+     <x>190</x>
+     <y>150</y>
+     <width>60</width>
+     <height>36</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>60</width>
+     <height>36</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>60</width>
+     <height>36</height>
+    </size>
+   </property>
+   <property name="text">
+    <string>登录</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="edit_phone_email">
+   <property name="geometry">
+    <rect>
+     <x>70</x>
+     <y>50</y>
+     <width>181</width>
      <height>36</height>
     </rect>
    </property>
@@ -111,61 +97,37 @@
      <height>36</height>
     </size>
    </property>
-   <layout class="QHBoxLayout" name="horizontalLayout">
-    <property name="spacing">
-     <number>10</number>
-    </property>
-    <property name="leftMargin">
-     <number>0</number>
-    </property>
-    <property name="topMargin">
-     <number>0</number>
-    </property>
-    <property name="rightMargin">
-     <number>0</number>
-    </property>
-    <property name="bottomMargin">
-     <number>0</number>
-    </property>
-    <item>
-     <widget class="QLineEdit" name="edit_password">
-      <property name="minimumSize">
-       <size>
-        <width>0</width>
-        <height>36</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>16777215</width>
-        <height>36</height>
-       </size>
-      </property>
-      <property name="placeholderText">
-       <string>密码</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QPushButton" name="btn_login">
-      <property name="minimumSize">
-       <size>
-        <width>36</width>
-        <height>36</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>36</width>
-        <height>36</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>登录</string>
-      </property>
-     </widget>
-    </item>
-   </layout>
+   <property name="placeholderText">
+    <string>手机号或邮箱</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="edit_password">
+   <property name="geometry">
+    <rect>
+     <x>70</x>
+     <y>100</y>
+     <width>181</width>
+     <height>36</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>0</width>
+     <height>36</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>16777215</width>
+     <height>36</height>
+    </size>
+   </property>
+   <property name="text">
+    <string>验证码</string>
+   </property>
+   <property name="placeholderText">
+    <string>密码</string>
+   </property>
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>

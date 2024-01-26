@@ -326,6 +326,7 @@ void SettingHandler::readAll()
 	// 读取网易云相关信息
 	QJsonObject neteaseObject = obj["neteaseInfo"].toObject();
 	setting_.neteaseInfo.cookie = neteaseObject.value("cookie").toString();
+	setting_.neteaseInfo.token = neteaseObject.value("token").toString();
 	setting_.neteaseInfo.userId = neteaseObject.value("userId").toVariant().toLongLong();
 	setting_.neteaseInfo.avatarUrl = neteaseObject.value("avatarUrl").toString();
 	setting_.neteaseInfo.nickname = neteaseObject.value("nickname").toString();
@@ -356,6 +357,7 @@ void SettingHandler::writeAll()
 	QJsonObject neteaseObject;
 	neteaseObject.insert("userId", setting_.neteaseInfo.userId);
 	neteaseObject.insert("cookie", setting_.neteaseInfo.cookie);
+	neteaseObject.insert("token", setting_.neteaseInfo.token);
 	neteaseObject.insert("avatarUrl", setting_.neteaseInfo.avatarUrl);
 	neteaseObject.insert("nickname", setting_.neteaseInfo.nickname);
 	wholeObject.insert("neteaseInfo", neteaseObject);

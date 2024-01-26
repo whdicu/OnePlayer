@@ -2,6 +2,7 @@
 #include "neteasehandler.h"
 #include <QMessageBox>
 #include <QRegularExpression>
+#include "Toast.h"
 
 
 static NetLoginDialog* net_login_dialog = nullptr;
@@ -12,10 +13,10 @@ NetLoginDialog* NetLoginDialog::getInstance()
 	return net_login_dialog;
 }
 
-void NetLoginDialog::on_btn_sign_up_clicked()
+void NetLoginDialog::on_btn_send_captcha_clicked()
 {
 	QString phone = ui.edit_phone_email->text();
-	unsigned long long i = phone.toULongLong();
+	quint64 i = phone.toULongLong();
 	if (i < 10000000000ul || i > 19999999999ul)
 	{
 		QMessageBox::warning(this, tr("手机号错误"), tr("请输入正确的手机号"));
@@ -24,7 +25,11 @@ void NetLoginDialog::on_btn_sign_up_clicked()
 
 	if (NETEASE_HANDLER->sendCaptcha(phone))
 	{
-		// 验证码发送成功
+		Toast::makeToast("验证码发送成功");
+	}
+	else
+	{
+		Toast::makeToast("验证码发送失败");
 	}
 }
 

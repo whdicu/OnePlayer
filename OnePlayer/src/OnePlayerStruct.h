@@ -190,10 +190,27 @@ enum BG_MODE
 // 网易云相关设置信息
 struct NeteaseInfo
 {
+	NeteaseInfo() : hasLogin(false) {}
+
+	bool hasLogin;
 	qint64 userId;
 	QString cookie;
+	QString token;
 	QString avatarUrl;
 	QString nickname;
+};
+
+struct NeteasePlayListInfo
+{
+	QString coverImgUrl;
+	QString name;
+	qint64 id;
+};
+
+struct NeteaseSongInfo
+{
+	QString name;
+	qint64 id;
 };
 
 struct SettingStruct
