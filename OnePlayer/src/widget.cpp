@@ -1313,8 +1313,15 @@ void Widget::init()
 	// 检查网易云登陆状态
 	if (NETEASE_HANDLER->checkLoginStatus())
 	{
-		QImage image = ImageHandler::downloadImage(SETTING_HANDLER->getNeteaseInfo().avatarUrl);
-		ui->multi_btn_widget->setBtnNeteaseInfo(image, SETTING_HANDLER->getNeteaseInfo().nickname);
+		//ImageDownloadCallBack* callBack = new ImageDownloadCallBack(this);
+		//connect(callBack, &ImageDownloadCallBack::sigImageSet, this, [this](DSharedPointer<QImage> image)
+		//{
+		//	ui->multi_btn_widget->setBtnNeteaseInfo(*image, SETTING_HANDLER->getNeteaseInfo().nickname);
+		//});
+		ImageHandler::downloadImage(SETTING_HANDLER->getNeteaseInfo().avatarUrl, [this](DSharedPointer<QImage> image)
+		{
+			ui->multi_btn_widget->setBtnNeteaseInfo(*image, SETTING_HANDLER->getNeteaseInfo().nickname);
+		});
 	
 		auto allPlayLists = NETEASE_HANDLER->getPlayLists();
 		appendNeteasePlayListBtns(allPlayLists);

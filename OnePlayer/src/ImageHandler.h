@@ -1,6 +1,22 @@
 #pragma once
 #include <QImage>
 #include "opencv2/core.hpp"
+#include "HDMemory/DSharedPointer.hpp"
+
+
+class ImageDownloadCallBack : public QObject
+{
+	Q_OBJECT
+public:
+	explicit ImageDownloadCallBack(QObject *parent = nullptr);
+	~ImageDownloadCallBack();
+	void operator()(DSharedPointer<QImage> image);
+
+signals:
+	void sigImageSet(DSharedPointer<QImage> image);
+
+};
+
 
 namespace ImageHandler
 {
@@ -28,6 +44,13 @@ namespace ImageHandler
 	
 	cv::Mat roundCVMat(const cv::Mat& image, int radiusTL, int radiusTR
 		, int radiusBL, int radiusBR);
+
+	// callBack为nullptr时，函数阻塞执行，图片下载完了函数才会返回
+	// callBack不为nullptr时，函数发送完下载请求就会返回，图片在下载完时通过信号发送
+	//QImage downloadImage(const QString& url, ImageDownloadCallBack* callBack = nullptr);
+
+	template <typename Func>
+	QImage downloadImage(const QString& url, Func callBackFunc = nullptr);
 
 	QImage downloadImage(const QString& url);
 }

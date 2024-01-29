@@ -108,6 +108,9 @@
     <QtMoc Include="src\Toast.h">
       <Filter>widgets</Filter>
     </QtMoc>
+    <QtMoc Include="src\ImageHandler.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\hook.cpp">
@@ -250,9 +253,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\onlinehandler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ImageHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\OnePlayerStruct.h">
