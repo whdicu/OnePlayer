@@ -48,9 +48,6 @@ bool NeteaseHandler::loginPhone(const QString& phone, const QString& password)
 		QJsonObject profileObj = jo->value("profile").toObject();
 		QString avatarUrl = profileObj.value("avatarUrl").toString();
 		QString cookie = jo->value("cookie").toString();
-
-		QImage avatarImg = ImageHandler::downloadImage(avatarUrl);
-		emit sigAvatarImgChanged(avatarImg);
 		break;
 	}
 	qDebug() << *jo;

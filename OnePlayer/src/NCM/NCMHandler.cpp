@@ -19,7 +19,7 @@ extern "C"
 }
 
 
-CPPMusicData NCMHandler::dealNCM(const QString& filename)
+CPPMusicData NCMHandler::dealNCM(const QString& filename, ImageDownloadCallBack* callBack)
 {
 	CPPMusicData ret;
 	std::string fileStr = filename.toLocal8Bit().toStdString();
@@ -83,7 +83,8 @@ CPPMusicData NCMHandler::dealNCM(const QString& filename)
 	{
 		QString url = obj["albumPic"].toString()
 			+ QString("?param=%1y%2").arg(MUSIC_INFO_WIDGET_WIDTH).arg(MUSIC_INFO_WIDGET_HEIGHT);
-		ret.image = ImageHandler::downloadImage(url);
+		
+		ImageHandler::downloadImage(url, callBack);
 	}
 
 	//if (!albumImg.isNull())

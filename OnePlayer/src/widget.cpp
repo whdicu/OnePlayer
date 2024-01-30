@@ -41,11 +41,6 @@
 #include <QPropertyAnimation>
 #include <QProcess>
 
-#include <QtWinExtras/QWinThumbnailToolBar>
-#include <QtWinExtras/QWinThumbnailToolButton>
-#include <QtWinExtras>
-#include <QWindow>
-
 
 bool pointInWidget(QWidget* widget, QPoint pos)
 {
@@ -166,42 +161,6 @@ Widget::Widget(const QString& filepath, QWidget *parent)
 	}
 
 	setPlayMode(SETTING_HANDLER->getStruct().playMode);
-
-
-
-	QWindow * menu = new QWindow();
-	//if (QtWin::isCompositionEnabled()) {
-	//	QtWin::enableBlurBehindWindow(menu);
-	//}
-	//else {
-		QtWin::disableBlurBehindWindow(menu);
-		//menu->hide();
-	//}
-
-	QWinThumbnailToolBar* thumbnailToolBar = new QWinThumbnailToolBar(this);
-	thumbnailToolBar->setWindow(windowHandle());
-
-	QWinThumbnailToolButton* playToolButton = new QWinThumbnailToolButton(thumbnailToolBar);
-	playToolButton->setEnabled(false);
-	playToolButton->setToolTip(tr("Play"));
-	playToolButton->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
-	//connect(playToolButton, SIGNAL(clicked()), this, SLOT(togglePlayback()));
-
-	QWinThumbnailToolButton* forwardToolButton = new QWinThumbnailToolButton(thumbnailToolBar);
-	forwardToolButton->setEnabled(false);
-	forwardToolButton->setToolTip(tr("Fast forward"));
-	forwardToolButton->setIcon(style()->standardIcon(QStyle::SP_MediaSeekForward));
-	//connect(forwardToolButton, SIGNAL(clicked()), this, SLOT(seekForward()));
-
-	QWinThumbnailToolButton* backwardToolButton = new QWinThumbnailToolButton(thumbnailToolBar);
-	backwardToolButton->setEnabled(false);
-	backwardToolButton->setToolTip(tr("Rewind"));
-	backwardToolButton->setIcon(style()->standardIcon(QStyle::SP_MediaSeekBackward));
-	//connect(backwardToolButton, SIGNAL(clicked()), this, SLOT(seekBackward()));
-
-	thumbnailToolBar->addButton(backwardToolButton);
-	thumbnailToolBar->addButton(playToolButton);
-	thumbnailToolBar->addButton(forwardToolButton);
 }
 
 void Widget::slotKeyPressed(DWORD key)
@@ -413,6 +372,12 @@ void Widget::setListener()
 		emit sigChangeSystemIconToolTip(QString("OnePlayer\n正在播放：%1\n歌手：%2\n专辑：%3")
 			.arg(musicInfo.title).arg(musicInfo.singers).arg(musicInfo.album));
     });
+
+	// ncm封面图改变
+	connect(player_, &PlayerBase::albumImgChanged, this, [this](SharedImage image)
+	{
+		drawImage(*image);
+	});
 
     // 一些没用的事件
 //	connect(player_, &QMediaPlayer::seekableChanged, this, [](bool)
@@ -1140,32 +1105,14 @@ void Widget::initMultiFuncWidget()
         , ui->multi_func_widget->width(), ui->multi_func_widget->height()));
 }
 
-void Widget::refreshImageWidget(const MusicInfo& info)
+void Widget::drawImage(const QImage& image)
 {
-    // 设置歌曲名
-    if (!info.title.isEmpty())
-    {
-        ui->music_info_widget->setMusicName(info.title);
-        ui->btn_music_name->setText(info.title);
-    }
-    else
-    {
-		QString filename = SETTING_HANDLER->currentMusicUrl().fileName();
-		QString str = filename.mid(0, filename.indexOf('.'));
-        ui->music_info_widget->setMusicName(str);
-        ui->btn_music_name->setText(str);
-    }
+	if (image.isNull())
+	{
+		DWarning << __FUNCTION__ << "-> image is null!";
+		return;
+	}
 
-    // 设置歌手名
-    ui->music_info_widget->setSingerName(info.singers.isEmpty() ? "未知歌手" : info.singers);
-
-    // 设置专辑名
-    ui->music_info_widget->setAlbumName(info.album.isEmpty() ? "未知专辑" : info.album);
-
-	const static QImage default_image(":/images/music.png");
-
-	// 画图片
-	QImage image = info.image.isNull() ? default_image : info.image;
 	cv::Mat originMat = ImageHandler::QImageToCvMat(image);
 	cv::Mat fitMat = originMat;
 	switch (SETTING_HANDLER->getStruct().bgMode)
@@ -1193,6 +1140,32 @@ void Widget::refreshImageWidget(const MusicInfo& info)
 	ui->music_info_widget->drawBGMat(fitMat);
 	ui->music_info_widget->drawMainMat(originMat);
 	ui->music_info_widget->animationShow();
+}
+
+void Widget::refreshImageWidget(const MusicInfo& info)
+{
+    // 设置歌曲名
+    if (!info.title.isEmpty())
+    {
+        ui->music_info_widget->setMusicName(info.title);
+        ui->btn_music_name->setText(info.title);
+    }
+    else
+    {
+		QString filename = SETTING_HANDLER->currentMusicUrl().fileName();
+		QString str = filename.mid(0, filename.indexOf('.'));
+        ui->music_info_widget->setMusicName(str);
+        ui->btn_music_name->setText(str);
+    }
+
+    // 设置歌手名
+    ui->music_info_widget->setSingerName(info.singers.isEmpty() ? "未知歌手" : info.singers);
+
+    // 设置专辑名
+    ui->music_info_widget->setAlbumName(info.album.isEmpty() ? "未知专辑" : info.album);
+
+	// 画图片
+	drawImage(info.image);
 }
 
 void Widget::animateShow(bool fromCursor)
@@ -1313,15 +1286,13 @@ void Widget::init()
 	// 检查网易云登陆状态
 	if (NETEASE_HANDLER->checkLoginStatus())
 	{
-		//ImageDownloadCallBack* callBack = new ImageDownloadCallBack(this);
-		//connect(callBack, &ImageDownloadCallBack::sigImageSet, this, [this](DSharedPointer<QImage> image)
-		//{
-		//	ui->multi_btn_widget->setBtnNeteaseInfo(*image, SETTING_HANDLER->getNeteaseInfo().nickname);
-		//});
-		ImageHandler::downloadImage(SETTING_HANDLER->getNeteaseInfo().avatarUrl, [this](DSharedPointer<QImage> image)
+		ImageDownloadCallBack* callBack = new ImageDownloadCallBack(this);
+		connect(callBack, &ImageDownloadCallBack::sigImageSet, this, [this, callBack](SharedImage image)
 		{
 			ui->multi_btn_widget->setBtnNeteaseInfo(*image, SETTING_HANDLER->getNeteaseInfo().nickname);
+			callBack->deleteLater();
 		});
+		ImageHandler::downloadImage(SETTING_HANDLER->getNeteaseInfo().avatarUrl + "?param=80y80", callBack);
 	
 		auto allPlayLists = NETEASE_HANDLER->getPlayLists();
 		appendNeteasePlayListBtns(allPlayLists);

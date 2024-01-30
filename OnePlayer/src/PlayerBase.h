@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "HDMemory/DSharedPointer.hpp"
 #include "OnePlayerStruct.h"
 #include <QImage>
 #include <QObject>
@@ -22,6 +23,7 @@ public:
 	MusicInfo getMusicInfo() { return musicInfo_; }
 
 signals:
+	void albumImgChanged(SharedImage);
 	void durationChanged(qint64 position);
 	void positionChanged(qint64 position);
 	void sourceChanged(const QUrl& media);

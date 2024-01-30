@@ -308,71 +308,20 @@ cv::Mat ImageHandler::roundCVMat(const cv::Mat& image, int radiusTL, int radiusT
 	return result;
 }
 
-//QImage ImageHandler::downloadImage(const QString& url, ImageDownloadCallBack* callBack)
-//{
-//	QImage image;
-//
-//	QNetworkAccessManager* manager = new QNetworkAccessManager;
-//	QNetworkRequest request(url);
-//	QNetworkReply* reply = manager->get(request);
-//
-//	if (callBack == nullptr)
-//	{
-//		QEventLoop loop;
-//		QObject::connect(reply, &QNetworkReply::finished, &loop, &QEventLoop::quit);
-//		loop.exec();
-//
-//		if (reply->error() == QNetworkReply::NoError)
-//		{
-//			QByteArray imageData = reply->readAll();
-//			image.loadFromData(imageData);
-//		}
-//		else
-//		{
-//			qWarning() << __FUNCTION__ << "Failed to download image:" << reply->errorString();
-//		}
-//
-//		reply->deleteLater();
-//		manager->deleteLater();
-//	}
-//	else
-//	{
-//		QObject::connect(reply, &QNetworkReply::finished, reply, [manager, reply, callBack]()
-//		{
-//			if (reply->error() == QNetworkReply::NoError)
-//			{
-//				DSharedPointer<QImage> image(new QImage);
-//				QByteArray imageData = reply->readAll();
-//				image->loadFromData(imageData);
-//				(*callBack)(image);
-//			}
-//			reply->deleteLater();
-//			manager->deleteLater();
-//		});
-//	}
-//
-//	return image;
-//}
-
-template <typename Func>
-QImage ImageHandler::downloadImage(const QString& url, Func callBackFunc)
+void ImageHandler::downloadImage(const QString& url, ImageDownloadCallBack* callBack)
 {
-	QImage image;
-
 	QNetworkAccessManager* manager = new QNetworkAccessManager;
 	QNetworkRequest request(url);
 	QNetworkReply* reply = manager->get(request);
 
-	if (callBackFunc == nullptr)
+	QObject::connect(reply, &QNetworkReply::finished, reply, [manager, reply, callBack]()
 	{
-		QEventLoop loop;
-		QObject::connect(reply, &QNetworkReply::finished, &loop, &QEventLoop::quit);
-		loop.exec();
-
 		if (reply->error() == QNetworkReply::NoError)
 		{
 			QByteArray imageData = reply->readAll();
-			image.loadFromData(imageData);
+			SharedImage image(new QImage);
+			image->loadFromData(imageData);
+			(*callBack)(image);
 		}
 		else
 		{
@@ -381,30 +330,13 @@ QImage ImageHandler::downloadImage(const QString& url, Func callBackFunc)
 
 		reply->deleteLater();
 		manager->deleteLater();
-	}
-	else
-	{
-		QObject::connect(reply, &QNetworkReply::finished, reply, [manager, reply, callBackFunc]()
-			{
-				if (reply->error() == QNetworkReply::NoError)
-				{
-					DSharedPointer<QImage> image(new QImage);
-					QByteArray imageData = reply->readAll();
-					image->loadFromData(imageData);
-					callBackFunc(image);
-				}
-				reply->deleteLater();
-				manager->deleteLater();
-			});
-	}
-
-	return image;
+	});
 }
 
-QImage ImageHandler::downloadImage(const QString& url)
+SharedImage ImageHandler::downloadImage(const QString& url)
 {
-	QImage image;
-
+	SharedImage imageRet(new QImage);
+	
 	QNetworkAccessManager* manager = new QNetworkAccessManager;
 	QNetworkRequest request(url);
 	QNetworkReply* reply = manager->get(request);
@@ -416,7 +348,7 @@ QImage ImageHandler::downloadImage(const QString& url)
 	if (reply->error() == QNetworkReply::NoError)
 	{
 		QByteArray imageData = reply->readAll();
-		image.loadFromData(imageData);
+		imageRet->loadFromData(imageData);
 	}
 	else
 	{
@@ -426,7 +358,7 @@ QImage ImageHandler::downloadImage(const QString& url)
 	reply->deleteLater();
 	manager->deleteLater();
 
-	return image;
+	return imageRet;
 }
 
 ImageDownloadCallBack::ImageDownloadCallBack(QObject *parent /*= nullptr*/)
@@ -440,7 +372,7 @@ ImageDownloadCallBack::~ImageDownloadCallBack()
 
 }
 
-void ImageDownloadCallBack::operator()(DSharedPointer<QImage> image)
+void ImageDownloadCallBack::operator()(SharedImage image)
 {
-	sigImageSet(image);
+	emit sigImageSet(image);
 }

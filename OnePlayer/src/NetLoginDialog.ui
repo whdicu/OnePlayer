@@ -123,10 +123,10 @@ QLineEdit {
     </size>
    </property>
    <property name="text">
-    <string>验证码</string>
+    <string/>
    </property>
    <property name="placeholderText">
-    <string>密码</string>
+    <string>验证码</string>
    </property>
   </widget>
  </widget>

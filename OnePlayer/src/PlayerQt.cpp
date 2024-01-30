@@ -1,8 +1,9 @@
 ﻿#include "PlayerQt.h"
-#include "PlayerFFmpeg.h"
+#include "ImageHandler.h"
 #include "NCM/NCMHandler.h"
 #include "OneMessageBox.h"
 #include "OnePlayerStruct.h"
+#include "PlayerFFmpeg.h"
 #include <QAudioOutput>
 #include <QBuffer>
 #include <QDebug>
@@ -150,7 +151,13 @@ void PlayerQt::playCurrentIndex(qint64 pos)
 	QString filePath = url.toLocalFile();
 	if (filePath.endsWith(".ncm"))
 	{
-		CPPMusicData musicData = NCMHandler::dealNCM(filePath);
+		ImageDownloadCallBack* callBack = new ImageDownloadCallBack(this);
+		connect(callBack, &ImageDownloadCallBack::sigImageSet, this, [this](SharedImage image)
+		{
+			musicInfo_.image = *image;
+			emit albumImgChanged(image);
+		});
+		CPPMusicData musicData = NCMHandler::dealNCM(filePath, callBack);
 		//QByteArray aa(reinterpret_cast<const char*>(mb.data.data()), mb.data.size());
 		dataBuffer_ = new QBuffer(this);
 		dataBuffer_->setData(musicData.data);
@@ -159,7 +166,6 @@ void PlayerQt::playCurrentIndex(qint64 pos)
 		musicInfo_.title = musicData.title;
 		musicInfo_.singers = musicData.singers;
 		musicInfo_.album = musicData.album;
-		musicInfo_.image = musicData.image;
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 		player_->setSourceDevice(dataBuffer_);

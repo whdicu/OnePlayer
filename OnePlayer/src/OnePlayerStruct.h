@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "HDBase/DVector.hpp"
+#include "HDMemory/DSharedPointer.hpp"
 #include <QEasingCurve>
 #include <QImage>
 #include <QMap>
@@ -22,6 +23,7 @@ const static QStringList TYPE_LIST = { "mp3", "flac", "wav", "ogg", "acc", "m4a"
 const static QStringList TYPE_LIST = { "mp3", "wav", "ogg", "acc", "ncm"};  // 5.9.4无法播放flac m4a
 #endif
 
+using SharedImage = DSharedPointer<QImage>;
 
 const static QString PLF_FORMAT = ".oned";  // PlayList file format
 const static QString TEMP_PLAY_LIST_NAME = "TEMP_PLAY_LIST";  // 临时播放列表名，用来存右键打开的歌曲

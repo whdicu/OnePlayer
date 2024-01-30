@@ -92,6 +92,8 @@ private:
     // 初始化右侧控件
     void initMultiFuncWidget();
 
+	// 画图片
+	void drawImage(const QImage& image);
     void refreshImageWidget(const MusicInfo& info);
 	void setListener();
 	void refreshMusicBtns();

@@ -7,6 +7,8 @@ extern "C" {
 	#include "ncmToMp3.h"
 }
 
+class ImageDownloadCallBack;
+
 struct CPPMusicData
 {
 	QByteArray data;
@@ -19,6 +21,6 @@ struct CPPMusicData
 
 namespace NCMHandler
 {
-	CPPMusicData dealNCM(const QString& filename);
+	CPPMusicData dealNCM(const QString& filename, ImageDownloadCallBack* callBack = nullptr);
 };
 
