@@ -94,6 +94,8 @@ private:
 
 	// 画图片
 	void drawImage(const QImage& image);
+
+	// 刷新音乐信息控件，info里需要有image
     void refreshImageWidget(const MusicInfo& info);
 	void setListener();
 	void refreshMusicBtns();

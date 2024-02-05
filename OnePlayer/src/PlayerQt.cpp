@@ -155,7 +155,7 @@ void PlayerQt::playCurrentIndex(qint64 pos)
 		connect(callBack, &ImageDownloadCallBack::sigImageSet, this, [this](SharedImage image)
 		{
 			musicInfo_.image = *image;
-			emit albumImgChanged(image);
+			emit MusicInfoChanged(musicInfo_);
 		});
 		CPPMusicData musicData = NCMHandler::dealNCM(filePath, callBack);
 		//QByteArray aa(reinterpret_cast<const char*>(mb.data.data()), mb.data.size());
@@ -177,6 +177,9 @@ void PlayerQt::playCurrentIndex(qint64 pos)
 	else
 	{
 		musicInfo_ = PlayerFFmpeg::analyzeMusicInfo(url.toLocalFile());
+		if (musicInfo_.image.isNull())
+			musicInfo_.image = QImage(":/images/music.png");
+
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 		player_->setSource(url);
 		setPosition(pos);  // QT5的在durationChanged中设置Pos
@@ -186,6 +189,7 @@ void PlayerQt::playCurrentIndex(qint64 pos)
 	}
 
 	emit sourceChanged(url);
+	emit MusicInfoChanged(musicInfo_);
 	player_->play();
 }
 

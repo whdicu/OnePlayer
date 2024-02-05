@@ -415,6 +415,10 @@ void SettingHandler::readPlayList()
 		DVector<QUrl> ret;
 		for (const QString& str : strList)
 		{
+			// 排除不支持的格式
+			if (!TYPE_LIST.contains(str.section('.', -1)))
+				continue;
+
 			ret.pushBack(QUrl::fromLocalFile(str));
 		}
         setting_.playListMap.insert(playListName, ret);

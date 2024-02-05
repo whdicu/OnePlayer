@@ -23,7 +23,7 @@ public:
 	MusicInfo getMusicInfo() { return musicInfo_; }
 
 signals:
-	void albumImgChanged(SharedImage);
+	void MusicInfoChanged(MusicInfo info);
 	void durationChanged(qint64 position);
 	void positionChanged(qint64 position);
 	void sourceChanged(const QUrl& media);

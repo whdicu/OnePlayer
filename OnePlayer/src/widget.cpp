@@ -356,28 +356,19 @@ void Widget::setListener()
         ui->music_info_widget->animationHide();
     });
 
-    // 先sourceChanged，再metaDataChanged
-    connect(player_, &PlayerBase::sourceChanged, this, [this](const QUrl& media)
+    connect(player_, &PlayerBase::MusicInfoChanged, this, [this](MusicInfo info)
     {
-        MusicInfo musicInfo = player_->getMusicInfo();
-
-		if (musicInfo.title.isEmpty())
+		if (info.title.isEmpty())
 		{
 			QString filename = SETTING_HANDLER->currentMusicUrl().fileName();
-			musicInfo.title = filename.mid(0, filename.indexOf('.'));
+			info.title = filename.mid(0, filename.indexOf('.'));
 		}
 
-		refreshImageWidget(musicInfo);
+		refreshImageWidget(info);
 
 		emit sigChangeSystemIconToolTip(QString("OnePlayer\n正在播放：%1\n歌手：%2\n专辑：%3")
-			.arg(musicInfo.title).arg(musicInfo.singers).arg(musicInfo.album));
+			.arg(info.title).arg(info.singers).arg(info.album));
     });
-
-	// ncm封面图改变
-	connect(player_, &PlayerBase::albumImgChanged, this, [this](SharedImage image)
-	{
-		drawImage(*image);
-	});
 
     // 一些没用的事件
 //	connect(player_, &QMediaPlayer::seekableChanged, this, [](bool)
@@ -1109,7 +1100,7 @@ void Widget::drawImage(const QImage& image)
 {
 	if (image.isNull())
 	{
-		DWarning << __FUNCTION__ << "-> image is null!";
+		DWarning << "-> image is null!";
 		return;
 	}
 
@@ -1144,6 +1135,13 @@ void Widget::drawImage(const QImage& image)
 
 void Widget::refreshImageWidget(const MusicInfo& info)
 {
+	// 图片为空，说明是ncm格式的歌曲，图片要过一会儿才下载完
+	if (info.image.isNull())
+	{
+		DWarning << "-> image is null!";
+		return;
+	}
+
     // 设置歌曲名
     if (!info.title.isEmpty())
     {
