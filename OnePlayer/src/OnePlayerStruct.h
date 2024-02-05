@@ -1,14 +1,16 @@
 ﻿#pragma once
 #include "HDBase/DVector.hpp"
 #include "HDMemory/DSharedPointer.hpp"
+#include <QDateTime>
 #include <QEasingCurve>
 #include <QImage>
 #include <QMap>
 #include <QString>
 #include <QUrl>
 
-#define DWarning (qWarning() << __FUNCTION__)
-#define DDebug (qDebug() << __FUNCTION__)
+#define LOG_HEAD QDateTime::currentDateTime().toString("[yyyy-MM-dd hh:mm:ss.zzz]") << __FUNCTION__
+#define DWarning (qWarning().noquote() << LOG_HEAD)
+#define DDebug (qDebug().noquote() << LOG_HEAD)
 
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
