@@ -1028,7 +1028,7 @@ void Widget::keyPressEvent(QKeyEvent *event)
         }
         else
         {
-            player_->setPosition(player_->getPosition() - 2000);
+            player_->setPosition(player_->getPosition() - 3000);
         }
         break;
     case Qt::Key_Right:
@@ -1038,7 +1038,7 @@ void Widget::keyPressEvent(QKeyEvent *event)
         }
         else
         {
-            player_->setPosition(player_->getPosition() + 2000);
+            player_->setPosition(player_->getPosition() + 3000);
         }
         break;
     case Qt::Key_Up:
