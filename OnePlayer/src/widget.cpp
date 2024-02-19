@@ -1334,7 +1334,7 @@ void Widget::init()
 	ui->stacked_music_btn->setCurrentIndex(0);
 
 	NETEASE_HANDLER->startApiExe();
-	bool isNeteaseLogin = NETEASE_HANDLER->checkLoginStatus();
+	bool isNeteaseLogin = !SETTING_HANDLER->getNeteaseInfo().cookie.isEmpty() && NETEASE_HANDLER->checkLoginStatus();
 	Hook::getInstance()->installHook();
 	connect(Hook::getInstance(), &Hook::sendKeyType, this, &Widget::slotKeyPressed, Qt::QueuedConnection);
 
