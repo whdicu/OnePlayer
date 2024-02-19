@@ -48,14 +48,14 @@ SettingHandler* SettingHandler::getInstance()
     return setting_handler;
 }
 
-void SettingHandler::addPlayList(const QString& playListName, const DVector<QUrl>& list)
+void SettingHandler::addPlayList(const QString& playListName, const DVector<QString>& list)
 {
     QString uniqueName = checkPlayListName(playListName);
     setting_.playListMap.insert(uniqueName, list);
     writeAll();
 }
 
-void SettingHandler::adDVector2CurrentPlayList(const DVector<QUrl>& list)
+void SettingHandler::add2CurrentPlayList(const DVector<QString>& list)
 {
 	if (!setting_.playListMap.contains(setting_.playListName))
 	{
@@ -64,8 +64,8 @@ void SettingHandler::adDVector2CurrentPlayList(const DVector<QUrl>& list)
 	}
 
 	// 去除播放列表中已存在的歌曲
-	DVector<QUrl> onlyList;
-	for (const QUrl& url : list)
+	DVector<QString> onlyList;
+	for (const QString& url : list)
 	{
 		if (setting_.playListMap.value(setting_.playListName).contains(url))
 			continue;
@@ -111,7 +111,7 @@ bool SettingHandler::notExistPlayList()
 	return setting_.playListMap.isEmpty();
 }
 
-const DVector<QUrl> SettingHandler::currentPlayList()
+const DVector<QString> SettingHandler::currentPlayList()
 {
 	if ((setting_.playListName.isEmpty() || setting_.playListName == "Null")
 		&& !setting_.playListMap.isEmpty())
@@ -189,7 +189,7 @@ DSizeType SettingHandler::nextMusicIndex()
     return getMusicIndex();
 }
 
-QUrl SettingHandler::currentMusicUrl()
+QString SettingHandler::currentMusicUrl()
 {
 	if ((setting_.playListName.isEmpty() || setting_.playListName == "Null")
 		&& !setting_.playListMap.isEmpty())
@@ -206,7 +206,7 @@ QUrl SettingHandler::currentMusicUrl()
 		break;
 	}
     if (musicIndex_ >= currentPlayList().size())
-        return QUrl();
+        return "";
 
     return currentPlayList().at(musicIndex_);
 }
@@ -255,6 +255,36 @@ void SettingHandler::setMusicIndex(DSizeType musicIndex)
 	DSizeType oldIndex = musicIndex_;
 	musicIndex_ = musicIndex;
 	emit sigMusicIndexChanged(oldIndex, musicIndex);
+}
+
+NeteaseSongInfo SettingHandler::getNeteaseSongInfo(DSizeType index)
+{
+	if (index >= currentNeteaseSongsInfo_.size())
+		return NeteaseSongInfo();
+	else
+		return currentNeteaseSongsInfo_.at(index);
+}
+
+NeteaseSongInfo SettingHandler::getNeteaseSongInfo(dint64 id)
+{
+	auto it = std::find_if(currentNeteaseSongsInfo_.begin(), currentNeteaseSongsInfo_.end(), [id](const NeteaseSongInfo& info)
+	{
+		return info.id == id;
+	});
+
+	if (it == currentNeteaseSongsInfo_.end())
+		return NeteaseSongInfo();
+	else
+		return *it;
+}
+
+DSizeType SettingHandler::getNeteaseSongIndex(dint64 id)
+{
+	auto it = std::find_if(currentNeteaseSongsInfo_.begin(), currentNeteaseSongsInfo_.end(), [id](const NeteaseSongInfo& info)
+	{
+		return info.id == id;
+	});
+	return it - currentNeteaseSongsInfo_.begin();
 }
 
 SettingHandler::SettingHandler()
@@ -405,23 +435,28 @@ void SettingHandler::readPlayList()
         QStringList strList = str.split('\n');
         QString playListName = fileName.mid(0, fileName.indexOf('.'));
 
-		// 与临时播放列表同名的，不添加
-		if (playListName == TEMP_PLAY_LIST_NAME)
+		// 与临时播放列表同名的，或者是以网易云播放列表名称前缀开头的，不添加
+		if (playListName == TEMP_PLAY_LIST_NAME
+			|| playListName.startsWith(NETEASE_PLAY_LIST_PREFIX))
 		{
 			DDebug << "Play list name is the same as TEMP_PLAY_LIST! It would be ignore.";
 			continue;
 		}
 
-		DVector<QUrl> ret;
+		qint64 i1 = QDateTime::currentMSecsSinceEpoch();
+		DVector<QString> ret;
 		for (const QString& str : strList)
 		{
 			// 排除不支持的格式
 			if (!TYPE_LIST.contains(str.section('.', -1)))
 				continue;
 
-			ret.pushBack(QUrl::fromLocalFile(str));
+			ret.pushBack(str);
 		}
         setting_.playListMap.insert(playListName, ret);
+
+		qint64 i2 = QDateTime::currentMSecsSinceEpoch();
+		qDebug() << (i2 - i1);
     }
     
     //QJsonObject playListObject = obj["playList"].toObject();
@@ -445,8 +480,9 @@ void SettingHandler::writePlayList()
 
     for (auto it = setting_.playListMap.cbegin(); it != setting_.playListMap.cend(); ++it)
     {
-		// 临时播放列表不写入
-		if (TEMP_PLAY_LIST_NAME == it.key())
+		// 临时播放列表和网易云的播放列表不写入
+		if (TEMP_PLAY_LIST_NAME == it.key()
+			|| it.key().startsWith(NETEASE_PLAY_LIST_PREFIX))
 			continue;
 
         // 如果路径中有不存在的文件夹则创建
@@ -462,9 +498,9 @@ void SettingHandler::writePlayList()
 			continue;
 		}
 
-		for (const QUrl& path : it.value())
+		for (const QString& path : it.value())
 		{
-			file.write(path.toLocalFile().toUtf8() + '\n');
+			file.write(path.toUtf8() + '\n');
 		}
 		file.close();
     }

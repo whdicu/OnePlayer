@@ -1,6 +1,7 @@
 ﻿#include "PlayerQt.h"
 #include "ImageHandler.h"
 #include "NCM/NCMHandler.h"
+#include "neteasehandler.h"
 #include "OneMessageBox.h"
 #include "OnePlayerStruct.h"
 #include "PlayerFFmpeg.h"
@@ -140,7 +141,7 @@ void PlayerQt::playCurrentIndex(qint64 pos)
 {
 	emit beginPlay();
 	startPos_ = pos;
-	QUrl url = SETTING_HANDLER->currentMusicUrl();
+	QString urlStr = SETTING_HANDLER->currentMusicUrl();
 
 	if (dataBuffer_ != nullptr)
 	{
@@ -148,47 +149,70 @@ void PlayerQt::playCurrentIndex(qint64 pos)
 		dataBuffer_ = nullptr;
 	}
 
-	QString filePath = url.toLocalFile();
-	if (filePath.endsWith(".ncm"))
+	bool ok = false;
+	dint64 id = urlStr.toLongLong(&ok);
+	if (ok)  // 说明是网易云的音乐的id
 	{
+		urlStr = NETEASE_HANDLER->getMusicUrl(id);
+		NeteaseSongInfo info = SETTING_HANDLER->getNeteaseSongInfo(id);
+
 		ImageDownloadCallBack* callBack = new ImageDownloadCallBack(this);
 		connect(callBack, &ImageDownloadCallBack::sigImageSet, this, [this](SharedImage image)
 		{
 			musicInfo_.image = *image;
 			emit MusicInfoChanged(musicInfo_);
 		});
-		CPPMusicData musicData = NCMHandler::dealNCM(filePath, callBack);
-		//QByteArray aa(reinterpret_cast<const char*>(mb.data.data()), mb.data.size());
-		dataBuffer_ = new QBuffer(this);
-		dataBuffer_->setData(musicData.data);
-		dataBuffer_->open(QIODevice::ReadOnly);
+		ImageHandler::downloadImage(info.picUrl, callBack);
 
-		musicInfo_.title = musicData.title;
-		musicInfo_.singers = musicData.singers;
-		musicInfo_.album = musicData.album;
+		musicInfo_.title = info.name;
+		musicInfo_.singers = info.singer;
+		musicInfo_.album = info.album;
 
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-		player_->setSourceDevice(dataBuffer_);
-		setPosition(pos);  // QT5的在durationChanged中设置Pos
-#else
-		player_->setMedia(QMediaContent(), dataBuffer_);
-#endif
+		player_->setMedia(QUrl(urlStr));
+		emit MusicInfoChanged(musicInfo_);
 	}
 	else
 	{
-		musicInfo_ = PlayerFFmpeg::analyzeMusicInfo(url.toLocalFile());
-		if (musicInfo_.image.isNull())
-			musicInfo_.image = QImage(":/images/music.png");
+		if (urlStr.endsWith(".ncm"))
+		{
+			ImageDownloadCallBack* callBack = new ImageDownloadCallBack(this);
+			connect(callBack, &ImageDownloadCallBack::sigImageSet, this, [this](SharedImage image)
+			{
+				musicInfo_.image = *image;
+				emit MusicInfoChanged(musicInfo_);
+			});
+			CPPMusicData musicData = NCMHandler::dealNCM(urlStr, callBack);
+			//QByteArray aa(reinterpret_cast<const char*>(mb.data.data()), mb.data.size());
+			dataBuffer_ = new QBuffer(this);
+			dataBuffer_->setData(musicData.data);
+			dataBuffer_->open(QIODevice::ReadOnly);
+
+			musicInfo_.title = musicData.title;
+			musicInfo_.singers = musicData.singers;
+			musicInfo_.album = musicData.album;
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-		player_->setSource(url);
-		setPosition(pos);  // QT5的在durationChanged中设置Pos
+			player_->setSourceDevice(dataBuffer_);
+			setPosition(pos);  // QT5的在durationChanged中设置Pos
 #else
-		player_->setMedia(url);
+			player_->setMedia(QMediaContent(), dataBuffer_);
 #endif
-	}
+		}
+		else
+		{
+			musicInfo_ = PlayerFFmpeg::analyzeMusicInfo(urlStr);
+			if (musicInfo_.image.isNull())
+				musicInfo_.image = QImage(":/images/music.png");
 
-	emit sourceChanged(url);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+			player_->setSource(QUrl::fromLocalFile(urlStr));
+			setPosition(pos);  // QT5的在durationChanged中设置Pos
+#else
+			player_->setMedia(QUrl::fromLocalFile(urlStr));
+#endif
+		}
+	}
+	
 	emit MusicInfoChanged(musicInfo_);
 	player_->play();
 }

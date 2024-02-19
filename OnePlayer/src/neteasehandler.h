@@ -36,11 +36,17 @@ public:
 
 	bool getUserDetail();
 
-	// 获取所有歌单
-	DVector<NeteasePlayListInfo> getPlayLists();
+	// 获取该用户的所有歌单信息
+	DVector<NeteasePlayListInfo> getAllPlayListsInfo();
+
+	// 获取歌单信息
+	NeteasePlayListInfo getPlayListInfo(dint64 id);
 
 	// 获取一个歌单下的所有歌曲
-	DVector<NeteaseSongInfo> getSongsfromPlayList(qint64 id);
+	DVector<NeteaseSongInfo> getSongsfromPlayList(dint64 id);
+
+	// 获取歌曲URL
+	QString getMusicUrl(dint64 id);
 
 signals:
 	// 下载了新头像

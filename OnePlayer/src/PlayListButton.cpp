@@ -4,13 +4,13 @@
 
 PlayListButton* PlayListButton::choosedBtn_ = nullptr;
 
-PlayListButton::PlayListButton(const QString& str, QWidget *parent)
+PlayListButton::PlayListButton(const NeteasePlayListInfo& info, QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::PlayListButton)
-	, playListId_(-1)
+	, info_(info)
 {
     ui->setupUi(this);
-    ui->btn_name->setText(str);
+    ui->btn_name->setText(info.name);
 }
 
 PlayListButton::~PlayListButton()
@@ -32,10 +32,10 @@ void PlayListButton::on_btn_name_clicked()
 {
 	setChoosed();
 	QString str = ui->btn_name->text();
-	if (-1 == playListId_)
+	if (-1 == info_.id)
 		emit sigPlayListClicked(str);
 	else
-		emit sigNeteasePlayListClicked(playListId_);
+		emit sigNeteasePlayListClicked(info_);
 }
 
 void PlayListButton::on_btn_delete_clicked()

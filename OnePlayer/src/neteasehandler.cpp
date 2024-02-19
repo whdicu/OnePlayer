@@ -143,7 +143,7 @@ bool NeteaseHandler::getUserDetail()
 	return true;
 }
 
-DVector<NeteasePlayListInfo> NeteaseHandler::getPlayLists()
+DVector<NeteasePlayListInfo> NeteaseHandler::getAllPlayListsInfo()
 {
 	QString url = QString("/user/playlist");
 	QString content = QString("cookie=") + SETTING_HANDLER->getNeteaseInfo().cookie;
@@ -165,7 +165,17 @@ DVector<NeteasePlayListInfo> NeteaseHandler::getPlayLists()
 	return ret;
 }
 
-DVector<NeteaseSongInfo> NeteaseHandler::getSongsfromPlayList(qint64 id)
+NeteasePlayListInfo NeteaseHandler::getPlayListInfo(dint64 id)
+{
+	QString url = QString("/playlist/detail");
+	QString content = QString("cookie=") + SETTING_HANDLER->getNeteaseInfo().cookie;
+	content += QString("&id=%1").arg(id);
+	DSharedPointer<QJsonObject> jo = execPost(url, content);
+
+	return NeteasePlayListInfo();
+}
+
+DVector<NeteaseSongInfo> NeteaseHandler::getSongsfromPlayList(dint64 id)
 {
 	QString url = QString("/playlist/track/all");
 	QString content = QString("cookie=") + SETTING_HANDLER->getNeteaseInfo().cookie;
@@ -180,10 +190,36 @@ DVector<NeteaseSongInfo> NeteaseHandler::getSongsfromPlayList(qint64 id)
 		QJsonObject songObj = song.toObject();
 		info.name = songObj.value("name").toString();
 		info.id = songObj.value("id").toVariant().toLongLong();
+		info.album = songObj.value("al").toObject().value("name").toString();
+		info.picUrl = songObj.value("al").toObject().value("picUrl").toString();
+
+		info.singer = "";
+		QJsonArray artistArr = songObj.value("ar").toArray();
+		for (const auto& artist : artistArr)
+		{
+			info.singer.append(artist.toObject().value("name").toString() + ' ');
+		}
+		info.singer.trimmed();
+		
 		ret.pushBack(info);
 	}
 
 	return ret;
+}
+
+QString NeteaseHandler::getMusicUrl(dint64 id)
+{
+	QString url = QString("/song/url/v1");
+	QString content = QString("cookie=") + SETTING_HANDLER->getNeteaseInfo().cookie;
+	content += QString("&id=%1").arg(id);
+	content += QString("&level=%1").arg("higher");  // 音质 standard higher 
+	DSharedPointer<QJsonObject> jo = execPost(url, content);
+
+	QJsonArray dataArr = jo->value("data").toArray();
+	if (!dataArr.isEmpty())
+		return dataArr.first().toObject().value("url").toString();
+	else
+		return "";
 }
 
 DSharedPointer<QJsonObject> NeteaseHandler::execPost(const QString& url, const QString& content)

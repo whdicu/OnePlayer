@@ -7,6 +7,7 @@
 #include "ImageHandler.h"
 #include "LocalMusicButton.h"
 #include "neteasehandler.h"
+#include "NeteaseMusicBtn.h"
 #include "NetLoginDialog.h"
 #include "onlinemusicbutton.h"
 #include "PlayerFFmpeg.h"
@@ -109,7 +110,7 @@ Widget::Widget(const QString& filepath, QWidget *parent)
 	ui->play_list_layout->addWidget(edit);
 	connect(edit, &PlayListEdit::sigAdd, this, [this](const QString& playListName)
 	{
-		SETTING_HANDLER->addPlayList(playListName, DVector<QUrl>());
+		SETTING_HANDLER->addPlayList(playListName, DVector<QString>());
 		refreshPlayListBtns();
 	});
 
@@ -135,7 +136,7 @@ Widget::Widget(const QString& filepath, QWidget *parent)
 			return;
 		}
 
-		SETTING_HANDLER->addPlayList(TEMP_PLAY_LIST_NAME, { QUrl::fromLocalFile(filepath) });
+		SETTING_HANDLER->addPlayList(TEMP_PLAY_LIST_NAME, { filepath });
 		SETTING_HANDLER->getStruct().playListName = TEMP_PLAY_LIST_NAME;
 		SETTING_HANDLER->setMusicIndex(0);
     }
@@ -310,10 +311,51 @@ void Widget::slotLocalMusicBtnClicked(DSizeType musicIndex)
 	player_->playCurrentIndex();
 }
 
+void Widget::slotNeteaseMusicBtnClicked(dint64 musicId)
+{
+	DSizeType musicIndex = SETTING_HANDLER->getNeteaseSongIndex(musicId);
+
+	if (musicIndex == SETTING_HANDLER->getCurrentPlayListSize()
+		|| SETTING_HANDLER->getMusicIndex() == musicIndex)
+		return;
+
+	switch (SETTING_HANDLER->getStruct().playMode)
+	{
+	case RANDOM:
+		SETTING_HANDLER->insertToRandomPlayList(musicIndex);
+		SETTING_HANDLER->plusRandomIndex();
+		break;
+	default:
+		SETTING_HANDLER->setMusicIndex(musicIndex);
+		break;
+	}
+
+	player_->playCurrentIndex();
+}
+
 void Widget::slotBGModeChanged(BG_MODE bgMode)
 {
 	MusicInfo musicInfo = player_->getMusicInfo();
 	refreshImageWidget(musicInfo);
+}
+
+void Widget::slotNeteasePlayListClicked(const NeteasePlayListInfo& info)
+{
+	emit ui->multi_btn_widget->sigBtnPlayListClicked();
+
+	switch (SETTING_HANDLER->getStruct().playMode)
+	{
+	case RANDOM:
+		SETTING_HANDLER->clearRandomPlayList();
+		break;
+	}
+	
+	SETTING_HANDLER->getStruct().playListName = NETEASE_PLAY_LIST_PREFIX + QString::number(info.id) + '_' + info.name;
+	refreshNeteaseMusicBtns(info.id);
+	SETTING_HANDLER->setMusicIndex(0);
+
+	player_->playCurrentIndex();
+	slotMusicIndexChanged(SETTING_HANDLER->getMusicIndex(), SETTING_HANDLER->getMusicIndex());  // 初始化被播放的那个音乐按钮样式
 }
 
 void Widget::setListener()
@@ -360,7 +402,7 @@ void Widget::setListener()
     {
 		if (info.title.isEmpty())
 		{
-			QString filename = SETTING_HANDLER->currentMusicUrl().fileName();
+			QString filename = SETTING_HANDLER->currentMusicUrl();
 			info.title = filename.mid(0, filename.indexOf('.'));
 		}
 
@@ -511,14 +553,36 @@ void Widget::refreshMusicBtns()
             delete child->widget();
     }
 
-    DVector<QUrl> playList = SETTING_HANDLER->currentPlayList();
+    DVector<QString> playList = SETTING_HANDLER->currentPlayList();
     DSizeType index = 0;
-    for (const QUrl& musicUrl : playList)
+    for (const QString& musicUrl : playList)
     {
         BaseMusicButton* btn = addLocalMusicBtn(musicUrl);
         btn->setMusicIndex(index);
         ++index;
     }
+}
+
+void Widget::refreshNeteaseMusicBtns(dint64 playListId)
+{
+	QLayoutItem* child;
+	while (child = ui->music_layout->itemAt(0))
+	{
+		ui->music_layout->removeItem(child);
+		if (child->widget())
+			delete child->widget();
+	}
+
+	auto songs = NETEASE_HANDLER->getSongsfromPlayList(playListId);
+	DVector<QString> neteasePlayList;
+	for (const auto& song : songs)
+	{
+		neteasePlayList.pushBack(QString::number(song.id));
+		addNeteaseMusicBtn(song);
+	}
+
+	SETTING_HANDLER->setCurrentNeteaseSongsInfo(songs);
+	SETTING_HANDLER->addPlayList(SETTING_HANDLER->getStruct().playListName, neteasePlayList);
 }
 
 void Widget::refreshPlayListBtns()
@@ -592,7 +656,7 @@ void Widget::refreshPlayListBtns()
 
 	if (SETTING_HANDLER->getNeteaseInfo().hasLogin)
 	{
-		auto allPlayLists = NETEASE_HANDLER->getPlayLists();
+		auto allPlayLists = NETEASE_HANDLER->getAllPlayListsInfo();
 		appendNeteasePlayListBtns(allPlayLists);
 	}
 }
@@ -601,12 +665,8 @@ void Widget::appendNeteasePlayListBtns(const DVector<NeteasePlayListInfo>& infos
 {
 	for (const auto& info : infos)
 	{
-		PlayListButton* btn = new PlayListButton(info.name, this);
-		btn->setPlayListId(info.id);
-		connect(btn, &PlayListButton::sigNeteasePlayListClicked, this, [btn, this](qint64 playListId)
-		{
-			auto songs = NETEASE_HANDLER->getSongsfromPlayList(playListId);
-		});
+		PlayListButton* btn = new PlayListButton(info, this);
+		connect(btn, &PlayListButton::sigNeteasePlayListClicked, this, &Widget::slotNeteasePlayListClicked);
 		ui->play_list_layout->addWidget(btn);
 	}
 }
@@ -625,6 +685,20 @@ BaseMusicButton* Widget::addLocalMusicBtn(const QUrl& url)
     });
     ui->music_layout->addWidget(btn);
     return btn;
+}
+
+BaseMusicButton* Widget::addNeteaseMusicBtn(const NeteaseSongInfo& info)
+{
+	NeteaseMusicBtn* btn = new NeteaseMusicBtn(info, this);
+	btn->setContextMenuPolicy(Qt::CustomContextMenu);
+	connect(btn, &BaseMusicButton::clicked, this, &Widget::slotNeteaseMusicBtnClicked);
+	connect(btn, &QPushButton::customContextMenuRequested, this, [btn](const QPoint& pos)
+	{
+		//DMenu* menu = DMenu::getButtonMenu();
+		//menu->show(btn->getMusicIndex());
+	});
+	ui->music_layout->addWidget(btn);
+	return btn;
 }
 
 void Widget::setMusicBtnStyle(int index, void (BaseMusicButton::* setStyleFunc)())
@@ -869,16 +943,16 @@ void Widget::dropEvent(QDropEvent *event)
 
     //bool play = btn_list_.isEmpty();
 
-    DVector<QUrl> currentPlayList = SETTING_HANDLER->currentPlayList();
-	DVector<QUrl> list;
+    DVector<QString> currentPlayList = SETTING_HANDLER->currentPlayList();
+	DVector<QString> list;
 	QList<QUrl> all = event->mimeData()->urls();
     for (const QUrl& url : all)
     {
         QString type = url.toLocalFile().section('.', -1);
 
         // 已经存在的歌也不添加
-        if (TYPE_LIST.contains(type) && !currentPlayList.contains(url))
-            list.pushBack(url);
+        if (TYPE_LIST.contains(type) && !currentPlayList.contains(url.toLocalFile()))
+            list.pushBack(url.toLocalFile());
     }
 
 	int ret = OneMessageBox::information(nullptr, tr("提示"),
@@ -889,7 +963,7 @@ void Widget::dropEvent(QDropEvent *event)
 		if (SETTING_HANDLER->notExistPlayList())
 			SETTING_HANDLER->addPlayList("新播放列表", list);
 		else
-			SETTING_HANDLER->adDVector2CurrentPlayList(list);
+			SETTING_HANDLER->add2CurrentPlayList(list);
 	}
 
 	refreshMusicBtns();
@@ -1150,7 +1224,7 @@ void Widget::refreshImageWidget(const MusicInfo& info)
     }
     else
     {
-		QString filename = SETTING_HANDLER->currentMusicUrl().fileName();
+		QString filename = SETTING_HANDLER->currentMusicUrl();
 		QString str = filename.mid(0, filename.indexOf('.'));
         ui->music_info_widget->setMusicName(str);
         ui->btn_music_name->setText(str);
@@ -1260,6 +1334,7 @@ void Widget::init()
 	ui->stacked_music_btn->setCurrentIndex(0);
 
 	NETEASE_HANDLER->startApiExe();
+	bool isNeteaseLogin = NETEASE_HANDLER->checkLoginStatus();
 	Hook::getInstance()->installHook();
 	connect(Hook::getInstance(), &Hook::sendKeyType, this, &Widget::slotKeyPressed, Qt::QueuedConnection);
 
@@ -1273,6 +1348,41 @@ void Widget::init()
 	info.image = QImage(":/images/music.png");
 	refreshImageWidget(info);
 
+	if (isNeteaseLogin)
+	{
+		ImageDownloadCallBack* callBack = new ImageDownloadCallBack(this);
+		connect(callBack, &ImageDownloadCallBack::sigImageSet, this, [this, callBack](SharedImage image)
+			{
+				ui->multi_btn_widget->setBtnNeteaseInfo(*image, SETTING_HANDLER->getNeteaseInfo().nickname);
+				callBack->deleteLater();
+			});
+		ImageHandler::downloadImage(SETTING_HANDLER->getNeteaseInfo().avatarUrl + "?param=80y80", callBack);
+
+		auto allPlayLists = NETEASE_HANDLER->getAllPlayListsInfo();
+		appendNeteasePlayListBtns(allPlayLists);
+	}
+
+	// 如果上次的播放列表是网易云的，则先获取播放列表
+	if (SETTING_HANDLER->getStruct().playListName.startsWith(NETEASE_PLAY_LIST_PREFIX)
+		&& isNeteaseLogin)
+	{
+		int i = SETTING_HANDLER->getStruct().playListName.indexOf('_', NETEASE_PLAY_LIST_PREFIX.size());
+		if (-1 != i)
+		{
+			QString idStr = SETTING_HANDLER->getStruct().playListName.mid(NETEASE_PLAY_LIST_PREFIX.size(), i - NETEASE_PLAY_LIST_PREFIX.size());
+			
+			bool ok = false;
+			dint64 id = idStr.toLongLong(&ok);
+			if (ok)
+			{
+				//NeteasePlayListInfo info;
+				//info.name = SETTING_HANDLER->getStruct().playListName.mid(i + 1);
+				//info.id = id;
+				refreshNeteaseMusicBtns(id);
+			}
+		}
+	}
+
 	// 播放之前上次关闭时放的歌
 	if (SETTING_HANDLER->getStruct().playListName == TEMP_PLAY_LIST_NAME)
 		player_->playCurrentIndex();
@@ -1280,21 +1390,6 @@ void Widget::init()
 		player_->playCurrentIndex(SETTING_HANDLER->getStruct().musicPosition);
 
 	slotMusicIndexChanged(SETTING_HANDLER->getMusicIndex(), SETTING_HANDLER->getMusicIndex());  // 初始化被播放的那个音乐按钮样式
-
-	// 检查网易云登陆状态
-	if (NETEASE_HANDLER->checkLoginStatus())
-	{
-		ImageDownloadCallBack* callBack = new ImageDownloadCallBack(this);
-		connect(callBack, &ImageDownloadCallBack::sigImageSet, this, [this, callBack](SharedImage image)
-		{
-			ui->multi_btn_widget->setBtnNeteaseInfo(*image, SETTING_HANDLER->getNeteaseInfo().nickname);
-			callBack->deleteLater();
-		});
-		ImageHandler::downloadImage(SETTING_HANDLER->getNeteaseInfo().avatarUrl + "?param=80y80", callBack);
-	
-		auto allPlayLists = NETEASE_HANDLER->getPlayLists();
-		appendNeteasePlayListBtns(allPlayLists);
-	}
 }
 
 void Widget::uninit()

@@ -14,17 +14,18 @@ class PlayListButton : public QWidget
     Q_OBJECT
 
 public:
-	PlayListButton(const QString& str, QWidget *parent = nullptr);
+	PlayListButton(const QString& str, QWidget *parent = nullptr)
+		: PlayListButton(NeteasePlayListInfo(str), parent) {}
+
+	PlayListButton(const NeteasePlayListInfo& info, QWidget *parent = nullptr);
     ~PlayListButton();
 
 	void setChoosed();
 
-	void setPlayListId(qint64 id) { playListId_ = id; }
-
 signals:
 	void sigPlayListClicked(const QString& playListName);
 	void sigDeleteClicked(const QString& playListName);
-	void sigNeteasePlayListClicked(qint64 playListId);
+	void sigNeteasePlayListClicked(const NeteasePlayListInfo& info);
 
 private slots:
 	void on_btn_name_clicked();
@@ -40,7 +41,7 @@ private:
 
     Ui::PlayListButton *ui;
 	static PlayListButton* choosedBtn_;
-	qint64 playListId_;
+	NeteasePlayListInfo info_;
 };
 
 #endif // PLAYLISTBUTTON_H

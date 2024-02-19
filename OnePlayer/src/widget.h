@@ -58,7 +58,9 @@ private slots:
     void slotMusicIndexChanged(DSizeType oldIndex, DSizeType newIndex);
 	void slotMenuBtnClicked(const QString& text);
 	void slotLocalMusicBtnClicked(DSizeType musicIndex);
+	void slotNeteaseMusicBtnClicked(dint64 musicId);
 	void slotBGModeChanged(BG_MODE bgMode);
+	void slotNeteasePlayListClicked(const NeteasePlayListInfo& info);
      
 signals:
 	void sigChangeSystemIconToolTip(const QString& tip);
@@ -99,9 +101,11 @@ private:
     void refreshImageWidget(const MusicInfo& info);
 	void setListener();
 	void refreshMusicBtns();
+	void refreshNeteaseMusicBtns(dint64 playListId);
 	void refreshPlayListBtns();
 	void appendNeteasePlayListBtns(const DVector<NeteasePlayListInfo>& infos);
 	BaseMusicButton* addLocalMusicBtn(const QUrl& url);
+	BaseMusicButton* addNeteaseMusicBtn(const NeteaseSongInfo& info);
 	//    void add_online_music(const MusicInfo& music);
 	//    void init_local();
 	//    void init_mysite();

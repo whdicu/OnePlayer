@@ -29,6 +29,7 @@ using SharedImage = DSharedPointer<QImage>;
 
 const static QString PLF_FORMAT = ".oned";  // PlayList file format
 const static QString TEMP_PLAY_LIST_NAME = "TEMP_PLAY_LIST";  // 临时播放列表名，用来存右键打开的歌曲
+const static QString NETEASE_PLAY_LIST_PREFIX = "_NETEASE_";  // 网易云的播放列表名称前缀
 const static QString IP = "47.113.231.74";
 const static int PORT = 9002;
 
@@ -84,6 +85,44 @@ const static QStringList BUTTON_MENU_STR_LIST =
 static const QString LOCAL_NORMAL_STYLE = "QPushButton { color: #5c5c66; background-color: rgba(182, 209, 200, 0.25); border-radius: 20px; padding-left: 10px; padding-right: 10px; } QPushButton:hover {background-color: rgba(182, 209, 200, 0.5);}";
 static const QString LOCAL_PLAYING_STYLE = "QPushButton { color: #5c5c66; background-color: rgb(182, 209, 200);border-radius: 20px; padding-left: 10px; padding-right: 10px; }";
 static const QString LOCAL_SELECT_STYLE = "QPushButton { color: #5c5c66; background-color: rgba(182, 209, 200, 0.5); border-radius: 20px; padding-left: 10px; padding-right: 10px; }";
+
+// 网易云音乐按钮样式
+static const QString NETEASE_NORMAL_STYLE =
+"QPushButton { \
+	color: #5c5c66; \
+	background-color: transparent; \
+	text-align : left; \
+} #widget { \
+	background-color: rgba(182, 209, 200, 0.25); \
+	border-radius: 20px; \
+} #btn_name{ \
+	padding-left: 15px; \
+}";
+
+
+static const QString NETEASE_PLAYING_STYLE =
+"QPushButton { \
+	color: #5c5c66; \
+	background-color: transparent; \
+	text-align : left; \
+} #widget { \
+	background-color: rgb(182, 209, 200); \
+	border-radius: 20px; \
+} #btn_name{ \
+	padding-left: 15px; \
+}";
+
+static const QString NETEASE_HOVER_STYLE =
+"QPushButton { \
+	color: #5c5c66; \
+	background-color: transparent; \
+	text-align : left; \
+} #widget { \
+	background-color: rgba(182, 209, 200, 0.5); \
+	border-radius: 20px; \
+} #btn_name{ \
+	padding-left: 15px; \
+}";
 
 // 在线音乐按钮样式
 static const QString ONLINE_NORMAL_STYLE =
@@ -197,7 +236,7 @@ struct NeteaseInfo
 	NeteaseInfo() : hasLogin(false) {}
 
 	bool hasLogin;
-	qint64 userId;
+	dint64 userId;
 	QString cookie;
 	QString token;
 	QString avatarUrl;
@@ -206,22 +245,30 @@ struct NeteaseInfo
 
 struct NeteasePlayListInfo
 {
-	QString coverImgUrl;
+	NeteasePlayListInfo(const QString& n = QString(), const QString& c = QString(), dint64 i = -1)
+		: name(n)
+		, coverImgUrl(c)
+		, id(i) {}
+
 	QString name;
-	qint64 id;
+	QString coverImgUrl;
+	dint64 id;
 };
 
 struct NeteaseSongInfo
 {
 	QString name;
-	qint64 id;
+	dint64 id;
+	QString singer;
+	QString album;
+	QString picUrl;
 };
 
 struct SettingStruct
 {
 	SettingStruct() : playMode(AGAIN), musicDir(QString()), volume(0.0f)
 		, playListName(QString("Null")), musicPosition(0), playerMode(LOCAL)
-		, bgMode(ONLY_LEFT), downloadDir(QString()), playListMap(QMap<QString, DVector<QUrl>>())
+		, bgMode(ONLY_LEFT), downloadDir(QString()), playListMap(QMap<QString, DVector<QString>>())
 		, neteaseInfo() {}
 
 	PLAY_MODE                       playMode;
@@ -232,7 +279,7 @@ struct SettingStruct
 	PLAYER_MODE                     playerMode;
 	BG_MODE							bgMode;
 	QString                         downloadDir;
-	QMap<QString, DVector<QUrl>>	playListMap;
+	QMap<QString, DVector<QString>>	playListMap;
 	NeteaseInfo						neteaseInfo;
 };
 

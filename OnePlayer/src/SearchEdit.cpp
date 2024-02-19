@@ -101,11 +101,11 @@ void SearchEdit::findMusic(const QString& word)
 	if (word == "")
 		return;
 	
-	DVector<QUrl> playList = SETTING_HANDLER->currentPlayList();
+	DVector<QString> playList = SETTING_HANDLER->currentPlayList();
 	for (DSizeType i = 0; i < playList.size(); ++i)
 	{
 		QRegularExpression reg(".*" + word + ".*", QRegularExpression::CaseInsensitiveOption);
-		auto ret = reg.match(playList.at(i).fileName());
+		auto ret = reg.match(playList.at(i).section('/', -1));
 		if (ret.hasMatch())
 		{
 			findIndexList_.pushBack(i);
