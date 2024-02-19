@@ -168,7 +168,12 @@ void PlayerQt::playCurrentIndex(qint64 pos)
 		musicInfo_.singers = info.singer;
 		musicInfo_.album = info.album;
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+		player_->setSource(QUrl(urlStr));
+		setPosition(pos);  // QT5的在durationChanged中设置Pos
+#else
 		player_->setMedia(QUrl(urlStr));
+#endif
 		emit MusicInfoChanged(musicInfo_);
 	}
 	else
