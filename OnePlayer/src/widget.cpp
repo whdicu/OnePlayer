@@ -211,8 +211,8 @@ void Widget::slotPositionChanged(qint64 pos)
 
     // 进度超过最大，强制播放下一首
     // 音乐播放到末尾切歌操作在 mediaStatusChanged 中，这里只是为了保险起见
-    if (pos > player_->getDuration())
-        on_btn_next_clicked();
+    //if (pos > player_->getDuration())
+        //on_btn_next_clicked();
 }
 
 void Widget::slotSearchEditClose()
