@@ -776,82 +776,6 @@ void Widget::showMusicBtnAt(DSizeType index)
 		setMusicBtnStyle(index, &BaseMusicButton::setSelectStyle);
 }
 
-//void Widget::add_online_music(const MusicInfo& music)
-//{
-//    OnlineMusicButton* btn = new OnlineMusicButton(music, this);
-//    connect(btn, &BaseMusicButton::clicked, this, [this, btn]()
-//    {
-//        DSizeType newMusicIndex = btn_list_.indexOf(btn);
-//        play_music(newMusicIndex);
-//
-//        if (play_mode == RANDOM)
-//        {
-//            random_index_ = random_index_list_.size();
-//            random_index_list_.pushBack(newMusicIndex);
-//        }
-//    });
-//    connect(btn, &OnlineMusicButton::download_clicked, this, [this, btn]()
-//    {
-//        if (SETTING_HANDLER->get_download_dir().isEmpty())
-//        {
-//            QMessageBox::warning(this, tr("警告你"), tr("请先选择下载歌曲保存目录"));
-//            slot_btn_change_dir_download_clicked();
-//            if (SETTING_HANDLER->get_download_dir().isEmpty())
-//            {
-//                QMessageBox::warning(this, tr("警告你"), tr("你选择的目录为空"));
-//                return;
-//            }
-//        }
-//
-//        QDir dir(SETTING_HANDLER->get_download_dir());
-//        if (!dir.exists())
-//        {
-//            dir.mkdir(SETTING_HANDLER->get_download_dir());
-//        }
-//        OnlineHandler::getInstance()->get_music_info(btn->get_info());
-//        QByteArray data = OnlineHandler::getInstance()->get_music(btn->get_info().absolute_url_);
-//
-//        QString url = btn->get_info().absolute_url_.toString();
-//        QString type = url.mid(url.lastIndexOf('.'));
-//        QFile file(SETTING_HANDLER->get_download_dir() + "/" + btn->get_info().name_ + "-" + btn->get_info().singer_ + type);
-//        file.open(QIODevice::WriteOnly);
-//        file.write(data);
-//        file.close();
-//    });
-//
-//    ui->music_layout_online->addWidget(btn);
-//    btn_list_.pushBack(btn);
-//}
-
-//void Widget::init_local()
-//{
-//    clear_button(ui->music_layout);
-//
-//    ui->stacked_info->setCurrentIndex(0);
-//
-//    if (!SETTING_HANDLER->get_music_dir().isEmpty())
-//    {
-//        QDir dir(SETTING_HANDLER->get_music_dir());
-//        dir.setFilter(QDir::Files);
-//
-//        QStringList type_filter;
-//        std::for_each(TYPE_LIST.begin(), TYPE_LIST.end(), [&type_filter](const QString& t)
-//        {
-//            type_filter.push_back("*." + t);
-//        });
-//
-//        dir.setNameFilters(type_filter);
-//
-//        QStringList list = dir.entryList(QDir::Files);
-//
-//        load_music_list(list);
-//    }
-//
-//    ui->stacked_widget->setCurrentIndex(btn_list_.isEmpty() ? 2 : 0);
-//    ui->stacked_music_btn->setCurrentIndex(0);
-//    ui->btn_more->setIcon(QIcon(":/svgs/more.svg"));
-//}
-//
 //void Widget::init_mysite()
 //{
 //    clear_button(ui->music_layout);
@@ -892,28 +816,6 @@ void Widget::showMusicBtnAt(DSizeType index)
 //        }
 //    });
 //    socket->write("@C1,");
-//}
-//
-//void Widget::init_online()
-//{
-//    clear_button(ui->music_layout_online);
-//    ui->stacked_info->setCurrentIndex(1);
-//
-//    ui->btn_more->setIcon(QIcon(":/svgs/more.svg"));
-//    ui->stacked_widget->setCurrentIndex(0);
-//    ui->stacked_music_btn->setCurrentIndex(1);
-//    draw_image(QImage(), true);
-//}
-//
-//void Widget::init_netease()
-//{
-//    clear_button(ui->music_layout_online);
-//    player_->stop();
-//    //ui->stacked_info->setCurrentIndex(1);
-//
-//    ui->btn_more->setIcon(QIcon(":/svgs/more.svg"));
-//    ui->stacked_widget->setCurrentIndex(3);
-//    //ui->stacked_music_btn->setCurrentIndex(3);
 //}
 
 void Widget::dragEnterEvent(QDragEnterEvent *event)

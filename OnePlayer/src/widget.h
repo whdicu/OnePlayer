@@ -106,11 +106,7 @@ private:
 	void appendNeteasePlayListBtns(const DVector<NeteasePlayListInfo>& infos);
 	BaseMusicButton* addLocalMusicBtn(const QUrl& url);
 	BaseMusicButton* addNeteaseMusicBtn(const NeteaseSongInfo& info);
-	//    void add_online_music(const MusicInfo& music);
-	//    void init_local();
 	//    void init_mysite();
-	//    void init_online();
-	//    void init_netease();
     void setMusicBtnStyle(int index, void (BaseMusicButton::* setStyleFunc)());
 	void setPlayMode(PLAY_MODE mode);
 	void showMusicBtnAt(DSizeType index);
