@@ -21,7 +21,7 @@ MultiBtnWidget::MultiBtnWidget(QWidget *parent)
 	animation3_ = new QPropertyAnimation(ui.btn_play_list, "pos");
 	animation3_->setDuration(MORE_BTN_WIDGET_ANIMATION_TIME * 32 / 44);
 
-	animation4_ = new QPropertyAnimation(ui.btn_setting_3, "pos");
+	animation4_ = new QPropertyAnimation(ui.btn_search, "pos");
 	animation4_->setDuration(MORE_BTN_WIDGET_ANIMATION_TIME * 26 / 44);
 	
 	animation5_ = new QPropertyAnimation(ui.btn_setting_4, "pos");
@@ -36,6 +36,7 @@ MultiBtnWidget::MultiBtnWidget(QWidget *parent)
 	connect(ui.btn_netease, &QPushButton::clicked, this, &MultiBtnWidget::sigBtnNeteaseClicked);
 	connect(ui.btn_play_list, &QPushButton::clicked, this, &MultiBtnWidget::sigBtnPlayListClicked);
 	connect(ui.btn_setting, &QPushButton::clicked, this, &MultiBtnWidget::sigBtnSettingClicked);
+	connect(ui.btn_search, &QPushButton::clicked, this, &MultiBtnWidget::sigBtnSearchClicked);
 }
 
 MultiBtnWidget::~MultiBtnWidget()
@@ -65,7 +66,7 @@ void MultiBtnWidget::animationHide()
 	animation3_->setEndValue(endPoint);
 	animation3_->setEasingCurve(QEasingCurve::InCubic);
 
-	animation4_->setStartValue(QPoint(ui.btn_setting_3->x(), ui.btn_setting_3->y()));
+	animation4_->setStartValue(QPoint(ui.btn_search->x(), ui.btn_search->y()));
 	animation4_->setEndValue(endPoint);
 	animation4_->setEasingCurve(QEasingCurve::InCubic);
 
@@ -145,7 +146,7 @@ void MultiBtnWidget::animationShow()
 	animation3_->setEndValue(QPoint(0, 120));
 	animation3_->setEasingCurve(QEasingCurve::OutCubic);
 
-	animation4_->setStartValue(QPoint(ui.btn_setting_3->x(), ui.btn_setting_3->y()));
+	animation4_->setStartValue(QPoint(ui.btn_search->x(), ui.btn_search->y()));
 	animation4_->setEndValue(QPoint(0, 180));
 	animation4_->setEasingCurve(QEasingCurve::OutCubic);
 
@@ -179,7 +180,7 @@ void MultiBtnWidget::moveToHide()
 	ui.btn_netease->move(endPoint);
 	ui.btn_add->move(endPoint);
 	ui.btn_play_list->move(endPoint);
-	ui.btn_setting_3->move(endPoint);
+	ui.btn_search->move(endPoint);
 	ui.btn_setting_4->move(endPoint);
 	ui.btn_setting_5->move(endPoint);
 	ui.btn_setting->move(endPoint);

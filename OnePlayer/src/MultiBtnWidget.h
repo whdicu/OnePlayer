@@ -27,6 +27,7 @@ signals:
 	void sigBtnNeteaseClicked();
 	void sigBtnPlayListClicked();
 	void sigBtnSettingClicked();
+	void sigBtnSearchClicked();
 
 private:
 	Ui::MultiBtnWidgetClass ui;

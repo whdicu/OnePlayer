@@ -174,7 +174,7 @@ QPushButton:hover
        <bool>false</bool>
       </property>
      </widget>
-     <widget class="QPushButton" name="btn_setting_3">
+     <widget class="QPushButton" name="btn_search">
       <property name="geometry">
        <rect>
         <x>0</x>
@@ -203,7 +203,7 @@ QPushButton:hover
       </property>
       <property name="icon">
        <iconset resource="../res/res.qrc">
-        <normaloff>:/svgs/jia.svg</normaloff>:/svgs/jia.svg</iconset>
+        <normaloff>:/svgs/search.svg</normaloff>:/svgs/search.svg</iconset>
       </property>
       <property name="iconSize">
        <size>

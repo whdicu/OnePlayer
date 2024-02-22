@@ -160,6 +160,7 @@ void PlayerQt::playCurrentIndex(qint64 pos)
 		connect(callBack, &ImageDownloadCallBack::sigImageSet, this, [this](SharedImage image)
 		{
 			musicInfo_.image = *image;
+			musicInfo_.imgIsReady = true;
 			emit MusicInfoChanged(musicInfo_);
 		});
 		ImageHandler::downloadImage(info.picUrl, callBack);
@@ -167,6 +168,7 @@ void PlayerQt::playCurrentIndex(qint64 pos)
 		musicInfo_.title = info.name;
 		musicInfo_.singers = info.singer;
 		musicInfo_.album = info.album;
+		musicInfo_.imgIsReady = false;
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 		player_->setSource(QUrl(urlStr));
@@ -174,7 +176,6 @@ void PlayerQt::playCurrentIndex(qint64 pos)
 #else
 		player_->setMedia(QUrl(urlStr));
 #endif
-		emit MusicInfoChanged(musicInfo_);
 	}
 	else
 	{
@@ -184,6 +185,7 @@ void PlayerQt::playCurrentIndex(qint64 pos)
 			connect(callBack, &ImageDownloadCallBack::sigImageSet, this, [this](SharedImage image)
 			{
 				musicInfo_.image = *image;
+				musicInfo_.imgIsReady = true;
 				emit MusicInfoChanged(musicInfo_);
 			});
 			CPPMusicData musicData = NCMHandler::dealNCM(urlStr, callBack);
@@ -195,6 +197,7 @@ void PlayerQt::playCurrentIndex(qint64 pos)
 			musicInfo_.title = musicData.title;
 			musicInfo_.singers = musicData.singers;
 			musicInfo_.album = musicData.album;
+			musicInfo_.imgIsReady = false;
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 			player_->setSourceDevice(dataBuffer_);
@@ -206,8 +209,7 @@ void PlayerQt::playCurrentIndex(qint64 pos)
 		else
 		{
 			musicInfo_ = PlayerFFmpeg::analyzeMusicInfo(urlStr);
-			if (musicInfo_.image.isNull())
-				musicInfo_.image = QImage(":/images/music.png");
+			musicInfo_.imgIsReady = true;
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 			player_->setSource(QUrl::fromLocalFile(urlStr));

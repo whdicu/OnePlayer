@@ -537,6 +537,10 @@ void Widget::setListener()
         ui->btn_more->setIcon(QIcon(":/svgs/back.svg"));
         ui->stacked_widget->setCurrentIndex(1);
     });
+	connect(ui->multi_btn_widget, &MultiBtnWidget::sigBtnSearchClicked, this, [this]()
+	{
+		
+	});
 
 	/****************** 设置页中的一些信号 ********************/
 	connect(ui->setting_tab_widget, &SettingTabWidget::sigBGModeChanged, this, &Widget::slotBGModeChanged);
@@ -1074,13 +1078,7 @@ void Widget::initMultiFuncWidget()
 
 void Widget::drawImage(const QImage& image)
 {
-	if (image.isNull())
-	{
-		DWarning << "-> image is null!";
-		return;
-	}
-
-	cv::Mat originMat = ImageHandler::QImageToCvMat(image);
+	cv::Mat originMat = ImageHandler::QImageToCvMat(image.isNull() ? QImage(":/images/music.png") : image);
 	cv::Mat fitMat = originMat;
 	switch (SETTING_HANDLER->getStruct().bgMode)
 	{
@@ -1111,10 +1109,10 @@ void Widget::drawImage(const QImage& image)
 
 void Widget::refreshImageWidget(const MusicInfo& info)
 {
-	// 图片为空，说明是ncm格式的歌曲，图片要过一会儿才下载完
-	if (info.image.isNull())
+	// 图片要过一会儿才下载完
+	if (!info.imgIsReady)
 	{
-		DWarning << "-> image is null!";
+		DWarning << "-> image is not ready!";
 		return;
 	}
 

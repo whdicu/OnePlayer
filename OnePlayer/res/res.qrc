@@ -25,5 +25,7 @@
         <file>svgs/setting.svg</file>
         <file>svgs/netease.svg</file>
         <file>svgs/delete.svg</file>
+        <file>svgs/search.svg</file>
+        <file>svgs/heart.svg</file>
     </qresource>
 </RCC>

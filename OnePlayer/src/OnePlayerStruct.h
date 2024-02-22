@@ -295,11 +295,13 @@ struct MusicInfo
 		return (title == info.title)
 			&& (singers == info.singers)
 			&& (album == info.album)
-			&& (image == info.image);
+			&& (image == info.image)
+			&& (imgIsReady == info.imgIsReady);
 	}
 
 	QString title;
 	QString singers;
 	QString album;
 	QImage image;
+	bool imgIsReady;  // img是否已经准备好
 };
