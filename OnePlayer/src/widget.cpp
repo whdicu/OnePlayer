@@ -205,8 +205,7 @@ void Widget::slotPositionChanged(qint64 pos)
         ui->label_rest->setText(QString::number(rest_time / 60).append(":%1").arg(rest_time % 60, 2, 10, QLatin1Char('0')));
         ui->progress->setValue(pos);
 
-        //if (SETTING_HANDLER->get_player_mode() == ONLINE)
-            //ui->lyrics_widget->set_duration(pos);
+        ui->music_info_widget->setLyricPos(pos);
     }
 
     // 进度超过最大，强制播放下一首
@@ -411,6 +410,11 @@ void Widget::setListener()
 		emit sigChangeSystemIconToolTip(QString("OnePlayer\n正在播放：%1\n歌手：%2\n专辑：%3")
 			.arg(info.title).arg(info.singers).arg(info.album));
     });
+
+	connect(player_, &PlayerBase::LyricChanged, this, [this](const QString& lyricStr)
+	{
+		ui->music_info_widget->setLyrics(lyricStr);
+	});
 
     // 一些没用的事件
 //	connect(player_, &QMediaPlayer::seekableChanged, this, [](bool)

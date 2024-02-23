@@ -1,11 +1,14 @@
-#include "lyricswidget.h"
+#include "LyricsWidget.h"
 #include <QDebug>
-#include "ui_lyricswidget.h"
+#include "ui_LyricsWidget.h"
+
+// 歌词应该用4个label
+// 加上滚动动画。颜色变淡(透明的)、文字高度压缩
 
 LyricsWidget::LyricsWidget(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::LyricsWidget)
-    , lyrics_(DList<Lyric>())
+    , lyrics_(DVector<Lyric>())
     , now_it_(lyrics_.begin())
     , old_duration_(0)
 {
@@ -17,20 +20,52 @@ LyricsWidget::~LyricsWidget()
     delete ui;
 }
 
-void LyricsWidget::set_lyrics(const DList<Lyric>& lyrics)
+void LyricsWidget::setLyrics(const QString& lyricStr)
 {
-    lyrics_ = lyrics;
-    ui->label1->setText("");
-    ui->label2->setText("");
-    if (lyrics_.isEmpty())
-        ui->label3->setText("");
-    else
-        ui->label3->setText(lyrics_.first().text);
-    now_it_ = lyrics_.begin();
-    old_duration_ = 0;
+	lyrics_.clear();
+	QStringList lyrics = lyricStr.split('\n');
+	const static QRegularExpression regex("\\[(.*):(.*)\\.(.*)\\](.*)");
+	for (const QString& one : lyrics)
+	{
+		QRegularExpressionMatch match = regex.match(one);
+
+		if (!match.hasMatch())
+			continue;
+
+		int minute = match.captured(1).toInt();
+		int second = match.captured(2).toInt();
+		int msecond = match.captured(3).toInt();
+		QString text = match.captured(4);
+		Lyric lrc((minute * 60 + second) * 1000 + msecond, text);
+		lyrics_.pushBack(lrc);
+	}
+
+	ui->label1->setText("");
+	ui->label2->setText("");
+	if (lyrics_.isEmpty())
+		ui->label3->setText("");
+	else
+		ui->label3->setText(lyrics_.first().text);
+	now_it_ = lyrics_.begin();
+	old_duration_ = 0;
 }
 
-bool LyricsWidget::set_duration(qint64 duration)
+void LyricsWidget::setLabel1Text(const QString& text)
+{
+	//ui->label1->setText(text);
+}
+
+void LyricsWidget::setLabel2Text(const QString& text)
+{
+	//ui->label2->setText(text);
+}
+
+void LyricsWidget::setLabel3Text(const QString& text)
+{
+	//ui->label3->setText(text);
+}
+
+bool LyricsWidget::setPos(qint64 pos)
 {
     if (now_it_ == lyrics_.end())
         return false;
@@ -38,13 +73,13 @@ bool LyricsWidget::set_duration(qint64 duration)
 //    qDebug() << duration << now_it_->duration;
 
     // 说明往前拖进度条了
-    if (duration < old_duration_)
+    if (pos < old_duration_)
     {
         QString s1 = "";
         QString s2 = "";
-        for (DList<Lyric>::iterator it = lyrics_.begin(); it != lyrics_.end(); ++it)
+        for (DVector<Lyric>::iterator it = lyrics_.begin(); it != lyrics_.end(); ++it)
         {
-            if (duration < it->duration)
+            if (pos < it->duration)
             {
                 now_it_ = it;
                 break;
@@ -57,7 +92,7 @@ bool LyricsWidget::set_duration(qint64 duration)
         ui->label2->setText(s2);
         ui->label3->setText(now_it_->text);
     }
-    else if (duration >= now_it_->duration)
+    else if (pos >= now_it_->duration)
     {
         ui->label1->setText(ui->label2->text());
         ui->label2->setText(ui->label3->text());
@@ -72,10 +107,11 @@ bool LyricsWidget::set_duration(qint64 duration)
         else
             ui->label3->setText(now_it_->text);
     }
+
     return true;
 }
 
-void LyricsWidget::set_color(bool is_dark)
+void LyricsWidget::setTextColor(bool is_dark)
 {
     if (is_dark)
     {

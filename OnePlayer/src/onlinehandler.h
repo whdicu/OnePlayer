@@ -2,34 +2,11 @@
 #define ONLINEHANDLER_H
 
 #include "HDBase/DList.hpp"
+#include "OnePlayerStruct.h"
 #include <QImage>
 #include <QList>
 #include <QString>
 #include <QUrl>
-
-struct Lyric
-{
-    Lyric(qint64 d, const QString& t) : duration(d), text(t) {}
-
-    qint64 duration;
-    QString text;
-};
-
-struct OnlineMusicInfo
-{
-    OnlineMusicInfo(const QString& name = QString(), const QString& singer = QString(), const QString& url = QString()
-            , const QString& image_url = QString(), const QUrl& absolute_url = QUrl(), const DList<Lyric>& lyrics = DList<Lyric>())
-        : name_(name), singer_(singer), url_(url)
-        , image_url_(image_url), absolute_url_(absolute_url), lyrics_(lyrics) {}
-    bool isEmpty() { return name_.isEmpty() && singer_.isEmpty() && url_.isEmpty(); }
-
-    QString name_;
-    QString singer_;
-    QString url_;
-    QString image_url_;
-    QUrl absolute_url_;
-    DList<Lyric> lyrics_;
-};
 
 class OnlineHandler
 {

@@ -48,6 +48,9 @@ public:
 	// 获取歌曲URL
 	QString getMusicUrl(dint64 id);
 
+	// 获取歌词
+	QString getLyric(dint64 id);
+
 signals:
 	// 下载了新头像
 	void sigAvatarImgChanged(const QImage& img);

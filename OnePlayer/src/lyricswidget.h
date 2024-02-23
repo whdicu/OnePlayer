@@ -3,6 +3,7 @@
 
 #include "onlinehandler.h"
 #include <QWidget>
+#include "HDBase/DVector.hpp"
 
 namespace Ui {
 class LyricsWidget;
@@ -15,14 +16,17 @@ class LyricsWidget : public QWidget
 public:
     explicit LyricsWidget(QWidget *parent = nullptr);
     ~LyricsWidget();
-    void set_lyrics(const DList<Lyric>& lyrics);
-    bool set_duration(qint64 duration);  // 到最后了会返回false
-    void set_color(bool is_dark);
+    void setLyrics(const QString& lyricStr);
+	void setLabel1Text(const QString& text);
+	void setLabel2Text(const QString& text);
+	void setLabel3Text(const QString& text);
+    bool setPos(qint64 pos);  // 到最后了会返回false
+    void setTextColor(bool is_dark);
 
 private:
-    Ui::LyricsWidget *ui;
-    DList<Lyric> lyrics_;
-    DListIterator<Lyric> now_it_;
+    Ui::LyricsWidget* ui;
+    DVector<Lyric> lyrics_;
+	DVector<Lyric>::iterator now_it_;
     qint64 old_duration_;
 };
 

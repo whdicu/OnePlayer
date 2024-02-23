@@ -26,6 +26,8 @@ const static QStringList TYPE_LIST = { "mp3", "wav", "ogg", "acc", "ncm"};  // 5
 #endif
 
 using SharedImage = DSharedPointer<QImage>;
+class Lyric;
+using Lyrics = DVector<Lyric>;
 
 const static QString PLF_FORMAT = ".oned";  // PlayList file format
 const static QString TEMP_PLAY_LIST_NAME = "TEMP_PLAY_LIST";  // 临时播放列表名，用来存右键打开的歌曲
@@ -304,4 +306,28 @@ struct MusicInfo
 	QString album;
 	QImage image;
 	bool imgIsReady;  // img是否已经准备好
+};
+
+struct Lyric
+{
+	Lyric(qint64 d = 0, const QString& t = QString()) : duration(d), text(t) {}
+
+	qint64 duration;
+	QString text;
+};
+
+struct OnlineMusicInfo
+{
+	OnlineMusicInfo(const QString& name = QString(), const QString& singer = QString(), const QString& url = QString()
+		, const QString& image_url = QString(), const QUrl& absolute_url = QUrl(), const DList<Lyric>& lyrics = DList<Lyric>())
+		: name_(name), singer_(singer), url_(url)
+		, image_url_(image_url), absolute_url_(absolute_url), lyrics_(lyrics) {}
+	bool isEmpty() { return name_.isEmpty() && singer_.isEmpty() && url_.isEmpty(); }
+
+	QString name_;
+	QString singer_;
+	QString url_;
+	QString image_url_;
+	QUrl absolute_url_;
+	DList<Lyric> lyrics_;
 };

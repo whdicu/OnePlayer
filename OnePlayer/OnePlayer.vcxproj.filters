@@ -36,9 +36,6 @@
     <QtMoc Include="src\hook.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="src\lyricswidget.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
     <QtMoc Include="src\morewidget.h">
       <Filter>Header Files</Filter>
     </QtMoc>
@@ -114,12 +111,12 @@
     <QtMoc Include="src\NeteaseMusicBtn.h">
       <Filter>widgets</Filter>
     </QtMoc>
+    <QtMoc Include="src\LyricsWidget.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\hook.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\lyricswidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\main.cpp">
@@ -212,11 +209,11 @@
     <ClCompile Include="src\NeteaseMusicBtn.cpp">
       <Filter>widgets</Filter>
     </ClCompile>
+    <ClCompile Include="src\LyricsWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <QtUic Include="src\lyricswidget.ui">
-      <Filter>Form Files</Filter>
-    </QtUic>
     <QtUic Include="src\morewidget.ui">
       <Filter>Form Files</Filter>
     </QtUic>
@@ -258,6 +255,9 @@
     </QtUic>
     <QtUic Include="src\NeteaseMusicBtn.ui">
       <Filter>widgets</Filter>
+    </QtUic>
+    <QtUic Include="src\LyricsWidget.ui">
+      <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>
   <ItemGroup>

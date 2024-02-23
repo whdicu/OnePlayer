@@ -108,7 +108,7 @@
     <ClCompile Include="src\DSystemTrayMenu.cpp" />
     <ClCompile Include="src\hook.cpp" />
     <ClCompile Include="src\ImageHandler.cpp" />
-    <ClCompile Include="src\lyricswidget.cpp" />
+    <ClCompile Include="src\LyricsWidget.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\morewidget.cpp" />
     <ClCompile Include="src\MultiBtnWidget.cpp" />
@@ -143,10 +143,10 @@
     <QtMoc Include="src\hook.h" />
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="src\lyricswidget.h" />
+    <QtMoc Include="src\LyricsWidget.h" />
   </ItemGroup>
   <ItemGroup>
-    <QtUic Include="src\lyricswidget.ui" />
+    <QtUic Include="src\LyricsWidget.ui" />
     <QtUic Include="src\morewidget.ui" />
     <QtUic Include="src\MultiBtnWidget.ui" />
     <QtUic Include="src\LocalMusicButton.ui" />

@@ -165,6 +165,10 @@ void PlayerQt::playCurrentIndex(qint64 pos)
 		});
 		ImageHandler::downloadImage(info.picUrl, callBack);
 
+		// 下载歌词
+		QString lyricStr = NETEASE_HANDLER->getLyric(id);
+		emit LyricChanged(lyricStr);
+
 		musicInfo_.title = info.name;
 		musicInfo_.singers = info.singer;
 		musicInfo_.album = info.album;

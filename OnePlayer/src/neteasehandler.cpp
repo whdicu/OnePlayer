@@ -222,6 +222,19 @@ QString NeteaseHandler::getMusicUrl(dint64 id)
 		return "";
 }
 
+QString NeteaseHandler::getLyric(dint64 id)
+{
+	QString url = QString("/lyric");
+	QString content = QString("cookie=") + SETTING_HANDLER->getNeteaseInfo().cookie;
+	content += QString("&id=%1").arg(id);
+	DSharedPointer<QJsonObject> jo = execPost(url, content);
+
+	if (200 == jo->value("code").toInt())
+		return jo->value("lrc").toObject().value("lyric").toString();
+	else
+		return "";
+}
+
 DSharedPointer<QJsonObject> NeteaseHandler::execPost(const QString& url, const QString& content)
 {
 	QNetworkRequest request(FIRST_URL + url);
@@ -234,8 +247,8 @@ DSharedPointer<QJsonObject> NeteaseHandler::execPost(const QString& url, const Q
 		if (reply->error() == QNetworkReply::NoError)
 		{
 			QByteArray responseData = reply->readAll();
-			//qDebug() << responseData.size();
-			//QString ss = responseData;
+			qDebug() << responseData.size();
+			QString ss = responseData;
 			reply->deleteLater();
 			QJsonParseError parseError;
 			QJsonDocument jsonDoc = QJsonDocument::fromJson(responseData, &parseError);
