@@ -20,13 +20,13 @@ public:
 	void setLabel1Text(const QString& text);
 	void setLabel2Text(const QString& text);
 	void setLabel3Text(const QString& text);
-    bool setPos(qint64 pos);  // 到最后了会返回false
+    void setPos(qint64 pos);  // 到最后了会返回false
     void setTextColor(bool is_dark);
 
 private:
     Ui::LyricsWidget* ui;
     DVector<Lyric> lyrics_;
-	DVector<Lyric>::iterator now_it_;
+	DVector<Lyric>::iterator nowIt_;
     qint64 old_duration_;
 };
 

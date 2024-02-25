@@ -1,6 +1,7 @@
 #include "LyricsWidget.h"
 #include <QDebug>
 #include "ui_LyricsWidget.h"
+#include <QRegularExpressionMatch>
 
 // 歌词应该用4个label
 // 加上滚动动画。颜色变淡(透明的)、文字高度压缩
@@ -9,7 +10,7 @@ LyricsWidget::LyricsWidget(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::LyricsWidget)
     , lyrics_(DVector<Lyric>())
-    , now_it_(lyrics_.begin())
+    , nowIt_(lyrics_.begin())
     , old_duration_(0)
 {
     ui->setupUi(this);
@@ -36,6 +37,11 @@ void LyricsWidget::setLyrics(const QString& lyricStr)
 		int second = match.captured(2).toInt();
 		int msecond = match.captured(3).toInt();
 		QString text = match.captured(4);
+        
+        // 跳过空的歌词
+        if (text.isEmpty())
+            continue;
+
 		Lyric lrc((minute * 60 + second) * 1000 + msecond, text);
 		lyrics_.pushBack(lrc);
 	}
@@ -46,7 +52,7 @@ void LyricsWidget::setLyrics(const QString& lyricStr)
 		ui->label3->setText("");
 	else
 		ui->label3->setText(lyrics_.first().text);
-	now_it_ = lyrics_.begin();
+    nowIt_ = lyrics_.begin();
 	old_duration_ = 0;
 }
 
@@ -65,50 +71,28 @@ void LyricsWidget::setLabel3Text(const QString& text)
 	//ui->label3->setText(text);
 }
 
-bool LyricsWidget::setPos(qint64 pos)
+void LyricsWidget::setPos(qint64 pos)
 {
-    if (now_it_ == lyrics_.end())
-        return false;
+    auto it = std::upper_bound(lyrics_.begin(), lyrics_.end(), Lyric(pos));
 
-//    qDebug() << duration << now_it_->duration;
+    if (it == nowIt_)
+        return;
+    nowIt_ = it;
 
-    // 说明往前拖进度条了
-    if (pos < old_duration_)
-    {
-        QString s1 = "";
-        QString s2 = "";
-        for (DVector<Lyric>::iterator it = lyrics_.begin(); it != lyrics_.end(); ++it)
-        {
-            if (pos < it->duration)
-            {
-                now_it_ = it;
-                break;
-            }
-            s1 = s2;
-            s2 = it->text;
-        }
+    if (it == lyrics_.begin() || (it - 1 == lyrics_.begin()))
+        ui->label1->setText("");
+    else
+        ui->label1->setText((it - 2)->text);
 
-        ui->label1->setText(s1);
-        ui->label2->setText(s2);
-        ui->label3->setText(now_it_->text);
-    }
-    else if (pos >= now_it_->duration)
-    {
-        ui->label1->setText(ui->label2->text());
-        ui->label2->setText(ui->label3->text());
+    if (it == lyrics_.begin())
+        ui->label2->setText("");
+    else
+        ui->label2->setText((it - 1)->text);
 
-        old_duration_ = now_it_->duration;
-        ++now_it_;
-        if (now_it_ == lyrics_.end())
-        {
-            ui->label3->setText("");
-            return false;
-        }
-        else
-            ui->label3->setText(now_it_->text);
-    }
-
-    return true;
+    if (it == lyrics_.end())
+        ui->label3->setText("");
+    else
+        ui->label3->setText(it->text);
 }
 
 void LyricsWidget::setTextColor(bool is_dark)

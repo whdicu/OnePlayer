@@ -312,6 +312,8 @@ struct Lyric
 {
 	Lyric(qint64 d = 0, const QString& t = QString()) : duration(d), text(t) {}
 
+	bool operator<(const Lyric& lrc) const { return duration < lrc.duration; }
+
 	qint64 duration;
 	QString text;
 };
