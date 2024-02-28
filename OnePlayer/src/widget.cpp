@@ -399,10 +399,12 @@ void Widget::setListener()
 
     connect(player_, &PlayerBase::MusicInfoChanged, this, [this](MusicInfo info)
     {
-		if (info.title.isEmpty())
+		//if (info.title.isEmpty())
 		{
 			QString filename = SETTING_HANDLER->currentMusicUrl();
-			info.title = filename.mid(0, filename.indexOf('.'));
+			int i1 = filename.lastIndexOf('/');
+			int i2 = filename.indexOf('.');
+			info.title = filename.mid(i1, i2 - i1);
 		}
 
 		refreshImageWidget(info);
@@ -992,6 +994,14 @@ void Widget::mouseMoveEvent(QMouseEvent *ev)
 void Widget::mouseReleaseEvent(QMouseEvent *)
 {
     thisIsMoveWindow_ = false;
+}
+
+void Widget::mouseDoubleClickEvent(QMouseEvent* event)
+{
+	if (event->pos().y() < 20)
+	{
+		ui->scrollArea->verticalScrollBar()->setValue(0);
+	}
 }
 
 void Widget::keyPressEvent(QKeyEvent *event)
