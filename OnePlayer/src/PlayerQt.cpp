@@ -27,11 +27,9 @@ PlayerQt::PlayerQt(QObject* parent)
 
 	connect(player_, &QMediaPlayer::durationChanged, this, [this](qint64 duration)
 	{
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-		// QT6的在playCurrentIndex中设置Pos
 		if (startPos_ >= 0)
 			setPosition(startPos_);
-#endif
+
 		emit durationChanged(duration);
 	});
 	connect(player_, &QMediaPlayer::positionChanged, this, &PlayerQt::positionChanged);
@@ -141,7 +139,6 @@ void PlayerQt::playCurrentIndex(qint64 pos)
 {
 	emit beginPlay();
 	startPos_ = pos;
-	QString urlStr = SETTING_HANDLER->currentMusicUrl();
 
 	if (dataBuffer_ != nullptr)
 	{
@@ -149,6 +146,7 @@ void PlayerQt::playCurrentIndex(qint64 pos)
 		dataBuffer_ = nullptr;
 	}
 
+	QString urlStr = SETTING_HANDLER->currentMusicUrl();
 	bool ok = false;
 	dint64 id = urlStr.toLongLong(&ok);
 	if (ok)  // 说明是网易云的音乐的id
@@ -176,7 +174,6 @@ void PlayerQt::playCurrentIndex(qint64 pos)
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 		player_->setSource(QUrl(urlStr));
-		setPosition(pos);  // QT5的在durationChanged中设置Pos
 #else
 		player_->setMedia(QUrl(urlStr));
 #endif
@@ -205,7 +202,6 @@ void PlayerQt::playCurrentIndex(qint64 pos)
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 			player_->setSourceDevice(dataBuffer_);
-			setPosition(pos);  // QT5的在durationChanged中设置Pos
 #else
 			player_->setMedia(QMediaContent(), dataBuffer_);
 #endif
@@ -217,7 +213,6 @@ void PlayerQt::playCurrentIndex(qint64 pos)
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 			player_->setSource(QUrl::fromLocalFile(urlStr));
-			setPosition(pos);  // QT5的在durationChanged中设置Pos
 #else
 			player_->setMedia(QUrl::fromLocalFile(urlStr));
 #endif

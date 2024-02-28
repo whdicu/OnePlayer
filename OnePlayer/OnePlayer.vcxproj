@@ -68,7 +68,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="QtSettings">
     <QtModules>concurrent;core;gui;multimedia;network;widgets</QtModules>
     <QtBuildConfig>release</QtBuildConfig>
-    <QtInstall>qt-6.6.0-msvc</QtInstall>
+    <QtInstall>qt-6.6.2-msvc</QtInstall>
   </PropertyGroup>
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.props')">
     <Import Project="$(QtMsBuild)\qt.props" />

@@ -456,29 +456,6 @@ void Widget::setListener()
     // 使本次播放进度变成上次关闭时的进度
     //static bool first_play = true;
     connect(player_, &PlayerBase::mediaAtEnd, this, &Widget::on_btn_next_clicked);
-    //connect(player_, &PlayerBase::mediaAtEnd, this, [this](QMediaPlayer::MediaStatus status)
-    //{
-    //    if (QMediaPlayer::EndOfMedia == status)
-    //        on_btn_next_clicked();
-
-        //if (first_play)
-        //{
-        //    if (status == QMediaPlayer::LoadedMedia)
-        //    {
-        //        first_play = false;
-        //        // 延时播放音乐，防止进度不正确
-        //        QTimer* timer = new QTimer(this);
-        //        connect(timer, &QTimer::timeout, this, [this, timer]()
-        //        {
-        //            qint64 pos = SETTING_HANDLER->get_music_position();  // 放到player_->play()后面会导致音乐播放后新的进度写入，覆盖原有进度
-        //            player_->setPosition(pos);
-        //            player_->play();
-        //            timer->deleteLater();
-        //        });
-        //        timer->start(10);
-        //    }
-        //}
-    //});
 
     // 音乐时长改变
     connect(player_, &PlayerQt::durationChanged, ui->progress, &QSlider::setMaximum);
