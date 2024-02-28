@@ -399,7 +399,7 @@ void Widget::setListener()
 
     connect(player_, &PlayerBase::MusicInfoChanged, this, [this](MusicInfo info)
     {
-		//if (info.title.isEmpty())
+		if (info.title.isEmpty())
 		{
 			QString filename = SETTING_HANDLER->currentMusicUrl();
 			int i1 = filename.lastIndexOf('/');
