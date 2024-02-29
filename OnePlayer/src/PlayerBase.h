@@ -24,7 +24,6 @@ public:
 
 signals:
 	void MusicInfoChanged(MusicInfo info);
-	void LyricChanged(const QString& lyricStr);
 	void durationChanged(qint64 position);
 	void positionChanged(qint64 position);
 

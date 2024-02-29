@@ -413,11 +413,6 @@ void Widget::setListener()
 			.arg(info.title).arg(info.singers).arg(info.album));
     });
 
-	connect(player_, &PlayerBase::LyricChanged, this, [this](const QString& lyricStr)
-	{
-		ui->music_info_widget->setLyrics(lyricStr);
-	});
-
     // 一些没用的事件
 //	connect(player_, &QMediaPlayer::seekableChanged, this, [](bool)
 //	{
@@ -1104,7 +1099,11 @@ void Widget::refreshImageWidget(const MusicInfo& info)
 	if (!info.imgIsReady)
 	{
 		DWarning << "-> image is not ready!";
-		return;
+	}
+	else
+	{
+		// 画图片
+		drawImage(info.image);
 	}
 
     // 设置歌曲名
@@ -1127,8 +1126,8 @@ void Widget::refreshImageWidget(const MusicInfo& info)
     // 设置专辑名
     ui->music_info_widget->setAlbumName(info.album.isEmpty() ? "未知专辑" : info.album);
 
-	// 画图片
-	drawImage(info.image);
+	// 设置歌词
+	ui->music_info_widget->setLyrics(info.lyricStr);
 }
 
 void Widget::animateShow(bool fromCursor)

@@ -17,6 +17,7 @@ struct CPPMusicData
 	QString album;
 	QImage image;
 	QString format;
+	qint64 musicId;
 };
 
 namespace NCMHandler

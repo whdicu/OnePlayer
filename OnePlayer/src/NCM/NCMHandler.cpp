@@ -78,6 +78,7 @@ CPPMusicData NCMHandler::dealNCM(const QString& filename, ImageDownloadCallBack*
 	ret.singers = artists.isEmpty() ? "" : artists.first().toString();
 	ret.album = obj["album"].toString();
 	ret.format = obj["format"].toString();
+	ret.musicId = obj["musicId"].toVariant().toLongLong();
 
 	if (obj.contains("albumPic"))
 	{

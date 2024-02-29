@@ -24,6 +24,10 @@ LyricsWidget::~LyricsWidget()
 void LyricsWidget::setLyrics(const QString& lyricStr)
 {
 	lyrics_.clear();
+
+	if (lyricStr.isEmpty())
+		return;
+	
 	QStringList lyrics = lyricStr.split('\n');
 	const static QRegularExpression regex("\\[(.*):(.*)\\.(.*)\\](.*)");
 	for (const QString& one : lyrics)
@@ -58,21 +62,24 @@ void LyricsWidget::setLyrics(const QString& lyricStr)
 
 void LyricsWidget::setLabel1Text(const QString& text)
 {
-	//ui->label1->setText(text);
+	ui->label1->setText(text);
 }
 
 void LyricsWidget::setLabel2Text(const QString& text)
 {
-	//ui->label2->setText(text);
+	ui->label2->setText(text);
 }
 
 void LyricsWidget::setLabel3Text(const QString& text)
 {
-	//ui->label3->setText(text);
+	ui->label3->setText(text);
 }
 
 void LyricsWidget::setPos(qint64 pos)
 {
+	if (lyrics_.isEmpty())
+		return;
+
     auto it = std::upper_bound(lyrics_.begin(), lyrics_.end(), Lyric(pos));
 
     if (it == nowIt_)

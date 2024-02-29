@@ -165,12 +165,12 @@ void PlayerQt::playCurrentIndex(qint64 pos)
 
 		// 下载歌词
 		QString lyricStr = NETEASE_HANDLER->getLyric(id);
-		emit LyricChanged(lyricStr);
 
 		musicInfo_.title = info.name;
 		musicInfo_.singers = info.singer;
 		musicInfo_.album = info.album;
 		musicInfo_.imgIsReady = false;
+		musicInfo_.lyricStr = lyricStr;
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 		player_->setSource(QUrl(urlStr));
@@ -195,10 +195,14 @@ void PlayerQt::playCurrentIndex(qint64 pos)
 			dataBuffer_->setData(musicData.data);
 			dataBuffer_->open(QIODevice::ReadOnly);
 
+			// 下载歌词
+			QString lyricStr = NETEASE_HANDLER->getLyric(musicData.musicId);
+
 			musicInfo_.title = musicData.title;
 			musicInfo_.singers = musicData.singers;
 			musicInfo_.album = musicData.album;
 			musicInfo_.imgIsReady = false;
+			musicInfo_.lyricStr = lyricStr;
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 			player_->setSourceDevice(dataBuffer_);
@@ -210,6 +214,7 @@ void PlayerQt::playCurrentIndex(qint64 pos)
 		{
 			musicInfo_ = PlayerFFmpeg::analyzeMusicInfo(urlStr);
 			musicInfo_.imgIsReady = true;
+			musicInfo_.lyricStr = "";
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 			player_->setSource(QUrl::fromLocalFile(urlStr));
