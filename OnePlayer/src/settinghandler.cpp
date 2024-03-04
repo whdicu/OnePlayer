@@ -48,9 +48,9 @@ SettingHandler* SettingHandler::getInstance()
     return setting_handler;
 }
 
-void SettingHandler::addPlayList(const QString& playListName, const DVector<QString>& list)
+void SettingHandler::addPlayList(const QString& playListName, const DVector<QString>& list, bool coverOld)
 {
-    QString uniqueName = checkPlayListName(playListName);
+    QString uniqueName = coverOld ? playListName : checkPlayListName(playListName);
     setting_.playListMap.insert(uniqueName, list);
     writeAll();
 }

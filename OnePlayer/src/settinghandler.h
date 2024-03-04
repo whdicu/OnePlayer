@@ -19,7 +19,8 @@ public:
 	void save() { writeAll(); }
 
 	// 添加一些音乐到新的播放列表
-    void addPlayList(const QString& playListName, const DVector<QString>& list);
+	// coverOld为true时，会覆盖同名播放列表，false时
+    void addPlayList(const QString& playListName, const DVector<QString>& list, bool coverOld = false);
 
 	// 添加一些音乐到当前播放列表，会排除已存在的歌曲
 	void add2CurrentPlayList(const DVector<QString>& list);

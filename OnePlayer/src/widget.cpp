@@ -564,7 +564,7 @@ void Widget::refreshNeteaseMusicBtns(dint64 playListId)
 	}
 
 	SETTING_HANDLER->setCurrentNeteaseSongsInfo(songs);
-	SETTING_HANDLER->addPlayList(SETTING_HANDLER->getStruct().playListName, neteasePlayList);
+	SETTING_HANDLER->addPlayList(SETTING_HANDLER->getStruct().playListName, neteasePlayList, true);
 }
 
 void Widget::refreshPlayListBtns()
