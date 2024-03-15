@@ -172,6 +172,12 @@ void PlayerQt::playCurrentIndex(qint64 pos)
 		musicInfo_.imgIsReady = false;
 		musicInfo_.lyricStr = lyricStr;
 
+		if (urlStr.isEmpty())
+		{
+			DWarning << __FUNCTION__ << "url is empty! music:" << musicInfo_.title;
+			emit errorOccurred(MusicUrlIsEmpty);
+		}
+
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 		player_->setSource(QUrl(urlStr));
 #else

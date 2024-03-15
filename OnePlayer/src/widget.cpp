@@ -413,43 +413,20 @@ void Widget::setListener()
 			.arg(info.title).arg(info.singers).arg(info.album));
     });
 
-    // 一些没用的事件
-//	connect(player_, &QMediaPlayer::seekableChanged, this, [](bool)
-//	{
-//		//        qDebug() << 3;
-//	});
-//	connect(player_, &QMediaPlayer::playbackRateChanged, this, []()
-//	{
-//		//        qDebug() << 5;
-//	});
-//#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-//    connect(player_, &QMediaPlayer::tracksChanged, this, []()
-//    {
-////        qDebug() << 1;
-//    });
-//    connect(player_, &QMediaPlayer::videoOutputChanged, this, []()
-//    {
-////        qDebug() << 2;
-//    });
-//    connect(player_, &QMediaPlayer::activeTracksChanged, this, []()
-//    {
-////        qDebug() << 7;
-//    });
-//    connect(player_, &QMediaPlayer::audioOutputChanged, this, []()
-//    {
-////        qDebug() << 8;
-//    });
-//    connect(player_, &QMediaPlayer::bufferProgressChanged, this, []()
-//    {
-////        qDebug() << 9;
-//    });
-//    connect(player_, &QMediaPlayer::hasAudioChanged, this, []()
-//    {
-////        qDebug() << 10;
-//    });
-//#endif
+	connect(player_, &PlayerBase::errorOccurred, this, [this](PlayMusicError error)
+	{
+		switch (error)
+		{
+		case MusicUrlIsEmpty:
+			on_btn_next_clicked();
+			break;
+		default:
+			DWarning << "unknow error:" << error;
+			break;
+		}
+	});
+
     // 使本次播放进度变成上次关闭时的进度
-    //static bool first_play = true;
     connect(player_, &PlayerBase::mediaAtEnd, this, &Widget::on_btn_next_clicked);
 
     // 音乐时长改变

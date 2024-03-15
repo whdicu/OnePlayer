@@ -4,6 +4,11 @@
 #include <QImage>
 #include <QObject>
 
+enum PlayMusicError
+{
+	MusicUrlIsEmpty
+};
+
 class PlayerBase : public QObject
 {
 	Q_OBJECT
@@ -29,6 +34,7 @@ signals:
 
 	void mediaAtEnd();
 	void beginPlay();
+	void errorOccurred(PlayMusicError error);
 
 protected:
 	MusicInfo musicInfo_;
