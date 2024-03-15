@@ -1370,6 +1370,13 @@ void Widget::on_btn_more_clicked()
         }
         else
         {
+			if (2 == ui->stacked_music_btn->currentIndex())
+			{
+				ui->multi_btn_widget->setBtnPlayListIcon(QIcon(":/svgs/play_list.svg"));
+				ui->stacked_music_btn->setCurrentIndex(0);
+				grabKeyboard();
+			}
+
             ui->multi_btn_widget->animationHide();
             connect(stackedMusicBtnAnimationTimer_, &QTimer::timeout, this, [this]()
             {
