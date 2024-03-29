@@ -1303,21 +1303,15 @@ void Widget::on_btn_next_clicked()
 // 音量减
 void Widget::on_btn_down_clicked()
 {
-    if (SETTING_HANDLER->getStruct().volume > 0.05f)
-        SETTING_HANDLER->getStruct().volume -= 0.05f;
-    else
-        SETTING_HANDLER->getStruct().volume = 0.0f;
-    player_->setVolume(SETTING_HANDLER->getStruct().volume);
+	float volume = SETTING_HANDLER->downVolume();
+    player_->setVolume(volume);
 }
 
 // 音量加
 void Widget::on_btn_up_clicked()
 {
-    if (SETTING_HANDLER->getStruct().volume < 0.95f)
-        SETTING_HANDLER->getStruct().volume += 0.05f;
-    else
-        SETTING_HANDLER->getStruct().volume = 1.0f;
-    player_->setVolume(SETTING_HANDLER->getStruct().volume);
+	float volume = SETTING_HANDLER->upVolume();
+	player_->setVolume(volume);
 }
 
 // 模式切换按钮
@@ -1370,6 +1364,7 @@ void Widget::on_btn_more_clicked()
         }
         else
         {
+			// 如果在播放列表页，则切换到音乐页
 			if (2 == ui->stacked_music_btn->currentIndex())
 			{
 				ui->multi_btn_widget->setBtnPlayListIcon(QIcon(":/svgs/play_list.svg"));

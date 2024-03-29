@@ -23,7 +23,7 @@ PlayerQt::PlayerQt(QObject* parent)
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 	player_->setAudioOutput(audioOutput_);
 #endif
-	setVolume(SETTING_HANDLER->getStruct().volume);
+	setVolume(SETTING_HANDLER->getVolume());
 
 	connect(player_, &QMediaPlayer::durationChanged, this, [this](qint64 duration)
 	{

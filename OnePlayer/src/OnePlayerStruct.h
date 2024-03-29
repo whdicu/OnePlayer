@@ -268,14 +268,14 @@ struct NeteaseSongInfo
 
 struct SettingStruct
 {
-	SettingStruct() : playMode(AGAIN), musicDir(QString()), volume(0.0f)
+	SettingStruct() : playMode(AGAIN), musicDir(QString()), volumeIndex(0)
 		, playListName(QString("Null")), musicPosition(0), playerMode(LOCAL)
 		, bgMode(ONLY_LEFT), downloadDir(QString()), playListMap(QMap<QString, DVector<QString>>())
 		, neteaseInfo() {}
 
 	PLAY_MODE                       playMode;
 	QString                         musicDir;
-	float                           volume;
+	DSizeType                       volumeIndex;
 	QString                         playListName;
 	qint64                          musicPosition;
 	PLAYER_MODE                     playerMode;
@@ -283,6 +283,7 @@ struct SettingStruct
 	QString                         downloadDir;
 	QMap<QString, DVector<QString>>	playListMap;
 	NeteaseInfo						neteaseInfo;
+	bool							showLyric;
 };
 
 struct MusicInfo
@@ -298,7 +299,8 @@ struct MusicInfo
 			&& (singers == info.singers)
 			&& (album == info.album)
 			&& (image == info.image)
-			&& (imgIsReady == info.imgIsReady);
+			&& (imgIsReady == info.imgIsReady)
+			&& (lyricStr == info.lyricStr);
 	}
 
 	QString title;
@@ -306,6 +308,7 @@ struct MusicInfo
 	QString album;
 	QImage image;
 	bool imgIsReady;  // img是否已经准备好
+	QString lyricStr;
 };
 
 struct Lyric

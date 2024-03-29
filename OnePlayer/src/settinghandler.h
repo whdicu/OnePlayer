@@ -62,6 +62,15 @@ public:
 	// 根据网易云音乐的id获取它在播放列表中的下标
 	DSizeType getNeteaseSongIndex(dint64 id);
 
+	// 增加音量
+	float upVolume();
+
+	// 减小音量
+	float downVolume();
+
+	// 获取音量
+	float getVolume();
+
 signals:
     void sigMusicIndexChanged(DSizeType oldIndex, DSizeType newIndex);
 
@@ -91,6 +100,8 @@ private:
     DVector<DSizeType> randomIndexList_;
 
 	DVector<NeteaseSongInfo> currentNeteaseSongsInfo_;  // 当前正在播放的网易云音乐列表的所有歌曲信息
+
+	static const DVector<float> VOLUME_VEC;
 };
 
 #define SETTING_HANDLER SettingHandler::getInstance()

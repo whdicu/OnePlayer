@@ -40,6 +40,10 @@ QByteArray readFile(const QString& filePath)
     return data;
 }
 
+const DVector<float> SettingHandler::VOLUME_VEC = 
+{ 0.0f, 0.05f, 0.06f, 0.072, 0.0864f, 0.1037f, 0.1244f, 0.1493f, 0.1792f, 0.2150f, 
+0.2580f, 0.3096f, 0.3715f, 0.4458f, 0.5350f, 0.6420f, 0.7704f, 0.9244f, 1.0f};
+
 static SettingHandler* setting_handler = nullptr;
 SettingHandler* SettingHandler::getInstance()
 {
@@ -287,6 +291,25 @@ DSizeType SettingHandler::getNeteaseSongIndex(dint64 id)
 	return it - currentNeteaseSongsInfo_.begin();
 }
 
+float SettingHandler::upVolume()
+{
+	if (setting_.volumeIndex + 1 < VOLUME_VEC.size())
+		++setting_.volumeIndex;
+	return VOLUME_VEC.at(setting_.volumeIndex);
+}
+
+float SettingHandler::downVolume()
+{
+	if (setting_.volumeIndex > 0)
+		--setting_.volumeIndex;
+	return VOLUME_VEC.at(setting_.volumeIndex);
+}
+
+float SettingHandler::getVolume()
+{
+	return VOLUME_VEC.at(setting_.volumeIndex);
+}
+
 SettingHandler::SettingHandler()
     : QObject(nullptr)
     , setting_(SettingStruct())
@@ -345,7 +368,7 @@ void SettingHandler::readAll()
 
     setting_.playMode = (PLAY_MODE)obj["playMode"].toInt();
     setting_.musicDir = obj["musicDir"].toString();
-    setting_.volume = obj["volume"].toDouble();
+    setting_.volumeIndex = obj["volumeIndex"].toVariant().toLongLong();
     setting_.playListName = obj["playListName"].toString();
     setMusicIndex(obj["musicIndex"].toVariant().toULongLong());
     setting_.musicPosition = obj["musicPosition"].toVariant().toLongLong();
@@ -374,7 +397,7 @@ void SettingHandler::writeAll()
 
     wholeObject.insert("playMode", setting_.playMode);
     wholeObject.insert("musicDir", setting_.musicDir);
-    wholeObject.insert("volume", setting_.volume);
+    wholeObject.insert("volumeIndex", QString::number(setting_.volumeIndex));
 	if (TEMP_PLAY_LIST_NAME != setting_.playListName)
 		wholeObject.insert("playListName", setting_.playListName);
     wholeObject.insert("musicIndex", QString::number(getMusicIndex()));
