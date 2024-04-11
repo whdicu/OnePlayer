@@ -187,7 +187,7 @@
         </property>
         <property name="icon">
          <iconset resource="../res/res.qrc">
-          <normaloff>:/svgs/back.svg</normaloff>:/svgs/back.svg</iconset>
+          <normaloff>:/svgs/left.svg</normaloff>:/svgs/left.svg</iconset>
         </property>
         <property name="flat">
          <bool>true</bool>
@@ -234,6 +234,22 @@
          <bool>true</bool>
         </property>
        </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Fixed</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>3</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
       </item>
       <item>
        <widget class="QPushButton" name="btn_close">
