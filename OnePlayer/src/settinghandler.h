@@ -104,6 +104,8 @@ private:
 	static const DVector<float> VOLUME_VEC;
 };
 
+#ifndef SETTING_HANDLER
 #define SETTING_HANDLER SettingHandler::getInstance()
+#endif
 
 #endif // SETTINGHANDLER_H

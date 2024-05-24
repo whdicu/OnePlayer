@@ -1,5 +1,6 @@
 ﻿#include "settinghandler.h"
 #include "HDCore/HD2QT.hpp"
+#include <mutex>
 #include <QApplication>
 #include <QDir>
 #include <QFileInfo>
@@ -44,11 +45,11 @@ const DVector<float> SettingHandler::VOLUME_VEC =
 { 0.0f, 0.05f, 0.06f, 0.072, 0.0864f, 0.1037f, 0.1244f, 0.1493f, 0.1792f, 0.2150f, 
 0.2580f, 0.3096f, 0.3715f, 0.4458f, 0.5350f, 0.6420f, 0.7704f, 0.9244f, 1.0f};
 
+static std::once_flag onceFlag;
 static SettingHandler* setting_handler = nullptr;
 SettingHandler* SettingHandler::getInstance()
 {
-    if (nullptr == setting_handler)
-        setting_handler = new SettingHandler();
+	std::call_once(onceFlag, [] { setting_handler = new SettingHandler; });
     return setting_handler;
 }
 
