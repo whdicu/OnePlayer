@@ -10,6 +10,8 @@ struct CMusicData
 	unsigned char* data;
 	int dataSize;
 	char* jsonStr;
+	unsigned char* imgData;
+	int imgDataSize;
 };
 
 void swap(unsigned char* a, unsigned char* b);

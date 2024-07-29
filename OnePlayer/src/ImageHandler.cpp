@@ -310,6 +310,12 @@ cv::Mat ImageHandler::roundCVMat(const cv::Mat& image, int radiusTL, int radiusT
 
 void ImageHandler::downloadImage(const QString& url, ImageDownloadCallBack* callBack)
 {
+	if (nullptr == callBack)
+	{
+		qWarning() << __FUNCTION__ << "Image download call back is nullptr!";
+		return;
+	}
+
 	QNetworkAccessManager* manager = new QNetworkAccessManager;
 	QNetworkRequest request(url);
 	QNetworkReply* reply = manager->get(request);

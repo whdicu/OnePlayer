@@ -27,7 +27,7 @@ CPPMusicData NCMHandler::dealNCM(const QString& filename, ImageDownloadCallBack*
 	CMusicData musicData;
 	int status = getFileData(fileStr.c_str(), &musicData);
 	ret.data = QByteArray(reinterpret_cast<const char*>(musicData.data), musicData.dataSize);
-
+	ret.image.loadFromData(QByteArray(reinterpret_cast<const char*>(musicData.imgData), musicData.imgDataSize));
 
 	QJsonParseError parseError;
 	QJsonDocument jsonDoc = QJsonDocument::fromJson(musicData.jsonStr, &parseError);
@@ -80,13 +80,14 @@ CPPMusicData NCMHandler::dealNCM(const QString& filename, ImageDownloadCallBack*
 	ret.format = obj["format"].toString();
 	ret.musicId = obj["musicId"].toVariant().toLongLong();
 
-	if (obj.contains("albumPic"))
-	{
-		QString url = obj["albumPic"].toString()
-			+ QString("?param=%1y%2").arg(MUSIC_INFO_WIDGET_WIDTH).arg(MUSIC_INFO_WIDGET_HEIGHT);
-		
-		ImageHandler::downloadImage(url, callBack);
-	}
+	// 现在图片直接从ncm文件中获取，不再从网易云下载
+	//if (obj.contains("albumPic"))
+	//{
+	//	QString url = obj["albumPic"].toString()
+	//		+ QString("?param=%1y%2").arg(MUSIC_INFO_WIDGET_WIDTH).arg(MUSIC_INFO_WIDGET_HEIGHT);
+	//	
+	//	ImageHandler::downloadImage(url, callBack);
+	//}
 
 	//if (!albumImg.isNull())
 	//{
@@ -111,6 +112,7 @@ CPPMusicData NCMHandler::dealNCM(const QString& filename, ImageDownloadCallBack*
 
 	free(musicData.data);
 	free(musicData.jsonStr);
+	free(musicData.imgData);
 
 	return ret;
 }

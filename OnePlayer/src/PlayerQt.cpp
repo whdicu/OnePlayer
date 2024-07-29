@@ -188,14 +188,15 @@ void PlayerQt::playCurrentIndex(qint64 pos)
 	{
 		if (urlStr.endsWith(".ncm"))
 		{
-			ImageDownloadCallBack* callBack = new ImageDownloadCallBack(this);
-			connect(callBack, &ImageDownloadCallBack::sigImageSet, this, [this](SharedImage image)
-			{
-				musicInfo_.image = *image;
-				musicInfo_.imgIsReady = true;
-				emit MusicInfoChanged(musicInfo_);
-			});
-			CPPMusicData musicData = NCMHandler::dealNCM(urlStr, callBack);
+			//ImageDownloadCallBack* callBack = new ImageDownloadCallBack(this);
+			//connect(callBack, &ImageDownloadCallBack::sigImageSet, this, [this](SharedImage image)
+			//{
+			//	musicInfo_.image = *image;
+			//	musicInfo_.imgIsReady = true;
+			//	emit MusicInfoChanged(musicInfo_);
+			//});
+			//CPPMusicData musicData = NCMHandler::dealNCM(urlStr, callBack);
+			CPPMusicData musicData = NCMHandler::dealNCM(urlStr);
 			//QByteArray aa(reinterpret_cast<const char*>(mb.data.data()), mb.data.size());
 			dataBuffer_ = new QBuffer(this);
 			dataBuffer_->setData(musicData.data);
@@ -207,7 +208,8 @@ void PlayerQt::playCurrentIndex(qint64 pos)
 			musicInfo_.title = musicData.title;
 			musicInfo_.singers = musicData.singers;
 			musicInfo_.album = musicData.album;
-			musicInfo_.imgIsReady = false;
+			musicInfo_.image = musicData.image;
+			musicInfo_.imgIsReady = true;
 			musicInfo_.lyricStr = lyricStr;
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)

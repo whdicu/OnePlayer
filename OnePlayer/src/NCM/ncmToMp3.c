@@ -400,11 +400,11 @@ int getFileData(const char* fileName, struct CMusicData* structMusicData)
 	fseek(f, 9, SEEK_CUR);  //从当前位置跳过9个字节
 	fread(buf, 1, 4, f);    //读取图片大小
 	len = (buf[3] << 8 | buf[2]) << 16 | (buf[1] << 8 | buf[0]);
-	unsigned char* img = (unsigned char*)malloc(sizeof(unsigned char) * len);
-	if (NULL == img)
+	structMusicData->imgData = (unsigned char*)malloc(sizeof(unsigned char) * len);
+	if (NULL == structMusicData->imgData)
 		return -4;
-	fread(img, 1, len, f);  //读取图片数据
-
+	fread(structMusicData->imgData, 1, len, f);  //读取图片数据
+	structMusicData->imgDataSize = len;
 
 
 	int offset = 1024 * 1024 * 10;    //10MB 音乐数据一般比较大一次读入10MB
@@ -431,7 +431,7 @@ int getFileData(const char* fileName, struct CMusicData* structMusicData)
 #endif
 	free(data);
 	free(meta);
-	free(img);
+	//free(img);
 	//free(musicData);
 	fclose(f);
 
