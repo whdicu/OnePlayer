@@ -130,6 +130,7 @@ unsigned char* base64_decode(unsigned char* code, int len, int* actLen)
 
 }
 
+// 原来的代码，现在没用到
 void readFileData(const char* fileName, const char* outputDir, char** jsonStr)
 {
 	FILE* f = NULL;
@@ -383,54 +384,52 @@ int getFileData(const char* fileName, struct CMusicData* structMusicData)
 #endif
 
 	cJSON* cjson = cJSON_Parse(&newData[6]);	//json解析，获取格式和名字等
-	if (cjson == NULL)
+	if (cjson != NULL)
 	{
-		printf("cjson parse failed\n");
-		return -2;
+		char* tempJsonStr = cJSON_Print(cjson);
+		structMusicData->jsonStr = (char*)malloc(strlen(tempJsonStr) + 1);
+		if (NULL != structMusicData->jsonStr)
+		{
+			strcpy_s(structMusicData->jsonStr, strlen(tempJsonStr) + 1, tempJsonStr);
+			//printf("%s\n", structMusicData->jsonStr);	//输出json
+		}
+		cJSON_Delete(cjson);
+		free(tempJsonStr);
 	}
-	char* tempJsonStr = cJSON_Print(cjson);
-	structMusicData->jsonStr = (char*)malloc(strlen(tempJsonStr) + 1);
-	if (NULL == structMusicData->jsonStr)
-	{
-		return -3;
-	}
-	strcpy_s(structMusicData->jsonStr, strlen(tempJsonStr) + 1, tempJsonStr);
-	//printf("%s\n", structMusicData->jsonStr);	//输出json
 
 	fseek(f, 9, SEEK_CUR);  //从当前位置跳过9个字节
 	fread(buf, 1, 4, f);    //读取图片大小
 	len = (buf[3] << 8 | buf[2]) << 16 | (buf[1] << 8 | buf[0]);
 	structMusicData->imgData = (unsigned char*)malloc(sizeof(unsigned char) * len);
-	if (NULL == structMusicData->imgData)
-		return -4;
-	fread(structMusicData->imgData, 1, len, f);  //读取图片数据
-	structMusicData->imgDataSize = len;
-
+	if (NULL != structMusicData->imgData)
+	{
+		fread(structMusicData->imgData, 1, len, f);  //读取图片数据
+		structMusicData->imgDataSize = len;
+	}
 
 	int offset = 1024 * 1024 * 10;    //10MB 音乐数据一般比较大一次读入10MB
 	structMusicData->dataSize = 0;
 	int reSize = offset;
-	unsigned char* musicData = (unsigned char*)malloc(offset); //10m
+	structMusicData->data = (unsigned char*)malloc(offset); //10m
 
 	while (!feof(f))
 	{
-		len = fread(musicData + structMusicData->dataSize, 1, offset, f);	//每次读取10M
+		len = fread(structMusicData->data + structMusicData->dataSize, 1, offset, f);	//每次读取10M
 		structMusicData->dataSize += len;
 		reSize += offset;
-		musicData = realloc(musicData, reSize);	//扩容
+		structMusicData->data = realloc(structMusicData->data, reSize);	//扩容
 	}
 
 	unsigned char sBox[256] = { 0 };	//s盒
 	rc4Init(sBox, &rc4Key[17], strlen(&rc4Key[17]));	//用rC4密钥进行初始化s盒
-	rc4PRGA(sBox, musicData, structMusicData->dataSize);	//解密
-
-	structMusicData->data = musicData;
+	rc4PRGA(sBox, structMusicData->data, structMusicData->dataSize);	//解密
 
 #ifdef WIN32
 	free(newData);
 #endif
-	free(data);
+	free(rc4Key);
 	free(meta);
+	free(data);
 	//free(img);
 	//free(musicData);
 	fclose(f);

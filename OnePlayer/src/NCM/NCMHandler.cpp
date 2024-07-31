@@ -39,6 +39,9 @@ CPPMusicData NCMHandler::dealNCM(const QString& filename, ImageDownloadCallBack*
 		if (QJsonParseError::NoError != parseError.error)
 		{
 			qWarning() << __FUNCTION__ << "JsonStr analyze failed";
+			free(musicData.data);
+			free(musicData.jsonStr);
+			free(musicData.imgData);
 			return ret;
 		}
 	}
