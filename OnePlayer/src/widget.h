@@ -34,11 +34,13 @@ public:
 	// Widget构造函数失败时，为false
 	bool initSuccess() { return initSuccess_; }
 
+public slots:
+	void on_btn_play_clicked();
+	void on_btn_previoud_clicked();
+	void on_btn_next_clicked();
+
 private slots:
     void on_btn_shutdown_clicked();
-    void on_btn_play_clicked();
-    void on_btn_previoud_clicked();
-    void on_btn_next_clicked();
     void on_btn_down_clicked();
     void on_btn_up_clicked();
     void on_btn_mode_clicked();
@@ -63,7 +65,8 @@ private slots:
 	void slotNeteasePlayListClicked(const NeteasePlayListInfo& info);
      
 signals:
-	void sigChangeSystemIconToolTip(const QString& tip);
+	void sigChangeSystemIconToolTip(const QString& title, const QString& singer, const QString& album);
+	void sigPlayOrPause(bool isPlay);
 
 // 控件动画
 private:
@@ -117,10 +120,8 @@ private:
     bool movingProgress_;
     PlayerBase* player_;
 	bool initSuccess_;
-    
-    // 拖动窗口时记录按下的xy，播放动画时用来记录隐藏前的xy
-    int pressX_;
-    int pressY_;
+	QPoint pressPos_;  // 拖动窗口时记录按下的点
+	QPoint beforeAniPos_;  // 播放动画时用来记录隐藏前的点
     bool pressedCtrl_;
     bool thisIsMoveWindow_;
 

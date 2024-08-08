@@ -89,7 +89,7 @@ Widget::Widget(const QString& filepath, QWidget *parent)
         else
 		{
             //resize(MAIN_WIDGET_WIDTH, MAIN_WIDGET_HEIGHT);
-            move(pressX_, pressY_);
+            move(beforeAniPos_);
             hide();
 			//show();
 			//setWindowState(Qt::WindowMinimized);
@@ -394,7 +394,8 @@ void Widget::setListener()
     connect(player_, &PlayerBase::beginPlay, this, [this]()
     {
         ui->btn_play->setIcon(QIcon(":/svgs/pause.svg"));
-        ui->music_info_widget->animationHide();
+		emit sigPlayOrPause(true);
+		ui->music_info_widget->animationHide();
     });
 
     connect(player_, &PlayerBase::MusicInfoChanged, this, [this](MusicInfo info)
@@ -409,8 +410,7 @@ void Widget::setListener()
 
 		refreshImageWidget(info);
 
-		emit sigChangeSystemIconToolTip(QString("OnePlayer\n正在播放：%1\n歌手：%2\n专辑：%3")
-			.arg(info.title).arg(info.singers).arg(info.album));
+		emit sigChangeSystemIconToolTip(info.title, info.singers, info.album);
     });
 
 	connect(player_, &PlayerBase::errorOccurred, this, [this](PlayMusicError error)
@@ -922,8 +922,7 @@ void Widget::mousePressEvent(QMouseEvent *ev)
     if (pos.y() < 20)
     {
         thisIsMoveWindow_ = true;
-        pressX_ = pos.x();
-        pressY_ = pos.y();
+		pressPos_ = pos;
     }
 }
 
@@ -936,13 +935,14 @@ void Widget::mouseMoveEvent(QMouseEvent *ev)
 #else
 		auto global_pos = ev->globalPos();
 #endif
-        move(global_pos.x() - pressX_, global_pos.y() - pressY_);
+        move(global_pos - pressPos_);
     }
 }
 
-void Widget::mouseReleaseEvent(QMouseEvent *)
+void Widget::mouseReleaseEvent(QMouseEvent* event)
 {
     thisIsMoveWindow_ = false;
+	beforeAniPos_ = pos();
 }
 
 void Widget::mouseDoubleClickEvent(QMouseEvent* event)
@@ -1131,8 +1131,8 @@ void Widget::animateShow(bool fromCursor)
 		{
             int beginX = x() + MAIN_WIDGET_WIDTH / 2;
             int beginY = y() + MAIN_WIDGET_HEIGHT / 2;
-            endx = pressX_;
-            endy = pressY_;
+            endx = beforeAniPos_.x();
+            endy = beforeAniPos_.y();
 		}
 		else
 		{
@@ -1141,14 +1141,14 @@ void Widget::animateShow(bool fromCursor)
             starty = y();
             startWidth = width();
             startHeight = height();
-            endx = pressX_;
-            endy = pressY_;
+            endx = beforeAniPos_.x();
+            endy = beforeAniPos_.y();
 		}
 	}
 
     // 防止界面在被其他窗口遮挡。
     // 排除了 在播放hide动画时打断 的情况，防止show时窗口闪烁
-    if (isHidden())
+    //if (isHidden())
     {
         setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
         QWidget::show();
@@ -1174,8 +1174,7 @@ void Widget::animateHide()
     // 界面还在播放动画显示或隐藏时，不会更新pressX_和pressY_的值
     if (animation_->state() != QPropertyAnimation::Running)
     {
-        pressX_ = startX;
-        pressY_ = startY;
+		beforeAniPos_ = pos();
     }
 
     int newx = QCursor::pos().x();
@@ -1279,11 +1278,13 @@ void Widget::on_btn_play_clicked()
     if (player_->playOrPause())
     {
         ui->btn_play->setIcon(QIcon(":/svgs/pause.svg"));
+		emit sigPlayOrPause(true);
     }
     else
     {
         ui->btn_play->setIcon(QIcon(":/svgs/play.svg"));
-    }
+		emit sigPlayOrPause(false);
+	}
 }
 
 // 上一首
@@ -1291,6 +1292,7 @@ void Widget::on_btn_previoud_clicked()
 {
     ui->btn_play->setIcon(QIcon(":/svgs/pause.svg"));
     player_->playPrevious();
+	emit sigPlayOrPause(true);
 }
 
 // 下一首
@@ -1298,6 +1300,7 @@ void Widget::on_btn_next_clicked()
 {
     ui->btn_play->setIcon(QIcon(":/svgs/pause.svg"));
     player_->playNext();
+	emit sigPlayOrPause(true);
 }
 
 // 音量减

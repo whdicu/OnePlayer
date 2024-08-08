@@ -199,7 +199,9 @@
     <QtMoc Include="src\onlinemusicbutton.h" />
   </ItemGroup>
   <ItemGroup>
-    <QtRcc Include="res\res.qrc" />
+    <QtRcc Include="res\res.qrc">
+      <SubType>Designer</SubType>
+    </QtRcc>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="OnePlayer.rc" />
