@@ -14,7 +14,7 @@
     <ProjectGuid>{EDECB4BD-5A02-4D72-9923-AC7CC22F33EA}</ProjectGuid>
     <Keyword>QtVS_v303</Keyword>
     <QtMsBuild Condition="'$(QtMsBuild)'=='' OR !Exists('$(QtMsBuild)\qt.targets')">$(MSBuildProjectDirectory)\QtMsBuild</QtMsBuild>
-    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="Configuration">
@@ -23,7 +23,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <Target Name="QtMsBuildNotFound" BeforeTargets="CustomBuild;ClCompile" Condition="!Exists('$(QtMsBuild)\qt.targets') or !Exists('$(QtMsBuild)\qt.props')">
@@ -47,7 +47,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(QTDIR)\include;D:\coder\C++\OneDer\src;.\src;..\OpenCV\include;..\FFmpeg\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(QTDIR)\include;D:\Projects\OneDer\src;.\src;..\OpenCV\include;..\FFmpeg\include;..\..\QCloudMusicApi\QCloudMusicApi;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>CV_IGNORE_DEBUG_BUILD_GUARD</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -68,7 +68,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="QtSettings">
     <QtModules>concurrent;core;gui;multimedia;network;widgets</QtModules>
     <QtBuildConfig>release</QtBuildConfig>
-    <QtInstall>qt-6.6.2-msvc</QtInstall>
+    <QtInstall>qt5.9.4-msvc2017-x64</QtInstall>
   </PropertyGroup>
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.props')">
     <Import Project="$(QtMsBuild)\qt.props" />
@@ -118,7 +118,8 @@
     <ClCompile Include="src\NCM\cJSON.c" />
     <ClCompile Include="src\NCM\NCMHandler.cpp" />
     <ClCompile Include="src\NCM\ncmToMp3.c" />
-    <ClCompile Include="src\neteasehandler.cpp" />
+    <ClCompile Include="src\neteasehandlerjs.cpp" />
+    <ClCompile Include="src\neteasehandlerqt.cpp" />
     <ClCompile Include="src\NeteaseMusicBtn.cpp" />
     <ClCompile Include="src\neteasewidget.cpp" />
     <ClCompile Include="src\NetLoginDialog.cpp" />
@@ -172,7 +173,7 @@
     <QtMoc Include="src\Toast.h" />
     <QtMoc Include="src\PlayListEdit.h" />
     <QtMoc Include="src\PlayListButton.h" />
-    <QtMoc Include="src\neteasehandler.h" />
+    <QtMoc Include="src\neteasehandlerjs.h" />
     <QtMoc Include="src\neteasewidget.h" />
     <QtMoc Include="src\MusicInfoWidget.h" />
     <ClInclude Include="resource.h" />
@@ -187,6 +188,8 @@
     <ClInclude Include="src\NCM\ncmToMp3.h" />
     <QtMoc Include="src\NetLoginDialog.h" />
     <QtMoc Include="src\NeteaseMusicBtn.h" />
+    <QtMoc Include="src\neteasehandlerqt.h" />
+    <ClInclude Include="src\neteasehandler.h" />
     <ClInclude Include="src\OnePlayerStruct.h" />
     <ClInclude Include="src\onlinehandler.h" />
     <QtMoc Include="src\SearchEdit.h" />

@@ -1,6 +1,5 @@
 ﻿#include "widget.h"
 #include "ui_widget.h"
-
 #include "HDBase/DVector.hpp"
 #include "HDCore/HD2QT.hpp"
 #include "hook.h"
@@ -1199,7 +1198,7 @@ void Widget::init()
 {
 	ui->stacked_music_btn->setCurrentIndex(0);
 
-	NETEASE_HANDLER->startApiExe();
+	NETEASE_HANDLER->init();
 	bool isNeteaseLogin = !SETTING_HANDLER->getNeteaseInfo().cookie.isEmpty() && NETEASE_HANDLER->checkLoginStatus();
 	Hook::getInstance()->installHook();
 	connect(Hook::getInstance(), &Hook::sendKeyType, this, &Widget::slotKeyPressed, Qt::QueuedConnection);
@@ -1260,7 +1259,7 @@ void Widget::init()
 
 void Widget::uninit()
 {
-	NETEASE_HANDLER->stopApiExe();
+	NETEASE_HANDLER->uninit();
 	Hook::getInstance()->unInstallHook();
 	SETTING_HANDLER->save();
 }

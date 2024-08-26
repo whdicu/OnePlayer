@@ -51,7 +51,7 @@ void NeteaseWidget::slotLogin()
             return;
         }
 
-        if (NeteaseHandler::getInstance()->loginEmail(phoneOrEmail, password))
+        if (NETEASE_HANDLER->loginEmail(phoneOrEmail, password))
         {
             // 登陆成功
         }
@@ -65,7 +65,7 @@ void NeteaseWidget::slotLogin()
             return;
         }*/
         
-        if (NeteaseHandler::getInstance()->loginPhone(phoneOrEmail, password))
+        if (NETEASE_HANDLER->loginPhone(phoneOrEmail, password))
         {
             // 登陆成功
         }

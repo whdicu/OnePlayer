@@ -45,9 +45,6 @@
     <QtMoc Include="src\settingtabwidget.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="src\neteasehandler.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
     <QtMoc Include="src\neteasewidget.h">
       <Filter>Header Files</Filter>
     </QtMoc>
@@ -114,6 +111,12 @@
     <QtMoc Include="src\LyricsWidget.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="src\neteasehandlerjs.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="src\neteasehandlerqt.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\hook.cpp">
@@ -135,9 +138,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\settingtabwidget.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\neteasehandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\neteasewidget.cpp">
@@ -212,6 +212,12 @@
     <ClCompile Include="src\LyricsWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\neteasehandlerjs.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\neteasehandlerqt.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="src\morewidget.ui">
@@ -281,6 +287,9 @@
     </ClInclude>
     <ClInclude Include="src\NCM\NCMHandler.h">
       <Filter>NCM</Filter>
+    </ClInclude>
+    <ClInclude Include="src\neteasehandler.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

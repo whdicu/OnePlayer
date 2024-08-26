@@ -1,4 +1,4 @@
-﻿#include "neteasehandler.h"
+﻿#include "neteasehandlerjs.h"
 #include "ImageHandler.h"
 #include <QCryptographicHash>
 #include <QDebug>
@@ -14,15 +14,15 @@
 
 const static QString FIRST_URL = "http://127.0.0.1:3000";
 
-static NeteaseHandler* netease_handler = nullptr;
-NeteaseHandler* NeteaseHandler::getInstance()
+static NeteaseHandlerJS* netease_handler = nullptr;
+NeteaseHandlerJS* NeteaseHandlerJS::getInstance()
 {
 	if (nullptr == netease_handler)
-		netease_handler = new NeteaseHandler;
+		netease_handler = new NeteaseHandlerJS;
 	return netease_handler;
 }
 
-bool NeteaseHandler::loginPhone(const QString& phone, const QString& password)
+bool NeteaseHandlerJS::loginPhone(const QString& phone, const QString& password)
 {
 	qint64 nowTime = QDateTime::currentMSecsSinceEpoch();
 	QString passwordMD5 = QCryptographicHash::hash(password.toUtf8(), QCryptographicHash::Md5).toHex();
@@ -54,7 +54,7 @@ bool NeteaseHandler::loginPhone(const QString& phone, const QString& password)
 	return true;
 }
 
-bool NeteaseHandler::sendCaptcha(const QString& phone)
+bool NeteaseHandlerJS::sendCaptcha(const QString& phone)
 {
 	QString url = QString("/captcha/sent");
 	QString content = QString("phone=%1").arg(phone);
@@ -63,7 +63,7 @@ bool NeteaseHandler::sendCaptcha(const QString& phone)
 	return 200 == code;
 }
 
-bool NeteaseHandler::loginCaptcha(const QString& phone, const QString& captcha)
+bool NeteaseHandlerJS::loginCaptcha(const QString& phone, const QString& captcha)
 {
 	qint64 nowTime = QDateTime::currentMSecsSinceEpoch();
 	QString url = QString("/login/cellphone?timestamp=%3").arg(nowTime);
@@ -85,7 +85,7 @@ bool NeteaseHandler::loginCaptcha(const QString& phone, const QString& captcha)
 	return true;
 }
 
-bool NeteaseHandler::loginEmail(const QString& email, const QString& password)
+bool NeteaseHandlerJS::loginEmail(const QString& email, const QString& password)
 {
 	qint64 nowTime = QDateTime::currentMSecsSinceEpoch();
 	QString passwordMD5 = QCryptographicHash::hash(password.toUtf8(), QCryptographicHash::Md5).toHex();
@@ -111,7 +111,7 @@ bool NeteaseHandler::loginEmail(const QString& email, const QString& password)
 	return true;
 }
 
-bool NeteaseHandler::checkLoginStatus()
+bool NeteaseHandlerJS::checkLoginStatus()
 {
 	qint64 nowTime = QDateTime::currentMSecsSinceEpoch();
 	QString url = QString("/login/status?timestamp=%1").arg(nowTime);
@@ -133,7 +133,7 @@ bool NeteaseHandler::checkLoginStatus()
 	return true;
 }
 
-bool NeteaseHandler::getUserDetail()
+bool NeteaseHandlerJS::getUserDetail()
 {
 	QString url = QString("/user/detail");
 	QString content = QString("cookie=") + SETTING_HANDLER->getNeteaseInfo().cookie;
@@ -143,7 +143,7 @@ bool NeteaseHandler::getUserDetail()
 	return true;
 }
 
-DVector<NeteasePlayListInfo> NeteaseHandler::getAllPlayListsInfo()
+DVector<NeteasePlayListInfo> NeteaseHandlerJS::getAllPlayListsInfo()
 {
 	QString url = QString("/user/playlist");
 	QString content = QString("cookie=") + SETTING_HANDLER->getNeteaseInfo().cookie;
@@ -165,17 +165,19 @@ DVector<NeteasePlayListInfo> NeteaseHandler::getAllPlayListsInfo()
 	return ret;
 }
 
-NeteasePlayListInfo NeteaseHandler::getPlayListInfo(dint64 id)
+NeteasePlayListInfo NeteaseHandlerJS::getPlayListInfo(dint64 id)
 {
 	QString url = QString("/playlist/detail");
 	QString content = QString("cookie=") + SETTING_HANDLER->getNeteaseInfo().cookie;
 	content += QString("&id=%1").arg(id);
 	DSharedPointer<QJsonObject> jo = execPost(url, content);
 
+	// todo 未完成
+
 	return NeteasePlayListInfo();
 }
 
-DVector<NeteaseSongInfo> NeteaseHandler::getSongsfromPlayList(dint64 id)
+DVector<NeteaseSongInfo> NeteaseHandlerJS::getSongsfromPlayList(dint64 id)
 {
 	QString url = QString("/playlist/track/all");
 	QString content = QString("cookie=") + SETTING_HANDLER->getNeteaseInfo().cookie;
@@ -207,7 +209,7 @@ DVector<NeteaseSongInfo> NeteaseHandler::getSongsfromPlayList(dint64 id)
 	return ret;
 }
 
-QString NeteaseHandler::getMusicUrl(dint64 id)
+QString NeteaseHandlerJS::getMusicUrl(dint64 id)
 {
 	QString url = QString("/song/url/v1");
 	QString content = QString("cookie=") + SETTING_HANDLER->getNeteaseInfo().cookie;
@@ -222,7 +224,7 @@ QString NeteaseHandler::getMusicUrl(dint64 id)
 		return "";
 }
 
-QString NeteaseHandler::getLyric(dint64 id)
+QString NeteaseHandlerJS::getLyric(dint64 id)
 {
 	QString url = QString("/lyric");
 	QString content = QString("cookie=") + SETTING_HANDLER->getNeteaseInfo().cookie;
@@ -235,7 +237,7 @@ QString NeteaseHandler::getLyric(dint64 id)
 		return "";
 }
 
-DSharedPointer<QJsonObject> NeteaseHandler::execPost(const QString& url, const QString& content)
+DSharedPointer<QJsonObject> NeteaseHandlerJS::execPost(const QString& url, const QString& content)
 {
 	QNetworkRequest request(FIRST_URL + url);
 	QNetworkReply* reply = networkManager_->post(request, content.toUtf8());  // 发送 POST 请求
@@ -274,7 +276,7 @@ DSharedPointer<QJsonObject> NeteaseHandler::execPost(const QString& url, const Q
 	return ret;
 }
 
-NeteaseHandler::NeteaseHandler(QObject *parent)
+NeteaseHandlerJS::NeteaseHandlerJS(QObject *parent)
 	: QObject(parent)
 	, apiProcess_(new QProcess(this))
 	, networkManager_(new QNetworkAccessManager(this))
@@ -282,12 +284,12 @@ NeteaseHandler::NeteaseHandler(QObject *parent)
 
 }
 
-NeteaseHandler::~NeteaseHandler()
+NeteaseHandlerJS::~NeteaseHandlerJS()
 {
 	
 }
 
-void NeteaseHandler::startApiExe()
+void NeteaseHandlerJS::init()
 {
 	//apiThread_->start();
 	apiProcess_->start("NeteaseCloudMusicApi.exe");
@@ -297,12 +299,12 @@ void NeteaseHandler::startApiExe()
 	//}
 }
 
-void NeteaseHandler::stopApiExe()
+void NeteaseHandlerJS::uninit()
 {
 	apiProcess_->kill();
 }
 
-void NeteaseHandler::printJsonObject(const QJsonObject& obj, int space)
+void NeteaseHandlerJS::printJsonObject(const QJsonObject& obj, int space)
 {
 	/*if (obj.isEmpty())
 		return;
