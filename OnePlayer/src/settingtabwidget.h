@@ -3,6 +3,7 @@
 #include <QWidget>
 #include "ui_settingtabwidget.h"
 #include "HDBase/DList.hpp"
+#include "HDBase/DMap.hpp"
 #include "settinghandler.h"
 
 
@@ -12,13 +13,13 @@ enum TAB_BUTTON_TYPE
 	THEME_BTN
 };
 
-const static QMap<TAB_BUTTON_TYPE, QString> csmap_tabButtonTypeStr =
+const static DMap<TAB_BUTTON_TYPE, QString> csmap_tabButtonTypeStr =
 {
 	//{BASE_BTN, "基础设置"},
 	{THEME_BTN, "主题设置"}
 };
 
-const static QMap<PLAYER_MODE, QString> csmap_playerModeStr =
+const static DMap<PLAYER_MODE, QString> csmap_playerModeStr =
 {
 	{LOCAL, "本地模式"},
 	{MYSITE, "网站模式"},
@@ -26,7 +27,7 @@ const static QMap<PLAYER_MODE, QString> csmap_playerModeStr =
 	{NETEASE, "网易云模式"}
 };
 
-const static QMap<BG_MODE, QString> csmap_bgModeStr
+const static DMap<BG_MODE, QString> csmap_bgModeStr
 {
 	{ONLY_LEFT, "仅左侧"},
 	{FULL_WIDGET, "充满屏幕"}

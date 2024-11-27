@@ -1,10 +1,10 @@
 ﻿#pragma once
+#include "HDBase/DMap.hpp"
 #include "HDBase/DVector.hpp"
 #include "HDMemory/DSharedPointer.hpp"
 #include <QDateTime>
 #include <QEasingCurve>
 #include <QImage>
-#include <QMap>
 #include <QString>
 #include <QUrl>
 
@@ -270,7 +270,7 @@ struct SettingStruct
 {
 	SettingStruct() : playMode(AGAIN), musicDir(QString()), volumeIndex(0)
 		, playListName(QString("Null")), musicPosition(0), playerMode(LOCAL)
-		, bgMode(ONLY_LEFT), downloadDir(QString()), playListMap(QMap<QString, DVector<QString>>())
+		, bgMode(ONLY_LEFT), downloadDir(QString()), playListMap(DMap<QString, DVector<QString>>())
 		, neteaseInfo() {}
 
 	PLAY_MODE                       playMode;
@@ -281,7 +281,7 @@ struct SettingStruct
 	PLAYER_MODE                     playerMode;
 	BG_MODE							bgMode;
 	QString                         downloadDir;
-	QMap<QString, DVector<QString>>	playListMap;
+	DMap<QString, DVector<QString>>	playListMap;
 	NeteaseInfo						neteaseInfo;
 	bool							showLyric;
 };

@@ -1,6 +1,5 @@
 ﻿#include "settingtabwidget.h"
 #include <QComboBox>
-#include <QMap>
 #include <QPushButton>
 
 

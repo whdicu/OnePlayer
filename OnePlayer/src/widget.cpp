@@ -553,7 +553,7 @@ void Widget::refreshPlayListBtns()
 			delete child->widget();
 	}
 
-	QStringList playListNames = SETTING_HANDLER->getStruct().playListMap.keys();
+	DList<QString> playListNames = SETTING_HANDLER->getStruct().playListMap.keys();
 	for (const QString& playListName : playListNames)
 	{
 		//QString filename = url.fileName();
