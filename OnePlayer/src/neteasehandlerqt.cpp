@@ -35,8 +35,8 @@ bool NeteaseHandlerQT::loginPhone(const QString& phone, const QString& password)
 		{"md5_password", passwordMD5}
 	};
 
-	NeteaseCloudMusicApi api;
-	auto retMap = api.login_cellphone(infoMap);
+	//NeteaseCloudMusicApi api;
+	//auto retMap = api.login_cellphone(infoMap);
 
 	/*if (jo->isEmpty())
 	{

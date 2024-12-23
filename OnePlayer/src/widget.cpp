@@ -402,8 +402,8 @@ void Widget::setListener()
 		if (info.title.isEmpty())
 		{
 			QString filename = SETTING_HANDLER->currentMusicUrl();
-			int i1 = filename.lastIndexOf('/');
-			int i2 = filename.indexOf('.');
+			int i1 = filename.lastIndexOf('/') + 1;
+			int i2 = filename.indexOf('.', i1);
 			info.title = filename.mid(i1, i2 - i1);
 		}
 
@@ -1083,18 +1083,21 @@ void Widget::refreshImageWidget(const MusicInfo& info)
 	}
 
     // 设置歌曲名
-    if (!info.title.isEmpty())
+	QString musicName;
+    if (info.title.isEmpty())
     {
-        ui->music_info_widget->setMusicName(info.title);
-        ui->btn_music_name->setText(info.title);
+		QString filename = SETTING_HANDLER->currentMusicUrl();
+		int i1 = filename.lastIndexOf('/') + 1;
+		int i2 = filename.indexOf('.', i1);
+		musicName = filename.mid(i1, i2 - i1);
     }
     else
     {
-		QString filename = SETTING_HANDLER->currentMusicUrl();
-		QString str = filename.mid(0, filename.indexOf('.'));
-        ui->music_info_widget->setMusicName(str);
-        ui->btn_music_name->setText(str);
+		musicName = info.title;
     }
+	ui->music_info_widget->setMusicName(musicName);
+	ui->btn_music_name->setText(musicName);
+	setWindowTitle(musicName);
 
     // 设置歌手名
     ui->music_info_widget->setSingerName(info.singers.isEmpty() ? "未知歌手" : info.singers);
