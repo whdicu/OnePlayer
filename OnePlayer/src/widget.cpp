@@ -252,7 +252,7 @@ void Widget::slotMenuBtnClicked(const QString& text)
 	case 1:  // 打开文件所在位置
 	{
 		QUrl url = SETTING_HANDLER->currentPlayList().at(musicIndex);
-		QString path = url.toLocalFile();
+		QString path = url.toString();
         path.replace("/", "\\");
 
         QProcess::startDetached("explorer.exe", { "/select,", path });
