@@ -271,7 +271,7 @@ struct SettingStruct
 	SettingStruct() : playMode(AGAIN), musicDir(QString()), volumeIndex(0)
 		, playListName(QString("Null")), musicPosition(0), playerMode(LOCAL)
 		, bgMode(ONLY_LEFT), downloadDir(QString()), playListMap(DMap<QString, DVector<QString>>())
-		, neteaseInfo() {}
+		, neteaseInfo(), playOnStart(true), showLyric(true) {}
 
 	PLAY_MODE                       playMode;
 	QString                         musicDir;
@@ -283,6 +283,7 @@ struct SettingStruct
 	QString                         downloadDir;
 	DMap<QString, DVector<QString>>	playListMap;
 	NeteaseInfo						neteaseInfo;
+	bool							playOnStart;  // 启动时自动播放
 	bool							showLyric;
 };
 

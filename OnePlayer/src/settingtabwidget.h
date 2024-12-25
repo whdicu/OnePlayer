@@ -54,6 +54,7 @@ signals:
 private slots:
 	void on_cmb_mode_currentIndexChanged(int index);
 	void on_cmb_bg_mode_currentIndexChanged(int index);
+	void on_cb_play_on_start_stateChanged(int state);
 
 private:
 	Ui::SettingTabWidget ui;

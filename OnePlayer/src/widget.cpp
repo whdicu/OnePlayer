@@ -1251,13 +1251,19 @@ void Widget::init()
 		}
 	}
 
-	// 播放之前上次关闭时放的歌
 	if (SETTING_HANDLER->getStruct().playListName == TEMP_PLAY_LIST_NAME)
 		player_->playCurrentIndex();
 	else
 		player_->playCurrentIndex(SETTING_HANDLER->getStruct().musicPosition);
 
 	slotMusicIndexChanged(SETTING_HANDLER->getMusicIndex(), SETTING_HANDLER->getMusicIndex());  // 初始化被播放的那个音乐按钮样式
+
+
+	// 播放之前上次关闭时放的歌
+	if (!SETTING_HANDLER->getStruct().playOnStart)
+	{
+		on_btn_play_clicked();
+	}
 }
 
 void Widget::uninit()

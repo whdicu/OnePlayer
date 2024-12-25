@@ -49,6 +49,8 @@ SettingTabWidget::SettingTabWidget(QWidget *parent)
 	int index2 = ui.cmb_bg_mode->findData(SETTING_HANDLER->getStruct().bgMode);
 	ui.cmb_bg_mode->setCurrentIndex(index2);
 
+	ui.cb_play_on_start->setChecked(SETTING_HANDLER->getStruct().playOnStart);
+
 	//ui.btn_open_dir->setIcon(QIcon(":/svgs/goto.svg"));
 	//ui.btn_open_dir_download->setIcon(QIcon(":/svgs/goto.svg"));
 	ui.btn_change_dir->setIcon(QIcon(":/svgs/folder.svg"));
@@ -88,6 +90,11 @@ void SettingTabWidget::on_cmb_bg_mode_currentIndexChanged(int index)
 
 	SETTING_HANDLER->getStruct().bgMode = (BG_MODE)ui.cmb_bg_mode->itemData(index).toInt();
 	emit sigBGModeChanged(SETTING_HANDLER->getStruct().bgMode);
+}
+
+void SettingTabWidget::on_cb_play_on_start_stateChanged(int state)
+{
+	SETTING_HANDLER->getStruct().playOnStart = (0 != state);
 }
 
 // 屏蔽鼠标滚动

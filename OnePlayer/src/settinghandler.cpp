@@ -376,7 +376,8 @@ void SettingHandler::readAll()
     setting_.playerMode = (PLAYER_MODE)obj["playerMode"].toInt();
     setting_.bgMode = (BG_MODE)obj["bgMode"].toInt(FULL_WIDGET);  // 默认背景图全屏
     setting_.downloadDir = obj["downloadDir"].toString();
-    setting_.showLyric = obj["showLyric"].toBool();
+    setting_.playOnStart = obj["playOnStart"].toBool(true);
+    setting_.showLyric = obj["showLyric"].toBool(true);
 
 	// 读取网易云相关信息
 	QJsonObject neteaseObject = obj["neteaseInfo"].toObject();
@@ -407,6 +408,7 @@ void SettingHandler::writeAll()
     wholeObject.insert("playerMode", setting_.playerMode);
     wholeObject.insert("bgMode", setting_.bgMode);
     wholeObject.insert("downloadDir", setting_.downloadDir);
+    wholeObject.insert("playOnStart", setting_.playOnStart);
     wholeObject.insert("showLyric", setting_.showLyric);
     
 	// 写入网易云相关信息
