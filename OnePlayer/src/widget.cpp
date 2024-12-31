@@ -1170,7 +1170,6 @@ void Widget::animateShow(bool fromCursor)
     //    QWidget::show();
     //    setWindowFlags(windowFlags() & ~Qt::WindowStaysOnTopHint);
     //}
-	animateLabel_->setPixmap(QPixmap::grabWidget(this));
 	animateLabel_->show();
 
 	animation_->stop();
@@ -1294,6 +1293,7 @@ void Widget::init()
 	{
 		on_btn_play_clicked();
 	}
+	animateLabel_->setPixmap(QPixmap::grabWidget(this));
 }
 
 void Widget::uninit()
