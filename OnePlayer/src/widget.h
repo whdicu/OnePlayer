@@ -34,6 +34,9 @@ public:
 	// Widget构造函数失败时，为false
 	bool initSuccess() { return initSuccess_; }
 
+	void move(int xx, int yy);
+	void move(const QPoint& p);
+
 public slots:
 	void on_btn_play_clicked();
 	void on_btn_previoud_clicked();
@@ -117,6 +120,7 @@ private:
 
 
     Ui::Widget *ui;
+	QLabel* animateLabel_;
     bool movingProgress_;
     PlayerBase* player_;
 	bool initSuccess_;

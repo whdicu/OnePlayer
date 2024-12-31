@@ -52,6 +52,7 @@ bool pointInWidget(QWidget* widget, QPoint pos)
 Widget::Widget(const QString& filepath, QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::Widget)
+	, animateLabel_(new QLabel)
     , player_(new PlayerQt(this))
 	, initSuccess_(true)
     , movingProgress_(false)
@@ -75,24 +76,35 @@ Widget::Widget(const QString& filepath, QWidget *parent)
 
     setAcceptDrops(true);
 	
+	animateLabel_->setWindowFlags(Qt::FramelessWindowHint);
+	animateLabel_->setAttribute(Qt::WA_TranslucentBackground);
+	animateLabel_->setScaledContents(true);
+
     // 动画创建
-    animation_ = new QPropertyAnimation(this, "geometry");
+    animation_ = new QPropertyAnimation(animateLabel_, "geometry");
     animation_->setDuration(MAIN_WIDGET_ANIMATION_TIME);
     connect(animation_, &QPropertyAnimation::finished, this, [this]()
     {
-        if (isShowAnimation_)
-            return;
-
-        if (shutdownBtnClicked_)
-            close();
-        else
+		if (isShowAnimation_)
 		{
-            //resize(MAIN_WIDGET_WIDTH, MAIN_WIDGET_HEIGHT);
-            move(beforeAniPos_);
-            hide();
-			//show();
-			//setWindowState(Qt::WindowMinimized);
-        }
+			QWidget::show();
+		}
+		else
+		{
+			if (shutdownBtnClicked_)
+			{
+				animateLabel_->deleteLater();
+				QApplication::quit();
+			}
+			else
+			{
+				//resize(MAIN_WIDGET_WIDTH, MAIN_WIDGET_HEIGHT);
+				move(beforeAniPos_);
+				//show();
+				//setWindowState(Qt::WindowMinimized);
+			}
+		}
+		animateLabel_->hide();
     });
 
     stackedMusicBtnAnimation_ = new QPropertyAnimation(ui->stacked_music_btn, "geometry");
@@ -1126,23 +1138,24 @@ void Widget::animateShow(bool fromCursor)
 		endy = starty - MAIN_WIDGET_HEIGHT / 2;
 		if (endy < 20)
 			endy = 20;
+		move(endx, endy);
 	}
 	else
 	{
-		if (isHidden())
+		if (animateLabel_->isHidden())
 		{
-            int beginX = x() + MAIN_WIDGET_WIDTH / 2;
-            int beginY = y() + MAIN_WIDGET_HEIGHT / 2;
+            int beginX = animateLabel_->x() + MAIN_WIDGET_WIDTH / 2;
+            int beginY = animateLabel_->y() + MAIN_WIDGET_HEIGHT / 2;
             endx = beforeAniPos_.x();
             endy = beforeAniPos_.y();
 		}
 		else
 		{
             // 在播放hide动画时打断，从当前位置当前大小开始恢复到press位置
-            startx = x();
-            starty = y();
-            startWidth = width();
-            startHeight = height();
+            startx = animateLabel_->x();
+            starty = animateLabel_->y();
+            startWidth = animateLabel_->width();
+            startHeight = animateLabel_->height();
             endx = beforeAniPos_.x();
             endy = beforeAniPos_.y();
 		}
@@ -1151,12 +1164,14 @@ void Widget::animateShow(bool fromCursor)
     // 防止界面在被其他窗口遮挡。
     // 排除了 在播放hide动画时打断 的情况，防止show时窗口闪烁
     //if (isHidden())
-    {
-        setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
-        QWidget::show();
-        setWindowFlags(windowFlags() & ~Qt::WindowStaysOnTopHint);
-    }
-    QWidget::show();
+
+    //{
+    //    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
+    //    QWidget::show();
+    //    setWindowFlags(windowFlags() & ~Qt::WindowStaysOnTopHint);
+    //}
+	animateLabel_->setPixmap(QPixmap::grabWidget(this));
+	animateLabel_->show();
 
 	animation_->stop();
     animation_->setEasingCurve(MAIN_WIDGET_SHOW_EASING);
@@ -1169,10 +1184,14 @@ void Widget::animateShow(bool fromCursor)
 void Widget::animateHide()
 {
 	isAnimateHide_ = true;
-    
-    int startX = x();
-    int startY = y();
 
+	int startX = animateLabel_->x();
+	int startY = animateLabel_->y();
+
+	animateLabel_->setPixmap(QPixmap::grabWidget(this));
+	animateLabel_->show();
+	hide();
+	
     // 界面还在播放动画显示或隐藏时，不会更新pressX_和pressY_的值
     if (animation_->state() != QPropertyAnimation::Running)
     {
@@ -1181,8 +1200,8 @@ void Widget::animateHide()
 
     int newx = QCursor::pos().x();
     int newy = QCursor::pos().y();
-    int w = width();
-    int h = height();
+    int w = animateLabel_->width();
+    int h = animateLabel_->height();
 
 	animation_->stop();
     animation_->setEasingCurve(MAIN_WIDGET_HIDE_EASING);
@@ -1190,6 +1209,17 @@ void Widget::animateHide()
     animation_->setEndValue(QRect(newx, newy, 0, 0));
     animation_->start();
     isShowAnimation_ = false;
+}
+
+void Widget::move(int xx, int yy)
+{
+	move(QPoint(xx, yy));
+}
+
+void Widget::move(const QPoint& p)
+{
+	animateLabel_->move(p);
+	QWidget::move(p);
 }
 
 Widget::~Widget()

@@ -56,9 +56,9 @@ const static int STACKED_MUSIC_BTN_HEIGHT = 355;
 
 /****************************** 时间 ******************************/
 // 主界面显示隐藏的过渡动画时间;
-const static int MAIN_WIDGET_ANIMATION_TIME = 250;
-const static QEasingCurve MAIN_WIDGET_SHOW_EASING = QEasingCurve::Linear;
-const static QEasingCurve MAIN_WIDGET_HIDE_EASING = QEasingCurve::Linear;
+const static int MAIN_WIDGET_ANIMATION_TIME = 300;
+const static QEasingCurve MAIN_WIDGET_SHOW_EASING = QEasingCurve::InQuad;
+const static QEasingCurve MAIN_WIDGET_HIDE_EASING = QEasingCurve::OutQuad;
 
 // 右侧按钮框的过渡动画Widget
 const static int MORE_BTN_WIDGET_ANIMATION_TIME = 300;
