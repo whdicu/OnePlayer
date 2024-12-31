@@ -47,7 +47,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(QTDIR)\include;D:\Projects\OneDer\src;.\src;..\OpenCV\include;..\FFmpeg\include;..\..\QCloudMusicApi\QCloudMusicApi;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(QTDIR)\include;..\..\OneDer\src;.\src;..\OpenCV\include;..\FFmpeg\include;..\..\QCloudMusicApi\QCloudMusicApi;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>CV_IGNORE_DEBUG_BUILD_GUARD</PreprocessorDefinitions>
     </ClCompile>
     <Link>
