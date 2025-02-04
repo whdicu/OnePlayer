@@ -1,5 +1,5 @@
 ﻿#include "settinghandler.h"
-#include "HDCore/HD2QT.hpp"
+#include "HDQt/HD2QT.hpp"
 #include <mutex>
 #include <QApplication>
 #include <QDir>

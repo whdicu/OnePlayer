@@ -66,7 +66,11 @@ void DSystemTrayMenu::initNameItem()
 	QWidget* container = new QWidget(this);
 	container->setFixedWidth(MENU_WIDTH);
 	QHBoxLayout* layout = new QHBoxLayout(container);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 8, 2)
+	layout->setContentsMargins(0, 0, 0, 0);
+#else
 	layout->setMargin(0);
+#endif
 	nameBtn_ = new QPushButton(QIcon(":/svgs/music.svg"), "", container);
 	connect(nameBtn_, &QPushButton::clicked, this, &DSystemTrayMenu::sigName);
 	nameBtn_->setFont(FONT);
@@ -89,7 +93,11 @@ void DSystemTrayMenu::initPlayItem()
 	QWidget* container = new QWidget(this);
 	container->setFixedWidth(MENU_WIDTH);
 	QHBoxLayout* layout = new QHBoxLayout(container);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 8, 2)
+	layout->setContentsMargins(0, 0, 0, 0);
+#else
 	layout->setMargin(0);
+#endif
 	QPushButton* btnPrevioud = new QPushButton(QIcon(":/svgs/previous.svg"), "", container);
 	connect(btnPrevioud, &QPushButton::clicked, this, &DSystemTrayMenu::sigPrevioud);
 	btnPrevioud->setFlat(true);
@@ -126,7 +134,11 @@ void DSystemTrayMenu::initQuitItem()
 	QWidget* container = new QWidget(this);
 	container->setFixedWidth(MENU_WIDTH);
 	QHBoxLayout* layout = new QHBoxLayout(container);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 8, 2)
+	layout->setContentsMargins(0, 0, 0, 0);
+#else
 	layout->setMargin(0);
+#endif
 	QPushButton* btn = new QPushButton(QIcon(":/svgs/shutdown.svg"), tr("退出"), container);
 	connect(btn, &QPushButton::clicked, this, &DSystemTrayMenu::sigQuit);
 	btn->setFont(FONT);

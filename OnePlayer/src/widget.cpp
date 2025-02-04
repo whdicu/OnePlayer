@@ -1,7 +1,7 @@
 ﻿#include "widget.h"
 #include "ui_widget.h"
 #include "HDBase/DVector.hpp"
-#include "HDCore/HD2QT.hpp"
+#include "HDQt/HD2QT.hpp"
 #include "hook.h"
 #include "ImageHandler.h"
 #include "LocalMusicButton.h"
@@ -942,7 +942,7 @@ void Widget::mouseMoveEvent(QMouseEvent *ev)
     if (thisIsMoveWindow_)
     {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-        auto global_pos = ev->globalPosition();
+        auto global_pos = ev->globalPosition().toPoint();
 #else
 		auto global_pos = ev->globalPos();
 #endif
@@ -1186,8 +1186,11 @@ void Widget::animateHide()
 
 	int startX = animateLabel_->x();
 	int startY = animateLabel_->y();
-
+#if QT_VERSION >= QT_VERSION_CHECK(6, 8, 2)
+	animateLabel_->setPixmap(grab());
+#else
 	animateLabel_->setPixmap(QPixmap::grabWidget(this));
+#endif
 	animateLabel_->show();
 	hide();
 	
@@ -1293,7 +1296,11 @@ void Widget::init()
 	{
 		on_btn_play_clicked();
 	}
+#if QT_VERSION >= QT_VERSION_CHECK(6, 8, 2)
+	animateLabel_->setPixmap(grab());
+#else
 	animateLabel_->setPixmap(QPixmap::grabWidget(this));
+#endif
 }
 
 void Widget::uninit()
