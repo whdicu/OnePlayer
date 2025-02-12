@@ -1,6 +1,6 @@
 ﻿#include "neteasehandlerqt.h"
 //#include "ImageHandler.h"
-#include "module.h"
+//#include "module.h"
 #include <QCryptographicHash>
 //#include <QDebug>
 //#include <QEventLoop>
