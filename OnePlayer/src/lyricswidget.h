@@ -18,6 +18,7 @@ public:
     ~LyricsWidget();
     void setLyrics(const QString& lyricStr);
 	void setLabel1Text(const QString& text);
+	QString getLabel1Text();
 	void setLabel2Text(const QString& text);
 	void setLabel3Text(const QString& text);
     void setPos(qint64 pos);  // 到最后了会返回false

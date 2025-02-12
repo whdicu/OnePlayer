@@ -107,6 +107,9 @@ void DMenu::animateMove(QPoint pos)
 
 void DMenu::animateShow()
 {
+	if (!isHidden())
+		return;
+
     animation_->stop();
     QWidget::show();
     setFocus();
@@ -123,6 +126,9 @@ void DMenu::animateShow()
 
 void DMenu::animateHide()
 {
+	if (isHidden())
+		return;
+
     animation_->stop();
 
     is_hidden_ = true;
@@ -166,7 +172,6 @@ void DMenu::focusOutEvent(QFocusEvent* event)
     {
 //        qDebug() << "Widget lost focus.";
         // 发信号，让外部来判断是否需要隐藏
-        emit maybeNeedHide();
         emit maybeNeedHide();
     }
 

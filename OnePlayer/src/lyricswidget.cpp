@@ -65,6 +65,12 @@ void LyricsWidget::setLabel1Text(const QString& text)
 	ui->label1->setText(text);
 }
 
+
+QString LyricsWidget::getLabel1Text()
+{
+	return ui->label1->text();
+}
+
 void LyricsWidget::setLabel2Text(const QString& text)
 {
 	ui->label2->setText(text);

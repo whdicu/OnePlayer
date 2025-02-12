@@ -284,6 +284,7 @@ struct SettingStruct
 	DMap<QString, DVector<QString>>	playListMap;
 	NeteaseInfo						neteaseInfo;
 	bool							playOnStart;  // 启动时自动播放
+	QColor							mainColor;
 	bool							showLyric;
 };
 

@@ -99,9 +99,6 @@
     <QtMoc Include="src\PlayListEdit.h">
       <Filter>widgets</Filter>
     </QtMoc>
-    <QtMoc Include="src\Toast.h">
-      <Filter>widgets</Filter>
-    </QtMoc>
     <QtMoc Include="src\ImageHandler.h">
       <Filter>Header Files</Filter>
     </QtMoc>
@@ -201,9 +198,6 @@
       <Filter>widgets</Filter>
     </ClCompile>
     <ClCompile Include="src\PlayListEdit.cpp">
-      <Filter>widgets</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Toast.cpp">
       <Filter>widgets</Filter>
     </ClCompile>
     <ClCompile Include="src\NeteaseMusicBtn.cpp">

@@ -1,9 +1,10 @@
-#pragma once
+ï»¿#pragma once
 
 #include "opencv2/core.hpp"
 #include <QWidget>
 #include "ui_MusicInfoWidget.h"
 
+class DMenu;
 class QGraphicsOpacityEffect;
 class QPropertyAnimation;
 
@@ -12,7 +13,7 @@ class MusicInfoWidget : public QWidget
 	Q_OBJECT
 
 public:
-	MusicInfoWidget(QWidget *parent = nullptr);
+	MusicInfoWidget(QWidget* parent = nullptr);
 	~MusicInfoWidget();
 	void drawBGMat(const cv::Mat& image);
 	void drawMainMat(const cv::Mat& image);
@@ -21,12 +22,18 @@ public:
 	void setAlbumName(const QString& name) { ui.lyric_widget->setLabel3Text(name); }
 	void setLyrics(const QString& lyricStr) { ui.lyric_widget->setLyrics(lyricStr); }
 	void setLyricPos(dint64 pos) { ui.lyric_widget->setPos(pos); }
-	// Òş²Ø¶¯»­Îª×èÈûÊ½²¥·Å£¬Ê¹ÔÚ¶¯»­²¥·ÅÍêÖ®ºó²Å»áÈ¥×öË¢ĞÂÎÄ×Ö¡¢²¥·ÅÏÔÊ¾¶¯»­µÈ²Ù×÷¡£
+	// éšè—åŠ¨ç”»ä¸ºé˜»å¡å¼æ’­æ”¾ï¼Œä½¿åœ¨åŠ¨ç”»æ’­æ”¾å®Œä¹‹åæ‰ä¼šå»åšåˆ·æ–°æ–‡å­—ã€æ’­æ”¾æ˜¾ç¤ºåŠ¨ç”»ç­‰æ“ä½œã€‚
 	void animationHide();
 	void animationShow();
 
 private:
+	bool eventFilter(QObject* obj, QEvent* event) override;
+	void showImage();
+	void saveImage();
+
 	Ui::MusicInfoWidgetClass ui;
 	QGraphicsOpacityEffect* opacityEffect_;
 	QPropertyAnimation* animation_;
+	cv::Mat mainMat_;
+	DMenu* imageMenu_;
 };

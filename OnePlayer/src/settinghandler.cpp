@@ -1,5 +1,6 @@
 ﻿#include "settinghandler.h"
-#include "HDCore/HD2QT.hpp"
+#include "HDQt/DStyle.hpp"
+#include "HDQt/HD2QT.hpp"
 #include <mutex>
 #include <QApplication>
 #include <QDir>
@@ -377,6 +378,7 @@ void SettingHandler::readAll()
     setting_.bgMode = (BG_MODE)obj["bgMode"].toInt(FULL_WIDGET);  // 默认背景图全屏
     setting_.downloadDir = obj["downloadDir"].toString();
     setting_.playOnStart = obj["playOnStart"].toBool(true);
+	setting_.mainColor = DStyle::int2Color(obj["mainColor"].toInt(16737894));
     setting_.showLyric = obj["showLyric"].toBool(true);
 
 	// 读取网易云相关信息
@@ -409,6 +411,7 @@ void SettingHandler::writeAll()
     wholeObject.insert("bgMode", setting_.bgMode);
     wholeObject.insert("downloadDir", setting_.downloadDir);
     wholeObject.insert("playOnStart", setting_.playOnStart);
+	wholeObject.insert("mainColor", DStyle::color2Int(setting_.mainColor));
     wholeObject.insert("showLyric", setting_.showLyric);
     
 	// 写入网易云相关信息

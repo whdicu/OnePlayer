@@ -2,7 +2,7 @@
 #include "neteasehandler.h"
 #include <QMessageBox>
 #include <QRegularExpression>
-#include "Toast.h"
+#include "HDQt/HDWidget/DToast.hpp"
 
 
 static NetLoginDialog* net_login_dialog = nullptr;
@@ -25,11 +25,11 @@ void NetLoginDialog::on_btn_send_captcha_clicked()
 
 	if (NETEASE_HANDLER->sendCaptcha(phone))
 	{
-		Toast::makeToast("验证码发送成功");
+		DToast::toast(tr("验证码发送成功"), DToast::FromBottom);
 	}
 	else
 	{
-		Toast::makeToast("验证码发送失败");
+		DToast::toast(tr("验证码发送失败"), DToast::FromBottom);
 	}
 }
 

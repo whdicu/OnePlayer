@@ -12,8 +12,10 @@ class DMenu : public QWidget
 
 public:
     static DMenu* getButtonMenu();
-    DSizeType getSelectedMusicIndex() { return musicIndex_; }
+	DMenu(const QStringList& texts);
+	~DMenu();
 
+    DSizeType getSelectedMusicIndex() { return musicIndex_; }
     void animateMove(int newx, int newy);
     void animateMove(QPoint pos);
     void animateShow();
@@ -27,9 +29,6 @@ signals:
     void maybeNeedHide();
 
 private:
-    DMenu(const QStringList& texts);
-    ~DMenu();
-
     void focusOutEvent(QFocusEvent*);
 
     QWidget* widget_;

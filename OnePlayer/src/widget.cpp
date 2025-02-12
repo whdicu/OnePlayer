@@ -1,7 +1,8 @@
 ﻿#include "widget.h"
 #include "ui_widget.h"
 #include "HDBase/DVector.hpp"
-#include "HDCore/HD2QT.hpp"
+#include "HDQt/HD2QT.hpp"
+#include "HDQt/DStyle.hpp"
 #include "hook.h"
 #include "ImageHandler.h"
 #include "LocalMusicButton.h"
@@ -304,6 +305,7 @@ void Widget::slotMenuBtnClicked(const QString& text)
 
 void Widget::slotLocalMusicBtnClicked(DSizeType musicIndex)
 {
+	DMenu::getButtonMenu()->animateHide();
 	if (SETTING_HANDLER->getMusicIndex() == musicIndex)
 		return;
 
@@ -511,6 +513,7 @@ void Widget::setListener()
 	/****************** 设置页中的一些信号 ********************/
 	connect(ui->setting_tab_widget, &SettingTabWidget::sigBGModeChanged, this, &Widget::slotBGModeChanged);
 	connect(ui->setting_tab_widget, &SettingTabWidget::sigPlayerModeChanged, this, &Widget::slotPlayerModeChanged);
+	connect(ui->setting_tab_widget, &SettingTabWidget::sigMainColorChanged, this, &Widget::refreshMainColor);;
 }
 
 void Widget::refreshMusicBtns()
@@ -629,6 +632,11 @@ void Widget::refreshPlayListBtns()
 		auto allPlayLists = NETEASE_HANDLER->getAllPlayListsInfo();
 		appendNeteasePlayListBtns(allPlayLists);
 	}
+}
+
+void Widget::refreshMainColor(QColor mainColor)
+{
+	ui->widget_btn->setStyleSheet(QString("#widget_btn { background-color: %1; }").arg(DStyle::color2Str(mainColor)));
 }
 
 void Widget::appendNeteasePlayListBtns(const DVector<NeteasePlayListInfo>& infos)
@@ -1237,6 +1245,8 @@ void Widget::init()
 
 	// 初始化界面
 	initMultiFuncWidget();
+
+	refreshMainColor(SETTING_HANDLER->getStruct().mainColor);
 
 	MusicInfo info;
 	info.title = "歌曲名";

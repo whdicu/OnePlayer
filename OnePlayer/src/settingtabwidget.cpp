@@ -1,4 +1,5 @@
 ﻿#include "settingtabwidget.h"
+#include <QColorDialog>
 #include <QComboBox>
 #include <QPushButton>
 
@@ -10,6 +11,8 @@ SettingTabWidget::SettingTabWidget(QWidget *parent)
 	: QWidget(parent)
 {
 	ui.setupUi(this);
+
+	const SettingStruct& stru = SETTING_HANDLER->getStruct();
 
 	// 初始化TabButton
 	int i = 0;
@@ -38,7 +41,7 @@ SettingTabWidget::SettingTabWidget(QWidget *parent)
 	{
 		ui.cmb_mode->addItem(it.value(), it.key());
 	}
-	int index = ui.cmb_mode->findData(SETTING_HANDLER->getStruct().playerMode);
+	int index = ui.cmb_mode->findData(stru.playerMode);
 	ui.cmb_mode->setCurrentIndex(index);
 
 	// 初始化背景图片显示模式
@@ -46,10 +49,13 @@ SettingTabWidget::SettingTabWidget(QWidget *parent)
 	{
 		ui.cmb_bg_mode->addItem(it.value(), it.key());
 	}
-	int index2 = ui.cmb_bg_mode->findData(SETTING_HANDLER->getStruct().bgMode);
+	int index2 = ui.cmb_bg_mode->findData(stru.bgMode);
 	ui.cmb_bg_mode->setCurrentIndex(index2);
 
-	ui.cb_play_on_start->setChecked(SETTING_HANDLER->getStruct().playOnStart);
+	ui.cb_play_on_start->setChecked(stru.playOnStart);
+
+	ui.btn_color->setStyleSheet(QString("background-color: rgb(%1, %2, %3);")
+		.arg(stru.mainColor.red()).arg(stru.mainColor.green()).arg(stru.mainColor.blue()));
 
 	//ui.btn_open_dir->setIcon(QIcon(":/svgs/goto.svg"));
 	//ui.btn_open_dir_download->setIcon(QIcon(":/svgs/goto.svg"));
@@ -95,6 +101,26 @@ void SettingTabWidget::on_cmb_bg_mode_currentIndexChanged(int index)
 void SettingTabWidget::on_cb_play_on_start_stateChanged(int state)
 {
 	SETTING_HANDLER->getStruct().playOnStart = (0 != state);
+}
+
+void SettingTabWidget::on_btn_color_clicked()
+{
+	SettingStruct& stru = SETTING_HANDLER->getStruct();
+
+	QColorDialog dlg;
+	dlg.setCurrentColor(stru.mainColor);
+	if (dlg.exec() != QDialog::Accepted)
+		return;
+
+	QColor newColor = dlg.selectedColor();
+	if (newColor != stru.mainColor)
+	{
+		stru.mainColor = newColor;
+		emit sigMainColorChanged(newColor);
+	}
+
+	ui.btn_color->setStyleSheet(QString("background-color: rgb(%1, %2, %3);")
+		.arg(stru.mainColor.red()).arg(stru.mainColor.green()).arg(stru.mainColor.blue()));
 }
 
 // 屏蔽鼠标滚动

@@ -110,6 +110,7 @@ private:
 	void refreshMusicBtns();
 	void refreshNeteaseMusicBtns(dint64 playListId);
 	void refreshPlayListBtns();
+	void refreshMainColor(QColor mainColor);
 	void appendNeteasePlayListBtns(const DVector<NeteasePlayListInfo>& infos);
 	BaseMusicButton* addLocalMusicBtn(const QUrl& url);
 	BaseMusicButton* addNeteaseMusicBtn(const NeteaseSongInfo& info);

@@ -50,11 +50,14 @@ signals:
 	void sig_btn_change_dir_download_clicked();
 	void sigPlayerModeChanged(PLAYER_MODE playerMode);
 	void sigBGModeChanged(BG_MODE bgMode);
+	void sigMainColorChanged(QColor color);
 
 private slots:
 	void on_cmb_mode_currentIndexChanged(int index);
 	void on_cmb_bg_mode_currentIndexChanged(int index);
 	void on_cb_play_on_start_stateChanged(int state);
+	void on_btn_color_clicked();
+	void on_btn_color2_clicked() { on_btn_color_clicked(); }
 
 private:
 	Ui::SettingTabWidget ui;
