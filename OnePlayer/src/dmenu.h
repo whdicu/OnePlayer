@@ -4,6 +4,7 @@
 #include <QFocusEvent>
 #include "basemusicbutton.h"
 
+class QLabel;
 class QPropertyAnimation;
 
 class DMenu : public QWidget
@@ -35,4 +36,7 @@ private:
     bool is_hidden_;
     DSizeType musicIndex_;
     QPropertyAnimation* animation_;
+    QPropertyAnimation* animationMove_;
+	QLabel* animateLabel_;
+	int animationState_;  // 0正在显示 1正在隐藏 2正在移动
 };

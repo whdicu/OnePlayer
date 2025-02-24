@@ -3,7 +3,6 @@
 #include "HDBase/DVector.hpp"
 #include "HDQt/HD2QT.hpp"
 #include "HDQt/DStyle.hpp"
-#include "hook.h"
 #include "ImageHandler.h"
 #include "LocalMusicButton.h"
 #include "neteasehandler.h"
@@ -72,9 +71,6 @@ Widget::Widget(const QString& filepath, QWidget *parent)
 	setAttribute(Qt::WA_OpaquePaintEvent);
 	setAttribute(Qt::WA_PaintOnScreen);
 
-    // 捕获所有按键，让上下左右键也能捕获到
-    grabKeyboard();
-
     setAcceptDrops(true);
 	
 	animateLabel_->setWindowFlags(Qt::FramelessWindowHint);
@@ -94,7 +90,6 @@ Widget::Widget(const QString& filepath, QWidget *parent)
 		{
 			if (shutdownBtnClicked_)
 			{
-				animateLabel_->deleteLater();
 				QApplication::quit();
 			}
 			else
@@ -176,23 +171,49 @@ Widget::Widget(const QString& filepath, QWidget *parent)
 	setPlayMode(SETTING_HANDLER->getStruct().playMode);
 }
 
-void Widget::slotKeyPressed(DWORD key)
+void Widget::slotKeyPressed(const KeyInfo& info)
 {
-    switch (key)
+    switch (info.key)
     {
     case 179ul:
         on_btn_play_clicked();
-        break;
+        return;
     case 176ul:
         on_btn_next_clicked();
-        break;
+		return;
     case 177ul:
         on_btn_previoud_clicked();
-        break;
+		return;
     case 178ul:
         //player_->stop();
-        break;
+		return;
     }
+
+	// 当前程序有焦点时，才进行操作
+	if (isAncestorOf(QApplication::focusWidget()))
+	{
+		switch (info.key)
+		{
+		case 37ul:  // 左
+			if (info.ctrlPressed)
+				on_btn_previoud_clicked();
+			else
+				player_->setPosition(player_->getPosition() - 3000);
+			break;
+		case 38ul:  // 上
+			on_btn_up_clicked();
+			break;
+		case 39ul:  // 右
+			if (info.ctrlPressed)
+				on_btn_next_clicked();
+			else
+				player_->setPosition(player_->getPosition() + 3000);
+			break;
+		case 40ul:  // 下
+			on_btn_down_clicked();
+			break;
+		}
+	}
 }
 
 
@@ -228,7 +249,6 @@ void Widget::slotPositionChanged(qint64 pos)
 
 void Widget::slotSearchEditClose()
 {
-	grabKeyboard();
     ui->find_widget->animationHide();
     animationStackedLocalBtnsLong();
     ui->find_widget->setEditText("");
@@ -481,9 +501,7 @@ void Widget::setListener()
     // 右侧按钮Widget
 	connect(ui->multi_btn_widget, &MultiBtnWidget::sigBtnNeteaseClicked, this, [this]()
 	{
-		releaseKeyboard();
 		NET_LOGIN_DIALOG->exec();
-		grabKeyboard();
 	});
 	connect(ui->multi_btn_widget, &MultiBtnWidget::sigBtnPlayListClicked, this, [this]()
 	{
@@ -491,13 +509,11 @@ void Widget::setListener()
 		{
 			ui->multi_btn_widget->setBtnPlayListIcon(QIcon(":/svgs/play_list.svg"));
 			ui->stacked_music_btn->setCurrentIndex(0);
-			grabKeyboard();
 		}
 		else
 		{
 			ui->multi_btn_widget->setBtnPlayListIcon(QIcon(":/svgs/back.svg"));
 			ui->stacked_music_btn->setCurrentIndex(2);
-			releaseKeyboard();
 		}
 	});
     connect(ui->multi_btn_widget, &MultiBtnWidget::sigBtnSettingClicked, this, [this]()
@@ -974,7 +990,7 @@ void Widget::mouseDoubleClickEvent(QMouseEvent* event)
 
 void Widget::keyPressEvent(QKeyEvent *event)
 {
-//    qDebug() << event->key();
+    //qDebug() << "aaa->" << event->key();
     switch (event->key())
     {
     case 32:  // space
@@ -983,45 +999,17 @@ void Widget::keyPressEvent(QKeyEvent *event)
     case 16777249:  // ctrl
         pressedCtrl_ = true;
         break;
-    case Qt::Key_Left:
-        if (pressedCtrl_)
-        {
-            on_btn_previoud_clicked();
-        }
-        else
-        {
-            player_->setPosition(player_->getPosition() - 3000);
-        }
-        break;
-    case Qt::Key_Right:
-        if (pressedCtrl_)
-        {
-            on_btn_next_clicked();
-        }
-        else
-        {
-            player_->setPosition(player_->getPosition() + 3000);
-        }
-        break;
-    case Qt::Key_Up:
-        on_btn_up_clicked();
-        break;
-    case Qt::Key_Down:
-        on_btn_down_clicked();
-        break;
     case Qt::Key_F:
         if (pressedCtrl_)  // 按了ctrl + f弹出搜索框
         {
             if (ui->find_widget->isAnimateHide())
             {
-				releaseKeyboard();
                 ui->find_widget->animationShow();
 				animationStackedLocalBtnsShort();
                 ui->find_widget->setEditFocus();
             }
             else
             {
-				grabKeyboard();
                 slotSearchEditClose();
             }
         }
@@ -1234,6 +1222,8 @@ void Widget::move(const QPoint& p)
 
 Widget::~Widget()
 {
+	if (animateLabel_)
+		animateLabel_->deleteLater();
     delete ui;
 }
 
@@ -1427,7 +1417,6 @@ void Widget::on_btn_more_clicked()
 			{
 				ui->multi_btn_widget->setBtnPlayListIcon(QIcon(":/svgs/play_list.svg"));
 				ui->stacked_music_btn->setCurrentIndex(0);
-				grabKeyboard();
 			}
 
             ui->multi_btn_widget->animationHide();

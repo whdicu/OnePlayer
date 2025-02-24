@@ -1,6 +1,7 @@
 ﻿#include "dmenu.h"
 #include "OnePlayerStruct.h"
 #include <QDebug>
+#include <QLabel>
 #include <QVBoxLayout>
 #include <QPushButton>
 #include <QPainter>
@@ -48,12 +49,43 @@ DMenu::DMenu(const QStringList& texts)
     , widget_(new QWidget(this))
     , is_hidden_(true)
     , musicIndex_(0)
+	, animateLabel_(new QLabel)
+	, animationState_(0)
 {
     setAttribute(Qt::WA_TranslucentBackground);
     setFocusPolicy(Qt::StrongFocus);
 
-    animation_ = new QPropertyAnimation(this, "geometry");
+	animateLabel_->setWindowFlags(Qt::FramelessWindowHint);
+	animateLabel_->setAttribute(Qt::WA_TranslucentBackground);
+	animateLabel_->setScaledContents(true);
+
+	animationMove_ = new QPropertyAnimation(this, "pos");
+	animationMove_->setEasingCurve(QEasingCurve::InOutQuad);
+	animationMove_->setDuration(TIME300);
+
+    animation_ = new QPropertyAnimation(animateLabel_, "geometry");
     animation_->setEasingCurve(QEasingCurve::InOutQuad);
+	animation_->setDuration(TIME150);
+	connect(animation_, &QPropertyAnimation::finished, this, [this]()
+	{
+		switch (animationState_)
+		{
+		case 0:  // show
+			QWidget::show();
+			break;
+		case 1:  // hide
+			break;
+		default:
+			break;
+		}
+		animateLabel_->hide();
+		switch (animationState_)
+		{
+		case 0:  // show
+			setFocus();
+			break;
+		}
+	});
 
     move(QCursor::pos());
     widget_->move(0, 0);
@@ -82,6 +114,8 @@ DMenu::DMenu(const QStringList& texts)
     // 界面会一直show，只是使用动画缩小为0*0来代替隐藏
 //    resize(0, 0);
 //    QWidget::show();
+
+	animateLabel_->setPixmap(grab());
 }
 
 DMenu::~DMenu()
@@ -95,14 +129,11 @@ void DMenu::animateMove(int newx, int newy)
 
 void DMenu::animateMove(QPoint pos)
 {
-    animation_->stop();
-
-    setFocus();
-
-    animation_->setDuration(TIME300);
-    animation_->setStartValue(QRect(x(), y(), width(), height()));
-    animation_->setEndValue(QRect(pos, QSize(width(), height())));
-    animation_->start();
+	setFocus();
+	animationMove_->stop();
+	animationMove_->setStartValue(this->pos());
+    animationMove_->setEndValue(pos);
+    animationMove_->start();
 }
 
 void DMenu::animateShow()
@@ -110,18 +141,19 @@ void DMenu::animateShow()
 	if (!isHidden())
 		return;
 
-    animation_->stop();
-    QWidget::show();
+	animateLabel_->show();
+	animation_->stop();
     setFocus();
     is_hidden_ = false;
     int newx = QCursor::pos().x();
     int newy = QCursor::pos().y();
+	move(newx, newy);
 
-    animation_->setDuration(TIME150);
     //qDebug() << newx << newy << widget_->width() << widget_->height();
-    animation_->setStartValue(QRect(newx, newy, width(), height()));
+    animation_->setStartValue(QRect(newx, newy, 0, 0));
     animation_->setEndValue(QRect(newx, newy, widget_->width(), widget_->height()));
     animation_->start();
+	animationState_ = 0;
 }
 
 void DMenu::animateHide()
@@ -129,16 +161,19 @@ void DMenu::animateHide()
 	if (isHidden())
 		return;
 
+	animateLabel_->setPixmap(grab());
+	animateLabel_->show();
+	hide();
     animation_->stop();
 
     is_hidden_ = true;
     int newx = QCursor::pos().x();
     int newy = QCursor::pos().y();
 
-    animation_->setDuration(TIME150);
     animation_->setStartValue(QRect(x(), y(), widget_->width(), widget_->height()));
     animation_->setEndValue(QRect(newx, newy, 0, 0));
     animation_->start();
+	animationState_ = 1;
 }
 
 bool DMenu::setFocus()
@@ -162,7 +197,7 @@ void DMenu::focusOutEvent(QFocusEvent* event)
     if (event->reason() == Qt::MouseFocusReason)
     {
 //        qDebug() << "点击了菜单中的按钮";
-
+		animateHide();
     }
     else if (event->reason() == Qt::TabFocusReason)
     {

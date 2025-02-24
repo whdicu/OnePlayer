@@ -56,8 +56,7 @@ private slots:
 	void on_cmb_mode_currentIndexChanged(int index);
 	void on_cmb_bg_mode_currentIndexChanged(int index);
 	void on_cb_play_on_start_stateChanged(int state);
-	void on_btn_color_clicked();
-	void on_btn_color2_clicked() { on_btn_color_clicked(); }
+	void slot_widget_color_clicked(const QColor& color);
 
 private:
 	Ui::SettingTabWidget ui;

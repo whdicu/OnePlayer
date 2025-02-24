@@ -1,5 +1,5 @@
 ﻿#include "settingtabwidget.h"
-#include <QColorDialog>
+#include "DColorDialog.h"
 #include <QComboBox>
 #include <QPushButton>
 
@@ -54,14 +54,15 @@ SettingTabWidget::SettingTabWidget(QWidget *parent)
 
 	ui.cb_play_on_start->setChecked(stru.playOnStart);
 
-	ui.btn_color->setStyleSheet(QString("background-color: rgb(%1, %2, %3);")
-		.arg(stru.mainColor.red()).arg(stru.mainColor.green()).arg(stru.mainColor.blue()));
-
+	ui.widget_color->setColor(stru.mainColor);
+	ui.widget_color->setText(tr("主题颜色"));
+	
 	//ui.btn_open_dir->setIcon(QIcon(":/svgs/goto.svg"));
 	//ui.btn_open_dir_download->setIcon(QIcon(":/svgs/goto.svg"));
 	ui.btn_change_dir->setIcon(QIcon(":/svgs/folder.svg"));
 	ui.btn_change_dir_download->setIcon(QIcon(":/svgs/folder.svg"));
 
+	connect(ui.widget_color, &DColorButton::sigClicked, this, &SettingTabWidget::slot_widget_color_clicked);
 	connect(ui.btn_open_dir, &QPushButton::clicked, this, &SettingTabWidget::sig_btn_open_dir_clicked);
 	connect(ui.btn_change_dir, &QPushButton::clicked, this, &SettingTabWidget::sig_btn_change_dir_clicked);
 	connect(ui.btn_open_dir_download, &QPushButton::clicked, this, &SettingTabWidget::sig_btn_open_dir_download_clicked);
@@ -103,24 +104,28 @@ void SettingTabWidget::on_cb_play_on_start_stateChanged(int state)
 	SETTING_HANDLER->getStruct().playOnStart = (0 != state);
 }
 
-void SettingTabWidget::on_btn_color_clicked()
+void SettingTabWidget::slot_widget_color_clicked(const QColor& color)
 {
 	SettingStruct& stru = SETTING_HANDLER->getStruct();
 
-	QColorDialog dlg;
-	dlg.setCurrentColor(stru.mainColor);
-	if (dlg.exec() != QDialog::Accepted)
+	DColorDialog dlg({
+		{ QColor(182, 209, 200), tr("绿茵") },
+		{ QColor(255, 66, 66), tr("粉墨") },
+		{ QColor(190, 207, 216), tr("烟云") },
+		{ QColor(252, 252, 243), tr("皂白") },
+		{ QColor(50, 60, 55), tr("砚青") },
+	});
+	QColor newColor;
+	if (dlg.selectColor(stru.mainColor, newColor) != QDialog::Accepted)
 		return;
 
-	QColor newColor = dlg.selectedColor();
 	if (newColor != stru.mainColor)
 	{
 		stru.mainColor = newColor;
 		emit sigMainColorChanged(newColor);
 	}
 
-	ui.btn_color->setStyleSheet(QString("background-color: rgb(%1, %2, %3);")
-		.arg(stru.mainColor.red()).arg(stru.mainColor.green()).arg(stru.mainColor.blue()));
+	ui.widget_color->setColor(stru.mainColor);
 }
 
 // 屏蔽鼠标滚动

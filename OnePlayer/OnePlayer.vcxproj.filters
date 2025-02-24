@@ -114,6 +114,12 @@
     <QtMoc Include="src\neteasehandlerqt.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="src\DColorButton.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="src\DColorDialog.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\hook.cpp">
@@ -210,6 +216,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\neteasehandlerqt.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\DColorButton.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\DColorDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

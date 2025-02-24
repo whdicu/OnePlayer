@@ -3,6 +3,7 @@
 #pragma execution_character_set("utf-8")
 #include "HDBase/DVector.hpp"
 #include "basemusicbutton.h"
+#include "hook.h"
 #include "OnePlayerStruct.h"
 #include "onlinehandler.h"
 #include "PlayerBase.h"
@@ -57,7 +58,7 @@ private slots:
 //	void slot_btn_change_dir_download_clicked();
     void slotPlayerModeChanged(PLAYER_MODE playerMode);
 
-    void slotKeyPressed(DWORD key);
+    void slotKeyPressed(const KeyInfo& info);
     void slotPositionChanged(qint64 pos);
     void slotSearchEditClose();
     void slotMusicIndexChanged(DSizeType oldIndex, DSizeType newIndex);

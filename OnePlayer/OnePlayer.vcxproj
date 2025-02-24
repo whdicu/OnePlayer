@@ -103,6 +103,8 @@
     <QtMoc Include="src\basemusicbutton.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\DColorButton.cpp" />
+    <ClCompile Include="src\DColorDialog.cpp" />
     <ClCompile Include="src\dmenu.cpp" />
     <ClCompile Include="src\DProgressBar.cpp" />
     <ClCompile Include="src\DSystemTrayMenu.cpp" />
@@ -180,6 +182,8 @@
     <QtMoc Include="src\ImageHandler.h" />
     <QtMoc Include="src\MultiBtnWidget.h" />
     <QtMoc Include="src\OneMessageBox.h" />
+    <QtMoc Include="src\DColorButton.h" />
+    <QtMoc Include="src\DColorDialog.h" />
     <ClInclude Include="src\NCM\aes.h" />
     <ClInclude Include="src\NCM\cJSON.h" />
     <ClInclude Include="src\NCM\NCMHandler.h" />
