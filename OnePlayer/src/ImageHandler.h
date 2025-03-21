@@ -31,7 +31,7 @@ namespace ImageHandler
 	// ²Ã¼ôÍ¼Æ¬
 	cv::Mat cutImage(const cv::Mat& image, const QRect& rect);
 
-	QRgb getMainColor(const cv::Mat& image);
+	QRgb getMainColor(const cv::Mat& image, const QRect& rect = QRect(0, 0, 0, 0), int step = 3);
 
 	QString getTextColor(const cv::Mat& image);
 	

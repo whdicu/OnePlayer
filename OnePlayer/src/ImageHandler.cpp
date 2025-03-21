@@ -1,4 +1,5 @@
 #include "ImageHandler.h"
+#include "HDCore/DGlobal.h"
 #include "opencv2/imgproc.hpp"
 #include <opencv2/opencv.hpp>
 #include <QDebug>
@@ -64,15 +65,31 @@ cv::Mat ImageHandler::cutImage(const cv::Mat& image, const QRect& rect)
 	return image(roi);
 }
 
-QRgb ImageHandler::getMainColor(const cv::Mat& image)
+QRgb ImageHandler::getMainColor(const cv::Mat& image, const QRect& rect, int step)
 {
+	int fromCol = 0, toCol = 0, fromRow = 0, toRow = 0;
+	if (rect == QRect(0, 0, 0, 0))
+	{
+		toCol = image.cols;
+		toRow = image.rows;
+	}
+	else
+	{
+		fromCol = dBigger(rect.left(), 0);
+		fromRow = dBigger(rect.top(), 0);
+		toCol = dSmaller(rect.right(), image.cols);
+		toRow = dSmaller(rect.bottom(), image.rows);
+	}
+	if (step < 1)
+		step = 1;
+
 	unsigned long long r = 0, g = 0, b = 0, a = 0;
 	unsigned long long cnt = 0;
-	for (int i = 0; i < image.cols; i += 4)
+	for (int i = fromCol; i < toCol; i += step)
 	{
 		// 原来只采样图片下半部分
 		//for (int j = image.height() / 2; j < image.height(); j += 4)
-		for (int j = 0; j < image.rows; j += 4)
+		for (int j = fromRow; j < toRow; j += step)
 		{
 			cv::Vec3b pixel = image.at<cv::Vec3b>(j, i);
 

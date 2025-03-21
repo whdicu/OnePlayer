@@ -77,8 +77,11 @@ void MusicInfoWidget::drawBGMat(const cv::Mat& image)
     ui.label_background->setPixmap(QPixmap::fromImage(roundImage));
 
     QString text_color = ImageHandler::getTextColor(originImage);
-    setStyleSheet(QString("QLabel{ color: rgba(%1, 0.8); }").arg(text_color));
-    //ui->lyrics_widget->set_color(text_color == "#5c5c66");
+    //setStyleSheet(QString("QLabel{ color: rgba(%1, 0.8); }").arg(text_color));
+
+	QRgb rgb = ImageHandler::getMainColor(originImage, QRect(50, ui.lyric_widget->y(), ui.lyric_widget->width() - 100, ui.lyric_widget->height()));
+	int gray = (qRed(rgb) + qGreen(rgb) + qBlue(rgb)) / 3;
+    ui.lyric_widget->setTextColor(gray > 127);
 }
 
 void MusicInfoWidget::drawMainMat(const cv::Mat& image)

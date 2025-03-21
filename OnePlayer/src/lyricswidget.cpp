@@ -112,10 +112,10 @@ void LyricsWidget::setTextColor(bool is_dark)
 {
     if (is_dark)
     {
-        setStyleSheet("#label1,#label3 {color: rgba(92, 92, 102, 0.4);} #label2 {color: #5c5c66;}");
+        setStyleSheet("#label1,#label3 { color: rgba(92, 92, 102, 0.65); } #label2 { color: #5c5c66; }");
     }
     else
     {
-        setStyleSheet("#label1,#label3 {color: rgba(182, 209, 200, 0.4);} #label2 {color: #b6d1c8;}");
+        setStyleSheet("#label1,#label3 { color: rgba(182, 209, 200, 0.65); } #label2 { color: #b6d1c8; }");
     }
 }
