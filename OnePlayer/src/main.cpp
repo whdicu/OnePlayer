@@ -45,6 +45,7 @@ int main(int argc, char *argv[])
 				break;
 			case QSystemTrayIcon::DoubleClick:
 			case QSystemTrayIcon::Trigger:
+				w.activateWindow();
 				if (w.isAnimateHide())
 					w.animateShow(false);
 				else
@@ -63,6 +64,7 @@ int main(int argc, char *argv[])
 	DSystemTrayMenu trayMenu;
 	QObject::connect(&trayMenu, &DSystemTrayMenu::sigName, &w, [&w]()
 	{
+		w.activateWindow();
 		w.animateShow(false);
 	});
 	QObject::connect(&trayMenu, &DSystemTrayMenu::sigQuit, &a, &QApplication::quit);
