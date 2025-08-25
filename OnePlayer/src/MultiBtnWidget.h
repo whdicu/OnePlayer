@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include <QWidget>
 #include "ui_MultiBtnWidget.h"
@@ -14,7 +14,7 @@ public:
 	~MultiBtnWidget();
 	void animationHide();
 	void animationShow();
-	// Ö±½Ómoveµ½HideÎ»ÖÃ
+	// ç›´æ¥moveåˆ°Hideä½ç½®
 	void moveToHide();
 
 	bool isAnimateHide() { return isAnimateHide_; }
@@ -31,7 +31,7 @@ signals:
 
 private:
 	Ui::MultiBtnWidgetClass ui;
-	// ÄÚ²¿°´Å¥¶¯»­
+	// å†…éƒ¨æŒ‰é’®åŠ¨ç”»
 	QPropertyAnimation* animation1_;
 	QPropertyAnimation* animation2_;
 	QPropertyAnimation* animation3_;
@@ -39,5 +39,12 @@ private:
 	QPropertyAnimation* animation5_;
 	QPropertyAnimation* animation6_;
 	QPropertyAnimation* animation7_;
+	QPoint endPos1_;
+	QPoint endPos2_;
+	QPoint endPos3_;
+	QPoint endPos4_;
+	QPoint endPos5_;
+	QPoint endPos6_;
+	QPoint endPos7_;
 	bool isAnimateHide_;
 };
