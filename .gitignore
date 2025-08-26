@@ -1,6 +1,5 @@
 .vs
 OnePlayer/x64
-OnePlayer/src/NCM
 *.user
 x64/Release/audio
 x64/Release/bearer
