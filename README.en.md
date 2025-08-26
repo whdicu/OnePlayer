@@ -1,36 +1,29 @@
 # OnePlayer
 
+
 #### Description
-一款界面简洁美观的音乐播放器
-
-#### Software Architecture
-Software architecture description
-
-#### Installation
-
-1.  xxxx
-2.  xxxx
-3.  xxxx
-
-#### Instructions
-
-1.  xxxx
-2.  xxxx
-3.  xxxx
-
-#### Contribution
-
-1.  Fork the repository
-2.  Create Feat_xxx branch
-3.  Commit your code
-4.  Create Pull Request
+A music player with a simple and beautiful interface.
 
 
-#### Gitee Feature
+#### Function introduction
+0.Support looping, shuffle, and single loops.
+1.Volume control: The software can control the volume level individually, independent of the system volume.
+2.Playback memory: The software starts playing the song that was playing when you last exited, and starts playing from the position you exited.
+3.Cover display: Extract the picture from the song file and display it on the interface.
+4.Song search: Press Ctrl F to search for the song name in the playlist.
 
-1.  You can use Readme\_XXX.md to support different languages, such as Readme\_en.md, Readme\_zh.md
-2.  Gitee blog [blog.gitee.com](https://blog.gitee.com)
-3.  Explore open source project [https://gitee.com/explore](https://gitee.com/explore)
-4.  The most valuable open source project [GVP](https://gitee.com/gvp)
-5.  The manual of Gitee [https://gitee.com/help](https://gitee.com/help)
-6.  The most popular members  [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
+
+#### Building notes
+1.  QT version: 6.6.0  (Previously, when using the 6.3.2 msvc compiler, the playback lag phenomenon occurred, but the 6.3.2 mingw compiler did not have this problem).
+2.  VS version: 2022  (If you use QtCreater, you should be able to develop it with a slight modification, but I haven't tried it).
+3.  Another project of mine, OneDer, is also used in this project, mainly using its DList instead of QList. Pull is required and include paths configured.
+4.  Use QMediaPlayer's metaData to get music images, but many times you won't be able to get them, so use FFmpeg to get music images instead.
+
+
+#### Branches
+1.  dev: Development branch.
+2.  master: Stable branch that can be used.
+
+
+#### Player Showcase
+![image](./show/img1.png)
