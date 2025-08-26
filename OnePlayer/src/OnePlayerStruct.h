@@ -8,22 +8,39 @@
 #include <QString>
 #include <QUrl>
 
+#ifndef LOG_HEAD
 #define LOG_HEAD QDateTime::currentDateTime().toString("[yyyy-MM-dd hh:mm:ss.zzz]") << __FUNCTION__
+#endif
+#ifndef DWarning
 #define DWarning (qWarning().noquote() << LOG_HEAD)
+#endif
+#ifndef DDebug
 #define DDebug (qDebug().noquote() << LOG_HEAD)
+#endif
 
+#ifndef NCM_ENABLE
+//#define NCM_ENABLE
+#endif
+
+#ifdef NCM_ENABLE
+#define NCM_TYPE_STR ("ncm")
+#else
+#define NCM_TYPE_STR 
+#endif
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 #include <QRandomGenerator64>
 #define GET_PLAY_STATE player_->playbackState()
 #define SET_VOLUME(v) audioOutput_->setVolume((v));
-const static QStringList TYPE_LIST = { "mp3", "flac", "wav", "ogg", "acc", "m4a", "ncm"};
+const static DList<QString> TYPE_LIST = { "mp3", "flac", "wav", "ogg", "acc", "m4a", NCM_TYPE_STR };
 #else
 #include <QMediaPlaylist>
 #define GET_PLAY_STATE player_->state()
 #define SET_VOLUME(v) player_->setVolume((v) * 100);
-const static QStringList TYPE_LIST = { "mp3", "wav", "ogg", "acc", "ncm"};  // 5.9.4无法播放flac m4a
+const static DList<QString> TYPE_LIST = { "mp3", "wav", "ogg", "acc", NCM_TYPE_STR };  // 5.9.4无法播放flac m4a
 #endif
+
+
 
 using SharedImage = DSharedPointer<QImage>;
 class Lyric;

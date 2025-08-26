@@ -1,6 +1,8 @@
 ﻿#include "PlayerQt.h"
 #include "ImageHandler.h"
+#ifdef NCM_ENABLE
 #include "NCM/NCMHandler.h"
+#endif
 #include "neteasehandler.h"
 #include "OneMessageBox.h"
 #include "OnePlayerStruct.h"
@@ -186,6 +188,7 @@ void PlayerQt::playCurrentIndex(qint64 pos)
 	}
 	else
 	{
+#ifdef NCM_ENABLE
 		if (urlStr.endsWith(".ncm"))
 		{
 			//ImageDownloadCallBack* callBack = new ImageDownloadCallBack(this);
@@ -219,6 +222,7 @@ void PlayerQt::playCurrentIndex(qint64 pos)
 #endif
 		}
 		else
+#endif
 		{
 			musicInfo_ = PlayerFFmpeg::analyzeMusicInfo(urlStr);
 			musicInfo_.imgIsReady = true;

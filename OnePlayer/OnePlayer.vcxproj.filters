@@ -185,18 +185,6 @@
     <ClCompile Include="src\DSystemTrayMenu.cpp">
       <Filter>widgets</Filter>
     </ClCompile>
-    <ClCompile Include="src\NCM\aes.c">
-      <Filter>NCM</Filter>
-    </ClCompile>
-    <ClCompile Include="src\NCM\cJSON.c">
-      <Filter>NCM</Filter>
-    </ClCompile>
-    <ClCompile Include="src\NCM\NCMHandler.cpp">
-      <Filter>NCM</Filter>
-    </ClCompile>
-    <ClCompile Include="src\NCM\ncmToMp3.c">
-      <Filter>NCM</Filter>
-    </ClCompile>
     <ClCompile Include="src\NetLoginDialog.cpp">
       <Filter>widgets</Filter>
     </ClCompile>
@@ -281,18 +269,6 @@
     </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\NCM\cJSON.h">
-      <Filter>NCM</Filter>
-    </ClInclude>
-    <ClInclude Include="src\NCM\aes.h">
-      <Filter>NCM</Filter>
-    </ClInclude>
-    <ClInclude Include="src\NCM\ncmToMp3.h">
-      <Filter>NCM</Filter>
-    </ClInclude>
-    <ClInclude Include="src\NCM\NCMHandler.h">
-      <Filter>NCM</Filter>
     </ClInclude>
     <ClInclude Include="src\neteasehandler.h">
       <Filter>Header Files</Filter>
