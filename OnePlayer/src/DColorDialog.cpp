@@ -1,7 +1,7 @@
 ﻿#include "DColorDialog.h"
 #include "DColorButton.h"
 #include "HDCore/DGlobal.h"
-#include "HDQt/DStyle.hpp"
+#include "DStyle.h"
 #include <QDebug>
 #include <QHBoxLayout>
 #include <QLabel>

@@ -1,5 +1,5 @@
 #include "DColorButton.h"
-#include "HDQt/DStyle.hpp"
+#include "DStyle.h"
 #include <QHBoxLayout>
 #include <QLabel>
 #include "settinghandler.h"

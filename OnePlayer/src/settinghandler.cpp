@@ -1,6 +1,6 @@
 ﻿#include "settinghandler.h"
-#include "HDQt/DStyle.hpp"
-#include "HDQt/HD2QT.hpp"
+#include "DStyle.h"
+#include "HDQt.h"
 #include <mutex>
 #include <QApplication>
 #include <QDir>

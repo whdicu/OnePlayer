@@ -4,5 +4,5 @@
 #include "neteasehandlerqt.h"
 
 #ifndef NETEASE_HANDLER
-#define NETEASE_HANDLER NeteaseHandlerJS::getInstance()
+#define NETEASE_HANDLER NeteaseHandlerQT::getInstance()
 #endif

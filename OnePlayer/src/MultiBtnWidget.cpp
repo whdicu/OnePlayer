@@ -46,11 +46,11 @@ MultiBtnWidget::MultiBtnWidget(QWidget *parent)
 	connect(ui.btn_search, &QPushButton::clicked, this, &MultiBtnWidget::sigBtnSearchClicked);
 
 	// 未实现
-	ui.btn_netease->hide();
+	//ui.btn_netease->hide();
 	ui.btn_add->hide();
 	ui.btn_setting_4->hide();
 	ui.btn_setting_5->hide();
-	ui.btn_search->hide();
+	//ui.btn_search->hide();
 }
 
 MultiBtnWidget::~MultiBtnWidget()

@@ -2,7 +2,7 @@
 #include "neteasehandler.h"
 #include <QMessageBox>
 #include <QRegularExpression>
-#include "HDQt/HDWidget/DToast.hpp"
+#include "DToast.h"
 
 
 static NetLoginDialog* net_login_dialog = nullptr;
