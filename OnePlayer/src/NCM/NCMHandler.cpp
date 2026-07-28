@@ -19,34 +19,20 @@ extern "C"
 }
 
 
-CPPMusicData NCMHandler::dealNCM(const QString& filename, ImageDownloadCallBack* callBack)
+CPPMusicInfo NCMHandler::dealNCM(const QString& filename, ImageDownloadCallBack* callBack)
 {
-	CPPMusicData ret;
-	std::string fileStr = filename.toLocal8Bit().toStdString();
-	//std::string outputDirStr = outputDir.toLocal8Bit().toStdString();
-	CMusicData musicData;
-	int status = getFileData(fileStr.c_str(), &musicData);
-	ret.data = QByteArray(reinterpret_cast<const char*>(musicData.data), musicData.dataSize);
-	ret.image.loadFromData(QByteArray(reinterpret_cast<const char*>(musicData.imgData), musicData.imgDataSize));
+	CPPMusicInfo ret;
+	NCMMusicInfo musicData;
+	int status = getFileData(filename, &musicData);
+	ret.data = musicData.data;
+	ret.image.loadFromData(musicData.imgData);
 
-	QJsonParseError parseError;
-	QJsonDocument jsonDoc = QJsonDocument::fromJson(musicData.jsonStr, &parseError);
-	if (QJsonParseError::NoError != parseError.error)
+	QJsonObject obj = musicData.json;
+	if (obj.isEmpty())
 	{
-		// 直接用musicData.jsonStr（utf8格式）不对，尝试fromLocal8Bit
-		jsonDoc = QJsonDocument::fromJson(
-			QString::fromLocal8Bit(musicData.jsonStr).toUtf8(), &parseError);
-		if (QJsonParseError::NoError != parseError.error)
-		{
-			qWarning() << __FUNCTION__ << "JsonStr analyze failed";
-			free(musicData.data);
-			free(musicData.jsonStr);
-			free(musicData.imgData);
-			return ret;
-		}
+		qWarning() << __FUNCTION__ << "JsonStr analyze failed";
+		return ret;
 	}
-
-	QJsonObject obj = jsonDoc.object();
 	/*
 	
 	{
@@ -112,10 +98,6 @@ CPPMusicData NCMHandler::dealNCM(const QString& filename, ImageDownloadCallBack*
 	//QVariantMap map = obj.toVariantMap();
 	//for (auto it = map.begin(); it != map.end(); ++it)
 	//	qDebug() << it.key() << it.value();
-
-	free(musicData.data);
-	free(musicData.jsonStr);
-	free(musicData.imgData);
 
 	return ret;
 }

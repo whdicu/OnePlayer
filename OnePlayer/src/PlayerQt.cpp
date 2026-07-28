@@ -196,7 +196,7 @@ void PlayerQt::playCurrentIndex(qint64 pos)
 			//	emit MusicInfoChanged(musicInfo_);
 			//});
 			//CPPMusicData musicData = NCMHandler::dealNCM(urlStr, callBack);
-			CPPMusicData musicData = NCMHandler::dealNCM(urlStr);
+			CPPMusicInfo musicData = NCMHandler::dealNCM(urlStr);
 			//QByteArray aa(reinterpret_cast<const char*>(mb.data.data()), mb.data.size());
 			dataBuffer_ = new QBuffer(this);
 			dataBuffer_->setData(musicData.data);

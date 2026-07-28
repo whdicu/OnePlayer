@@ -1,15 +1,13 @@
 /*
-ncmToMp3.h ∂‘ QTµƒΩ”ø⁄
+ncmToMp3.h ÂØπ QTÁöÑÊé•Âè£
 */
 #pragma once
 #include <QImage>
-extern "C" {
-	#include "ncmToMp3.h"
-}
+#include "ncmToMp3.h"
 
 class ImageDownloadCallBack;
 
-struct CPPMusicData
+struct CPPMusicInfo
 {
 	QByteArray data;
 	QString title;
@@ -22,6 +20,6 @@ struct CPPMusicData
 
 namespace NCMHandler
 {
-	CPPMusicData dealNCM(const QString& filename, ImageDownloadCallBack* callBack = nullptr);
+	CPPMusicInfo dealNCM(const QString& filename, ImageDownloadCallBack* callBack = nullptr);
 };
 

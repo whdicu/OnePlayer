@@ -47,17 +47,17 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(QTDIR)\include;..\..\OneDer\src;..\..\OneDer\src\HDQt\include;.\src;..\OpenCV\include;..\FFmpeg\include;..\QCloudMusicApi\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(QTDIR)\include;..\..\OneDer\src;..\..\OneDer\src\HDQt\include;.\src;..\OpenCV\include;..\FFmpeg\include;..\QCloudMusicApi\include;..\openssl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>CV_IGNORE_DEBUG_BUILD_GUARD</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>..\OpenCV\lib;..\FFmpeg\lib;..\QCloudMusicApi\lib;../../OneDer/bin/HDQt;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opencv_world480.lib;avcodec.lib;avdevice.lib;avfilter.lib;avformat.lib;avutil.lib;postproc.lib;swresample.lib;swscale.lib;QCloudMusicApi.lib;OneDerQt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\OpenCV\lib;..\FFmpeg\lib;..\QCloudMusicApi\lib;../../OneDer/bin/HDQt;..\openssl\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opencv_world480.lib;avcodec.lib;avdevice.lib;avfilter.lib;avformat.lib;avutil.lib;postproc.lib;swresample.lib;swscale.lib;QCloudMusicApi.lib;OneDerQt.lib;libeay32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>.\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\src;..\openssl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="QtSettings">
@@ -116,10 +116,8 @@
     <ClCompile Include="src\MultiBtnWidget.cpp" />
     <ClCompile Include="src\LocalMusicButton.cpp" />
     <ClCompile Include="src\MusicInfoWidget.cpp" />
-    <ClCompile Include="src\NCM\aes.c" />
-    <ClCompile Include="src\NCM\cJSON.c" />
     <ClCompile Include="src\NCM\NCMHandler.cpp" />
-    <ClCompile Include="src\NCM\ncmToMp3.c" />
+    <ClCompile Include="src\NCM\ncmToMp3.cpp" />
     <ClCompile Include="src\neteasehandlerjs.cpp" />
     <ClCompile Include="src\neteasehandlerqt.cpp" />
     <ClCompile Include="src\NeteaseMusicBtn.cpp" />
@@ -184,8 +182,6 @@
     <QtMoc Include="src\OneMessageBox.h" />
     <QtMoc Include="src\DColorButton.h" />
     <QtMoc Include="src\DColorDialog.h" />
-    <ClInclude Include="src\NCM\aes.h" />
-    <ClInclude Include="src\NCM\cJSON.h" />
     <ClInclude Include="src\NCM\NCMHandler.h" />
     <ClInclude Include="src\NCM\ncmToMp3.h" />
     <QtMoc Include="src\NetLoginDialog.h" />
