@@ -24,7 +24,7 @@ public:
      * set_proxy(proxy): 设置代理
      * 可直接通过元对象系统修改/访问属性，不要直接修改私有属性
      */
-    DEFINE_VALUE(QString, proxy, "");
+    DEFINE_VALUE_SAFETY(QString, proxy, "");
 
     /**
      * @brief 封装了读取/修改方法
@@ -32,7 +32,7 @@ public:
      * set_realIP(realIP): 设置realIP
      * 可直接通过元对象系统修改/访问属性，不要直接修改私有属性
      */
-    DEFINE_VALUE(QString, realIP, "");
+    DEFINE_VALUE_SAFETY(QString, realIP, "");
 
     /**
      * @brief 封装了读取/修改方法
@@ -40,7 +40,7 @@ public:
      * set_cookie(cookie): 设置cookie
      * 可直接通过元对象系统修改/访问属性，不要直接修改私有属性
      */
-    DEFINE_VALUE(QString, cookie, "");
+    DEFINE_VALUE_SAFETY(QString, cookie, "");
 
     /**
      * @brief 封装了读取/修改方法
@@ -48,7 +48,7 @@ public:
      * set_domain(domain): 设置domain
      * 可直接通过元对象系统修改/访问属性，不要直接修改私有属性
      */
-    DEFINE_VALUE(QString, domain, "");
+    DEFINE_VALUE_SAFETY(QString, domain, "");
 
 public:
     explicit ApiHelper(QObject* parent = nullptr);
@@ -83,30 +83,23 @@ public:
     /**
      * @brief 加载插件
      * @param fileName 插件路径
-     * @return 加载结果
+     * @return 插件ID（从1开始），失败返回-1
      */
-    Q_INVOKABLE bool loadPlugin(const QString& fileName);
+    Q_INVOKABLE int loadPlugin(const QString& fileName);
 
     /**
      * @brief 加载插件
      * @param plugin 插件指针
-     * @return 加载结果
+     * @return 插件ID（从1开始），失败返回-1
      */
-    Q_INVOKABLE bool loadPlugin(QCloudMusicApiPlugin* plugin);
+    Q_INVOKABLE int loadPlugin(QCloudMusicApiPlugin* plugin);
 
     /**
      * @brief 卸载插件
-     * @param fileName 插件路径
+     * @param id 插件ID
      * @return 卸载结果
      */
-    Q_INVOKABLE bool unloadPlugin(const QString& fileName);
-
-    /**
-     * @brief 卸载插件
-     * @param plugin 插件指针
-     * @return 卸载结果
-     */
-    Q_INVOKABLE bool unloadPlugin(QCloudMusicApiPlugin* plugin);
+    Q_INVOKABLE bool unloadPlugin(int id);
 
 private:
     void beforeInvoke(QVariantMap& arg);

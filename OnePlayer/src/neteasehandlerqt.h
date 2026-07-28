@@ -47,6 +47,15 @@ public:
 	// 获取歌词
 	QString getLyric(dint64 id);
 
+	// 获取歌曲红心数量
+	qint64 getSongRedCount(dint64 id);
+
+	// 搜索
+	DVector<NeteaseSongInfo> search(const QString& keywords, int limit=30, int type=1);
+
+	// 获取歌手全部歌曲，order：hot 按热门排序    time 按时间排序
+	DVector<NeteaseSongInfo> getArtistSongs(dint64 id, const QString& order="hot", int limit=50, int offset=0);
+
 signals:
 	// 下载了新头像
 	void sigAvatarImgChanged(const QImage& img);

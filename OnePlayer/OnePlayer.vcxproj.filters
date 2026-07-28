@@ -31,6 +31,9 @@
     <Filter Include="NCM">
       <UniqueIdentifier>{a5e157ae-af7c-439b-888a-8b9263d86b17}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Netease">
+      <UniqueIdentifier>{7bdecc08-5478-445c-976d-cdf16a6a0f15}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="src\hook.h">
@@ -43,9 +46,6 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="src\settingtabwidget.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="src\neteasewidget.h">
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="src\SearchEdit.h">
@@ -108,17 +108,20 @@
     <QtMoc Include="src\LyricsWidget.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="src\neteasehandlerjs.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="src\neteasehandlerqt.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
     <QtMoc Include="src\DColorButton.h">
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="src\DColorDialog.h">
       <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="src\neteasehandlerjs.h">
+      <Filter>Netease</Filter>
+    </QtMoc>
+    <QtMoc Include="src\neteasehandlerqt.h">
+      <Filter>Netease</Filter>
+    </QtMoc>
+    <QtMoc Include="src\neteasewidget.h">
+      <Filter>Netease</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
@@ -141,9 +144,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\settingtabwidget.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\neteasewidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\ImageHandler.cpp">
@@ -206,17 +206,20 @@
     <ClCompile Include="src\LyricsWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\neteasehandlerjs.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\neteasehandlerqt.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\DColorButton.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\DColorDialog.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\neteasehandlerjs.cpp">
+      <Filter>Netease</Filter>
+    </ClCompile>
+    <ClCompile Include="src\neteasehandlerqt.cpp">
+      <Filter>Netease</Filter>
+    </ClCompile>
+    <ClCompile Include="src\neteasewidget.cpp">
+      <Filter>Netease</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -283,7 +286,7 @@
       <Filter>NCM</Filter>
     </ClInclude>
     <ClInclude Include="src\neteasehandler.h">
-      <Filter>Header Files</Filter>
+      <Filter>Netease</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

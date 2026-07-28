@@ -118,7 +118,8 @@ bool NeteaseHandlerQT::checkLoginStatus()
 		{ "timestamp", nowTime }
 	});
 
-	QVariantMap dataObj = retMap.value("data").toMap();
+	QVariantMap bodyMap = retMap.value("body").toMap();
+	QVariantMap dataObj = bodyMap.value("data").toMap();
 
 	SETTING_HANDLER->getNeteaseInfo().hasLogin = !dataObj.value("profile").isNull();
 	if (dataObj.value("profile").isNull())
@@ -152,7 +153,8 @@ DVector<NeteasePlayListInfo> NeteaseHandlerQT::getAllPlayListsInfo()
 	QVariantMap retMap = helper_.invoke("user_playlist", {
 		{ "uid", SETTING_HANDLER->getNeteaseInfo().userId }
 	});
-	QVariantList playlist = retMap.value("playlist").toList();
+	QVariantMap bodyMap = retMap.value("body").toMap();
+	QVariantList playlist = bodyMap.value("playlist").toList();
 
 	DVector<NeteasePlayListInfo> ret;
 	for (const auto& oneList : playlist)
@@ -190,7 +192,8 @@ DVector<NeteaseSongInfo> NeteaseHandlerQT::getSongsfromPlayList(dint64 id)
 	QVariantMap retMap = helper_.invoke("playlist_track_all", {
 		{ "id", id }
 	});
-	QVariantList songs = retMap.value("songs").toList();
+	QVariantMap bodyMap = retMap.value("body").toMap();
+	QVariantList songs = bodyMap.value("songs").toList();
 
 	DVector<NeteaseSongInfo> ret;
 	for (const auto& song : songs)
@@ -226,7 +229,8 @@ QString NeteaseHandlerQT::getMusicUrl(dint64 id)
 		{ "level", "higher" }  // 音质 standard higher
 	});
 
-	QVariantList dataArr = retMap.value("data").toList();
+	QVariantMap bodyMap = retMap.value("body").toMap();
+	QVariantList dataArr = bodyMap.value("data").toList();
 	if (!dataArr.isEmpty())
 		return dataArr.first().toMap().value("url").toString();
 	else
@@ -242,10 +246,108 @@ QString NeteaseHandlerQT::getLyric(dint64 id)
 		{ "id", id }
 	});
 
-	if (200 == retMap.value("code").toInt())
-		return retMap.value("lrc").toMap().value("lyric").toString();
+	QVariantMap bodyMap = retMap.value("body").toMap();
+
+	if (200 == bodyMap.value("code").toInt())
+		return bodyMap.value("lrc").toMap().value("lyric").toString();
 	else
 		return "";
+}
+
+qint64 NeteaseHandlerQT::getSongRedCount(dint64 id)
+{
+	// 设置 cookie
+	helper_.set_cookie(SETTING_HANDLER->getNeteaseInfo().cookie);
+
+	QVariantMap retMap = helper_.invoke("song_red_count", {
+		{ "id", id }
+	});
+
+	QVariantMap bodyMap = retMap.value("body").toMap();
+
+	if (200 == bodyMap.value("code").toInt())
+		return bodyMap.value("data").toMap().value("count").toLongLong();
+	else
+		return 0;
+}
+
+DVector<NeteaseSongInfo> NeteaseHandlerQT::search(const QString& keywords, int limit, int type)
+{
+	// 设置 cookie
+	helper_.set_cookie(SETTING_HANDLER->getNeteaseInfo().cookie);
+
+	QVariantMap retMap = helper_.invoke("cloudsearch", {
+		{ "keywords", keywords },
+		{ "limit", limit },
+		{ "type", type }
+	});
+
+	QVariantMap bodyMap = retMap.value("body").toMap();
+	//qDebug() << bodyMap;
+	QVariantMap resultObj = bodyMap.value("result").toMap();
+	QVariantList songs = resultObj.value("songs").toList();
+
+	DVector<NeteaseSongInfo> ret;
+	for (const auto& song : songs)
+	{
+		NeteaseSongInfo info;
+		QVariantMap songObj = song.toMap();
+		info.name = songObj.value("name").toString();
+		info.id = songObj.value("id").toLongLong();
+		info.album = songObj.value("al").toMap().value("name").toString();
+		info.picUrl = songObj.value("al").toMap().value("picUrl").toString();
+
+		info.singer = "";
+		QVariantList artistArr = songObj.value("ar").toList();
+		for (const auto& artist : artistArr)
+		{
+			info.singer.append(artist.toMap().value("name").toString() + ' ');
+		}
+		info.singer = info.singer.trimmed();
+
+		ret.pushBack(info);
+	}
+
+	return ret;
+}
+
+DVector<NeteaseSongInfo> NeteaseHandlerQT::getArtistSongs(dint64 id, const QString& order, int limit, int offset)
+{
+	// 设置 cookie
+	helper_.set_cookie(SETTING_HANDLER->getNeteaseInfo().cookie);
+
+	QVariantMap retMap = helper_.invoke("artist_songs", {
+		{ "id", id },
+		{ "order", order },
+		{ "limit", limit },
+		{ "offset", offset }
+	});
+
+	QVariantMap bodyMap = retMap.value("body").toMap();
+	QVariantList songs = bodyMap.value("songs").toList();
+
+	DVector<NeteaseSongInfo> ret;
+	for (const auto& song : songs)
+	{
+		NeteaseSongInfo info;
+		QVariantMap songObj = song.toMap();
+		info.name = songObj.value("name").toString();
+		info.id = songObj.value("id").toLongLong();
+		info.album = songObj.value("al").toMap().value("name").toString();
+		info.picUrl = songObj.value("al").toMap().value("picUrl").toString();
+
+		info.singer = "";
+		QVariantList artistArr = songObj.value("ar").toList();
+		for (const auto& artist : artistArr)
+		{
+			info.singer.append(artist.toMap().value("name").toString() + ' ');
+		}
+		info.singer = info.singer.trimmed();
+
+		ret.pushBack(info);
+	}
+
+	return ret;
 }
 
 NeteaseHandlerQT::NeteaseHandlerQT(QObject *parent)

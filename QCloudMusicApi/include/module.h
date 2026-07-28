@@ -5,10 +5,17 @@
 
 #include <QVariantMap>
 
+class NeteaseCloudMusicApiPrivate;
 class QCLOUDMUSICAPI_EXPORT NeteaseCloudMusicApi : public QObject {
     Q_OBJECT
 public:
     explicit NeteaseCloudMusicApi(QObject* parent = nullptr);
+
+private:
+    QVariantMap request(QString uri, QVariantMap data, QVariantMap options);
+    NeteaseCloudMusicApiPrivate* d_ptr = nullptr;
+
+public:
 
     // api
     Q_INVOKABLE QVariantMap api(QVariantMap);
@@ -157,6 +164,12 @@ public:
     // 检测手机号码是否已注册
     Q_INVOKABLE QVariantMap cellphone_existence_check(QVariantMap);
 
+    // 获取指定维度音乐排行榜详情
+    Q_INVOKABLE QVariantMap chart_detail(QVariantMap query);
+
+    // 获取指定维度音乐排行榜列表
+    Q_INVOKABLE QVariantMap chart_song_detail(QVariantMap query);
+
     // 歌曲可用性
     Q_INVOKABLE QVariantMap check_music(QVariantMap);
 
@@ -250,6 +263,21 @@ public:
 
     // 电台详情
     Q_INVOKABLE QVariantMap dj_detail(QVariantMap);
+
+    // DIFM电台 - 分类
+    Q_INVOKABLE QVariantMap dj_difm_all_style_channel(QVariantMap);
+
+    // DIFM电台 - 收藏列表
+    Q_INVOKABLE QVariantMap dj_difm_subscribe_channels_get(QVariantMap);
+
+    // DIFM电台 - 收藏频道
+    Q_INVOKABLE QVariantMap dj_difm_channel_subscribe(QVariantMap);
+
+    // DIFM电台 - 取消收藏频道
+    Q_INVOKABLE QVariantMap dj_difm_channel_unsubscribe(QVariantMap);
+
+    // DIFM电台 - 播放列表
+    Q_INVOKABLE QVariantMap dj_difm_playing_tracks_list(QVariantMap);
 
     // 热门电台
     Q_INVOKABLE QVariantMap dj_hot(QVariantMap);
@@ -392,6 +420,9 @@ public:
 
     //抱一抱评论
     Q_INVOKABLE QVariantMap hug_comment(QVariantMap);
+
+    // 多级行政区划数据获取接口
+    Q_INVOKABLE QVariantMap lbs_city_code(QVariantMap query);
 
     // 红心与取消红心歌曲
     Q_INVOKABLE QVariantMap like(QVariantMap);
@@ -965,6 +996,12 @@ public:
 
     // 用户是否互相关注
     Q_INVOKABLE QVariantMap user_mutualfollow_get(QVariantMap);
+
+    // 获取用户的收藏歌单列表
+    Q_INVOKABLE QVariantMap user_playlist_collect(QVariantMap);
+
+    // 获取用户的创建歌单列表
+    Q_INVOKABLE QVariantMap user_playlist_create(QVariantMap);
 
     // 用户歌单
     Q_INVOKABLE QVariantMap user_playlist(QVariantMap);

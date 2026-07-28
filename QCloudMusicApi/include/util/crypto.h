@@ -22,7 +22,7 @@ namespace QCloudMusicApi {
 
         static QByteArray aesDecrypt(const QByteArray& cipherText, const QString mode, const QByteArray& key, const QByteArray& iv, QString format = "base64");
 
-        static QByteArray rsaEncrypt(QString plainText, const QString& strPubKey);
+        static QByteArray rsaEncrypt(const QString& plainText, const QString& strPubKey);
 
         static QVariantMap weapi(QJsonDocument object);
 
@@ -30,7 +30,7 @@ namespace QCloudMusicApi {
 
         static QVariantMap eapi(QString url, QJsonDocument object);
 
-        static QVariantMap eapiResDecrypt(const QByteArray& encryptedParams);
+        static QVariantMap eapiResDecrypt(const QByteArray& encryptedParams, bool aeapi = false);
 
         static QVariantMap eapiReqDecrypt(const QByteArray& encryptedParams);
 
