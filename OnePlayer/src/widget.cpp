@@ -1252,10 +1252,10 @@ void Widget::init()
 	{
 		ImageDownloadCallBack* callBack = new ImageDownloadCallBack(this);
 		connect(callBack, &ImageDownloadCallBack::sigImageSet, this, [this, callBack](SharedImage image)
-			{
-				ui->multi_btn_widget->setBtnNeteaseInfo(*image, SETTING_HANDLER->getNeteaseInfo().nickname);
-				callBack->deleteLater();
-			});
+		{
+			ui->multi_btn_widget->setBtnNeteaseInfo(*image, SETTING_HANDLER->getNeteaseInfo().nickname);
+			callBack->deleteLater();
+		});
 		ImageHandler::downloadImage(SETTING_HANDLER->getNeteaseInfo().avatarUrl + "?param=80y80", callBack);
 
 		auto allPlayLists = NETEASE_HANDLER->getAllPlayListsInfo();

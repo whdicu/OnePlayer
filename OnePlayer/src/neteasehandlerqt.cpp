@@ -350,6 +350,55 @@ DVector<NeteaseSongInfo> NeteaseHandlerQT::getArtistSongs(dint64 id, const QStri
 	return ret;
 }
 
+QVariantMap NeteaseHandlerQT::getStyleList()
+{
+	// 设置 cookie
+	helper_.set_cookie(SETTING_HANDLER->getNeteaseInfo().cookie);
+
+	QVariantMap retMap = helper_.invoke("style_list", {});
+
+	return retMap.value("body").toMap();
+}
+
+DVector<NeteaseSongInfo> NeteaseHandlerQT::getStyleSongs(dint64 tagId, int size, qint64 cursor, int sort)
+{
+	// 设置 cookie
+	helper_.set_cookie(SETTING_HANDLER->getNeteaseInfo().cookie);
+
+	QVariantMap retMap = helper_.invoke("style_song", {
+		{ "tagId", tagId },
+		{ "size", size },
+		{ "cursor", cursor },
+		{ "sort", sort }
+	});
+
+	QVariantMap bodyMap = retMap.value("body").toMap();
+	QVariantList songs = bodyMap.value("data").toMap().value("songs").toList();
+
+	DVector<NeteaseSongInfo> ret;
+	for (const auto& song : songs)
+	{
+		NeteaseSongInfo info;
+		QVariantMap songObj = song.toMap();
+		info.name = songObj.value("name").toString();
+		info.id = songObj.value("id").toLongLong();
+		info.album = songObj.value("al").toMap().value("name").toString();
+		info.picUrl = songObj.value("al").toMap().value("picUrl").toString();
+
+		info.singer = "";
+		QVariantList artistArr = songObj.value("ar").toList();
+		for (const auto& artist : artistArr)
+		{
+			info.singer.append(artist.toMap().value("name").toString() + ' ');
+		}
+		info.singer = info.singer.trimmed();
+
+		ret.pushBack(info);
+	}
+
+	return ret;
+}
+
 NeteaseHandlerQT::NeteaseHandlerQT(QObject *parent)
 	: QObject(parent)
 	, helper_(this)

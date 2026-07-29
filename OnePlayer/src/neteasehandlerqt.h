@@ -56,6 +56,12 @@ public:
 	// 获取歌手全部歌曲，order：hot 按热门排序    time 按时间排序
 	DVector<NeteaseSongInfo> getArtistSongs(dint64 id, const QString& order="hot", int limit=50, int offset=0);
 
+	// 获取曲风列表
+	QVariantMap getStyleList();
+
+	// 获取曲风对应歌曲
+	DVector<NeteaseSongInfo> getStyleSongs(dint64 tagId, int size=20, qint64 cursor=0, int sort=0);
+
 signals:
 	// 下载了新头像
 	void sigAvatarImgChanged(const QImage& img);
