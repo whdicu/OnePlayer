@@ -20,7 +20,7 @@ NeteaseHandlerQT* NeteaseHandlerQT::getInstance()
 	return netease_handler;
 }
 
-bool NeteaseHandlerQT::loginPhone(const QString& phone, const QString& password)
+bool NeteaseHandlerQT::loginPhonePassword(const QString& phone, const QString& password, QString& errMsg)
 {
 	qint64 nowTime = QDateTime::currentMSecsSinceEpoch();
 	QString passwordMD5 = QCryptographicHash::hash(password.toUtf8(), QCryptographicHash::Md5).toHex();
@@ -31,24 +31,43 @@ bool NeteaseHandlerQT::loginPhone(const QString& phone, const QString& password)
 		{ "timestamp", nowTime }
 	});
 
-	int code = retMap.value("code").toInt();
-	QString message = retMap.value("message").toString();
-	switch (code)
+	QVariantMap bodyMap = retMap.value("body").toMap();
+	int code = bodyMap.value("code").toInt();
+	errMsg = bodyMap.value("message").toString();
+	if (code == 200)
 	{
-	case 502:
-		QMessageBox::warning(nullptr, tr("登陆失败"), message);
-		return false;
-	case 200:
-	{
-		QVariantMap accountObj = retMap.value("account").toMap();
-		QVariantMap profileObj = retMap.value("profile").toMap();
+		QVariantMap accountObj = bodyMap.value("account").toMap();
+		QVariantMap profileObj = bodyMap.value("profile").toMap();
 		QString avatarUrl = profileObj.value("avatarUrl").toString();
-		QString cookie = retMap.value("cookie").toString();
-		break;
+		QString cookie = bodyMap.value("cookie").toString();
 	}
-	}
-	qDebug() << retMap;
+
+	return code == 200;
 	return true;
+}
+
+bool NeteaseHandlerQT::loginPhoneCaptcha(const QString& phone, const QString& captcha, QString& errMsg)
+{
+	qint64 nowTime = QDateTime::currentMSecsSinceEpoch();
+
+	QVariantMap retMap = helper_.invoke("login_cellphone", {
+		{ "phone", phone },
+		{ "captcha", captcha },
+		{ "timestamp", nowTime }
+		});
+
+	QVariantMap bodyMap = retMap.value("body").toMap();
+	int code = bodyMap.value("code").toInt();
+	errMsg = bodyMap.value("message").toString();
+	if (code == 200)
+	{
+		QVariantMap accountObj = bodyMap.value("account").toMap();
+		QVariantMap profileObj = bodyMap.value("profile").toMap();
+		QString avatarUrl = profileObj.value("avatarUrl").toString();
+		QString cookie = bodyMap.value("cookie").toString();
+	}
+	
+	return code == 200;
 }
 
 bool NeteaseHandlerQT::sendCaptcha(const QString& phone)
@@ -56,31 +75,55 @@ bool NeteaseHandlerQT::sendCaptcha(const QString& phone)
 	QVariantMap retMap = helper_.invoke("captcha_sent", {
 		{ "cellphone", phone }
 	});
-	int code = retMap.value("code").toInt();
+	QVariantMap bodyMap = retMap.value("body").toMap();
+	int code = bodyMap.value("code").toInt();
 	return 200 == code;
 }
 
-bool NeteaseHandlerQT::loginCaptcha(const QString& phone, const QString& captcha)
+bool NeteaseHandlerQT::checkCaptcha(const QString& phone, const QString& captcha, QString& errMsg)
 {
 	qint64 nowTime = QDateTime::currentMSecsSinceEpoch();
-	QVariantMap retMap = helper_.invoke("login_cellphone", {
+	QVariantMap retMap = helper_.invoke("captcha_verify", {
 		{ "phone", phone },
 		{ "captcha", captcha },
 		{ "timestamp", nowTime }
 	});
 
-	SETTING_HANDLER->getNeteaseInfo().hasLogin = !retMap.isEmpty();
-	if (retMap.isEmpty())
-		return false;
+	QVariantMap bodyMap = retMap.value("body").toMap();
+	errMsg = bodyMap.value("message").toString();
+	bool ret = bodyMap.value("data").toBool();
+	SETTING_HANDLER->getNeteaseInfo().hasLogin = ret;
 
+	return ret;
+
+	//SETTING_HANDLER->getNeteaseInfo().hasLogin = !retMap.isEmpty();
+	//if (retMap.isEmpty())
+	//	return false;
+
+	//SETTING_HANDLER->getNeteaseInfo().cookie = retMap.value("cookie").toString();
+	//SETTING_HANDLER->getNeteaseInfo().token = retMap.value("token").toString();
+	//QVariantMap profileObj = retMap.value("profile").toMap();
+	//SETTING_HANDLER->getNeteaseInfo().userId = profileObj.value("userId").toLongLong();
+	//SETTING_HANDLER->getNeteaseInfo().avatarUrl = profileObj.value("avatarUrl").toString();
+	//SETTING_HANDLER->getNeteaseInfo().nickname = profileObj.value("nickname").toString();
+	//SETTING_HANDLER->save();
+
+	return true;
+}
+
+bool NeteaseHandlerQT::loginRefresh()
+{
+	qint64 nowTime = QDateTime::currentMSecsSinceEpoch();
+
+	// 设置 cookie
+	helper_.set_cookie(SETTING_HANDLER->getNeteaseInfo().cookie);
+
+	QVariantMap retMap = helper_.invoke("login_refresh", {
+		{ "timestamp", nowTime }
+	});
+
+	QVariantMap bodyMap = retMap.value("body").toMap();
 	SETTING_HANDLER->getNeteaseInfo().cookie = retMap.value("cookie").toString();
-	SETTING_HANDLER->getNeteaseInfo().token = retMap.value("token").toString();
-	QVariantMap profileObj = retMap.value("profile").toMap();
-	SETTING_HANDLER->getNeteaseInfo().userId = profileObj.value("userId").toLongLong();
-	SETTING_HANDLER->getNeteaseInfo().avatarUrl = profileObj.value("avatarUrl").toString();
-	SETTING_HANDLER->getNeteaseInfo().nickname = profileObj.value("nickname").toString();
-	SETTING_HANDLER->save();
-
 	return true;
 }
 
@@ -397,6 +440,61 @@ DVector<NeteaseSongInfo> NeteaseHandlerQT::getStyleSongs(dint64 tagId, int size,
 	}
 
 	return ret;
+}
+
+QString NeteaseHandlerQT::getQrKey()
+{
+	qint64 nowTime = QDateTime::currentMSecsSinceEpoch();
+
+	QVariantMap retMap = helper_.invoke("login_qr_key", {
+		{ "timestamp", nowTime }
+	});
+
+	QVariantMap bodyMap = retMap.value("body").toMap();
+	if (200 == bodyMap.value("code").toInt())
+		return bodyMap.value("data").toMap().value("unikey").toString();
+	else
+		return "";
+}
+
+QString NeteaseHandlerQT::getQrImageUrl(const QString& key)
+{
+	qint64 nowTime = QDateTime::currentMSecsSinceEpoch();
+
+	QVariantMap retMap = helper_.invoke("login_qr_create", {
+		{ "key", key },
+		{ "qrimg", true },
+		{ "timestamp", nowTime }
+	});
+
+	QVariantMap bodyMap = retMap.value("body").toMap();
+	if (200 == bodyMap.value("code").toInt())
+		return bodyMap.value("data").toMap().value("qrurl").toString();
+	else
+		return "";
+}
+
+int NeteaseHandlerQT::checkQrStatus(const QString& key)
+{
+	qint64 nowTime = QDateTime::currentMSecsSinceEpoch();
+
+	QVariantMap retMap = helper_.invoke("login_qr_check", {
+		{ "key", key },
+		{ "timestamp", nowTime }
+	});
+
+	QVariantMap bodyMap = retMap.value("body").toMap();
+	if (200 == bodyMap.value("code").toInt())
+	{
+		// 803: 授权成功，保存 cookie
+		QString cookie = bodyMap.value("cookie").toString();
+		if (!cookie.isEmpty())
+		{
+			SETTING_HANDLER->getNeteaseInfo().cookie = cookie;
+			SETTING_HANDLER->save();
+		}
+	}
+	return bodyMap.value("code").toInt();
 }
 
 NeteaseHandlerQT::NeteaseHandlerQT(QObject *parent)

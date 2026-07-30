@@ -37,6 +37,7 @@ void NeteaseWidget::on_btn_sign_up_clicked()
 
 void NeteaseWidget::slotLogin()
 {
+	/*
     QString phoneOrEmail = ui.edit_phone_email->text();
     QString password = ui.edit_password->text();
 
@@ -59,15 +60,16 @@ void NeteaseWidget::slotLogin()
     else
     {
         unsigned long long i = phoneOrEmail.toULongLong();
-        /*if (i < 10000000000ul || i > 19999999999ul)
+        if (i < 10000000000ul || i > 19999999999ul)
         {
             QMessageBox::warning(this, tr("手机号错误"), tr("请输入正确的手机号"));
             return;
-        }*/
+        }
         
-        if (NETEASE_HANDLER->loginPhone(phoneOrEmail, password))
+        if (NETEASE_HANDLER->loginPhonePassword(phoneOrEmail, password))
         {
             // 登陆成功
         }
     }
+	*/
 }

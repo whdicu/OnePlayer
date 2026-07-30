@@ -2,6 +2,7 @@
 #include "ui_widget.h"
 #include "HDBase/DVector.hpp"
 #include "HDQt.h"
+#include "hook.h"
 #include "DStyle.h"
 #include "ImageHandler.h"
 #include "LocalMusicButton.h"
@@ -1233,9 +1234,7 @@ void Widget::init()
 
 	NETEASE_HANDLER->init();
 	bool isNeteaseLogin = !SETTING_HANDLER->getNeteaseInfo().cookie.isEmpty() && NETEASE_HANDLER->checkLoginStatus();
-	Hook::getInstance()->installHook();
-	connect(Hook::getInstance(), &Hook::sendKeyType, this, &Widget::slotKeyPressed, Qt::QueuedConnection);
-
+	
 	// 初始化界面
 	initMultiFuncWidget();
 
@@ -1306,7 +1305,6 @@ void Widget::init()
 void Widget::uninit()
 {
 	NETEASE_HANDLER->uninit();
-	Hook::getInstance()->unInstallHook();
 	SETTING_HANDLER->save();
 }
 

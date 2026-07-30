@@ -3,7 +3,6 @@
 #pragma execution_character_set("utf-8")
 #include "HDBase/DVector.hpp"
 #include "basemusicbutton.h"
-#include "hook.h"
 #include "OnePlayerStruct.h"
 #include "onlinehandler.h"
 #include "PlayerBase.h"
@@ -17,6 +16,7 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class Widget; }
 QT_END_NAMESPACE
 
+class KeyInfo;
 class QPropertyAnimation;
 
 class Widget : public QWidget
@@ -42,6 +42,7 @@ public slots:
 	void on_btn_play_clicked();
 	void on_btn_previoud_clicked();
 	void on_btn_next_clicked();
+	void slotKeyPressed(const KeyInfo& info);
 
 private slots:
     void on_btn_shutdown_clicked();
@@ -58,7 +59,6 @@ private slots:
 //	void slot_btn_change_dir_download_clicked();
     void slotPlayerModeChanged(PLAYER_MODE playerMode);
 
-    void slotKeyPressed(const KeyInfo& info);
     void slotPositionChanged(qint64 pos);
     void slotSearchEditClose();
     void slotMusicIndexChanged(DSizeType oldIndex, DSizeType newIndex);

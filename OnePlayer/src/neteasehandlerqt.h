@@ -15,14 +15,20 @@ public:
 	void init() {}
 	void uninit() {}
 
-	// 手机号登录
-	bool loginPhone(const QString& phone, const QString& password);
+	// 手机号登录，使用密码
+	bool loginPhonePassword(const QString& phone, const QString& password, QString& errMsg);
+
+	// 手机号登录，使用验证码
+	bool loginPhoneCaptcha(const QString& phone, const QString& captcha, QString& errMsg);
 
 	// 发送验证码
 	bool sendCaptcha(const QString& phone);
 
 	// 验证码登录
-	bool loginCaptcha(const QString& phone, const QString& captcha);
+	bool checkCaptcha(const QString& phone, const QString& captcha, QString& errMsg);
+
+	// 刷新登录，会返回新的cookie（二维码登录除外）
+	bool loginRefresh();
 
 	// 邮箱登录
 	bool loginEmail(const QString& email, const QString& password);
@@ -61,6 +67,11 @@ public:
 
 	// 获取曲风对应歌曲
 	DVector<NeteaseSongInfo> getStyleSongs(dint64 tagId, int size=20, qint64 cursor=0, int sort=0);
+
+	// 二维码登录
+	QString getQrKey();
+	QString getQrImageUrl(const QString& key);
+	int checkQrStatus(const QString& key);
 
 signals:
 	// 下载了新头像

@@ -1,6 +1,7 @@
 ﻿#include "widget.h"
 
 #include "DSystemTrayMenu.h"
+#include "hook.h"
 #include <QApplication>
 #include <QMessageBox>
 #include <QSystemTrayIcon>
