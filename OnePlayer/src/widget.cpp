@@ -115,8 +115,9 @@ Widget::Widget(const QString& filepath, QWidget *parent)
     setAttribute(Qt::WA_TranslucentBackground);
 
 	// 硬件加速
+	// WA_PaintOnScreen 会和 WA_TranslucentBackground、QGraphicsEffect 冲突（Qt6 里该属性已失效），
+	// 会导致窗口失去焦点重绘后背景图右下部分被裁掉，这里不再设置
 	setAttribute(Qt::WA_OpaquePaintEvent);
-	setAttribute(Qt::WA_PaintOnScreen);
 
     setAcceptDrops(true);
 	

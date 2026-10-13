@@ -26,6 +26,13 @@ MusicInfoWidget::MusicInfoWidget(QWidget* parent)
     animation_->setDuration(MUSIC_INFO_WIDGET_ANIMATION_TIME);
     setGraphicsEffect(opacityEffect_);
 
+	// Qt5 的 QGraphicsEffect 会把控件渲染到离屏缓存，窗口失焦重绘后可能出现图片右下被裁掉的问题，
+	// 因此动画播完之后就禁用效果，只在播放动画期间启用
+	connect(animation_, &QPropertyAnimation::finished, this, [this]()
+	{
+		opacityEffect_->setEnabled(opacityEffect_->opacity() < 1.0);
+	});
+
 	connect(imageMenu_, &DMenu::sigBtnClicked, this, [this](const QString& text)
 	{
 		if ("查看封面" == text)
@@ -97,6 +104,7 @@ void MusicInfoWidget::drawMainMat(const cv::Mat& image)
 
 void MusicInfoWidget::animationHide()
 {
+	opacityEffect_->setEnabled(true);
 	animation_->stop();
 
     static QEventLoop loop;
@@ -114,6 +122,7 @@ void MusicInfoWidget::animationHide()
 
 void MusicInfoWidget::animationShow()
 {
+	opacityEffect_->setEnabled(true);
 	animation_->stop();
 
 	animation_->setEasingCurve(MUSIC_INFO_WIDGET_SHOW_EASING);
