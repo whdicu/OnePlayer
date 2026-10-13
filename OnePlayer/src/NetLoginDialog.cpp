@@ -64,7 +64,7 @@ void NetLoginDialog::on_btn_login_password_clicked()
 
 void NetLoginDialog::on_btn_send_captcha_clicked()
 {
-	QString phone = ui.edit_phone_email->text();
+	QString phone = ui.edit_phone->text();
 	quint64 i = phone.toULongLong();
 	if (i < 10000000000ul || i > 19999999999ul)
 	{
@@ -90,7 +90,7 @@ void NetLoginDialog::on_btn_send_captcha_clicked()
 void NetLoginDialog::on_btn_login_captcha_clicked()
 {
 	QString phone = ui.edit_phone->text();
-	QString password = ui.edit_password->text();
+	QString captcha = ui.edit_captcha->text();
 
 	unsigned long long i = phone.toULongLong();
 	if (i < 10000000000ul || i > 19999999999ul)
@@ -101,11 +101,11 @@ void NetLoginDialog::on_btn_login_captcha_clicked()
 
 	// 先检验验证码是否正确
 	QString errMsg;
-	bool ret1 = NETEASE_HANDLER->checkCaptcha(phone, password, errMsg);
+	bool ret1 = NETEASE_HANDLER->checkCaptcha(phone, captcha, errMsg);
 
 	if (ret1)
 	{
-		bool ret2 = NETEASE_HANDLER->loginPhoneCaptcha(phone, password, errMsg);
+		bool ret2 = NETEASE_HANDLER->loginPhoneCaptcha(phone, captcha, errMsg);
 		if (ret2)
 		{
 			return;

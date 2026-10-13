@@ -4,6 +4,9 @@
 #include "OnePlayerStruct.h"
 
 
+using SharedImage = DSharedPointer<QImage>;
+
+
 class ImageDownloadCallBack : public QObject
 {
 	Q_OBJECT

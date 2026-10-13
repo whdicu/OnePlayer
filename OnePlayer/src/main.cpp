@@ -81,7 +81,14 @@ int main(int argc, char *argv[])
 	trayIcon.setContextMenu(&trayMenu);
 	trayIcon.show();
 
+	Hook::getInstance()->installHook();
+	QObject::connect(Hook::getInstance(), &Hook::sendKeyType, &w, &Widget::slotKeyPressed, Qt::QueuedConnection);
+
 	w.init();
     w.animateShow();
-    return a.exec();
+    int retCode = a.exec();
+
+	Hook::getInstance()->unInstallHook();
+
+	return retCode;
 }

@@ -25,7 +25,6 @@ const static QStringList TYPE_LIST = { "mp3", "flac", "wav", "ogg", "acc", "m4a"
 const static QStringList TYPE_LIST = { "mp3", "wav", "ogg", "acc", "ncm"};  // 5.9.4无法播放flac m4a
 #endif
 
-using SharedImage = DSharedPointer<QImage>;
 class Lyric;
 using Lyrics = DVector<Lyric>;
 

@@ -524,7 +524,77 @@ void Widget::setListener()
     });
 	connect(ui->multi_btn_widget, &MultiBtnWidget::sigBtnSearchClicked, this, [this]()
 	{
-		
+		// 获取曲风列表
+		//auto map = NETEASE_HANDLER->getStyleList();
+		//QVariantList dataArr = map.value("data").toList();
+		//for (const auto& item : dataArr)
+		//{
+		//	QVariantMap itemObj = item.toMap();
+		//	qDebug() << itemObj.value("tagName").toString() << itemObj.value("tagId").toString();
+		//}
+
+		// 根据曲风获取歌曲
+		//auto infos = NETEASE_HANDLER->getStyleSongs(1008, 100);
+
+		/*
+		"流行" "1000"
+		"嘻哈说唱" "1017"
+		"电子" "1015"
+		"R&B" "1028"
+		"国风" "10119"
+		"儿童" "1026"
+		"摇滚" "1008"
+		"民谣" "1003"
+		"慢摇DJ" "79088"
+		"原声带" "1010"
+		"中国传统特色" "1001"
+		"古典" "1022"
+		"爵士" "1011"
+		"二次元" "1252"
+		"轻音乐" "1006"
+		"世界乐器体裁" "1263"
+		"纯演奏音乐" "1060683"
+		"乡村" "1077"
+		"新世纪" "1007"
+		"朋克" "152124"
+		"金属" "1041"
+		"蓝调" "1037"
+		"另类/独立" "1014"
+		"放克" "1029"
+		"雷鬼" "1043"
+		"拉丁音乐" "1071"
+		"世界音乐" "1012"
+		"实验" "1049"
+		*/
+		//return;
+
+
+
+		QString k = "生气了";
+		auto infos = NETEASE_HANDLER->search(k, 30);
+
+		qint64 t1 = QDateTime::currentMSecsSinceEpoch();
+		// 获取每首歌的红心数量并排序打印
+		QVector<QPair<QString, qint64>> songRedCounts;
+		for (const auto& info : infos)
+		{
+			qint64 redCount = NETEASE_HANDLER->getSongRedCount(info.id);
+			songRedCounts.append({ info.name + " - " + info.singer, redCount });
+		}
+		qint64 t2 = QDateTime::currentMSecsSinceEpoch();
+		qDebug() << "used: " << (t2 - t1);
+
+		std::sort(songRedCounts.begin(), songRedCounts.end(),
+			[](const QPair<QString, qint64>& a, const QPair<QString, qint64>& b) {
+				return a.second > b.second;
+			});
+
+		int i = 1;
+		for (const auto& item : songRedCounts)
+		{
+			qDebug() << i << item.first << item.second;
+			++i;
+		}
 	});
 
 	/****************** 设置页中的一些信号 ********************/

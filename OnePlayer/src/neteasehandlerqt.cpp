@@ -43,7 +43,6 @@ bool NeteaseHandlerQT::loginPhonePassword(const QString& phone, const QString& p
 	}
 
 	return code == 200;
-	return true;
 }
 
 bool NeteaseHandlerQT::loginPhoneCaptcha(const QString& phone, const QString& captcha, QString& errMsg)
@@ -65,6 +64,7 @@ bool NeteaseHandlerQT::loginPhoneCaptcha(const QString& phone, const QString& ca
 		QVariantMap profileObj = bodyMap.value("profile").toMap();
 		QString avatarUrl = profileObj.value("avatarUrl").toString();
 		QString cookie = bodyMap.value("cookie").toString();
+		SETTING_HANDLER->getNeteaseInfo().hasLogin = true;
 	}
 	
 	return code == 200;
@@ -92,8 +92,6 @@ bool NeteaseHandlerQT::checkCaptcha(const QString& phone, const QString& captcha
 	QVariantMap bodyMap = retMap.value("body").toMap();
 	errMsg = bodyMap.value("message").toString();
 	bool ret = bodyMap.value("data").toBool();
-	SETTING_HANDLER->getNeteaseInfo().hasLogin = ret;
-
 	return ret;
 
 	//SETTING_HANDLER->getNeteaseInfo().hasLogin = !retMap.isEmpty();
