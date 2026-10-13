@@ -829,11 +829,11 @@ BaseMusicButton* Widget::addLocalMusicBtn(const QUrl& url)
 {
 	//QString filename = url.fileName();
 	//QString str = filename.mid(0, filename.indexOf('.'));
-    LocalMusicButton* btn = new LocalMusicButton(url.fileName(), this);
+    LocalMusicButton* btn = new LocalMusicButton(url, this);
     btn->setContextMenuPolicy(Qt::CustomContextMenu);
 	btn->setColor(SETTING_HANDLER->getStruct().mainColor);
 	connect(btn, &LocalMusicButton::clicked, this, &Widget::slotLocalMusicBtnClicked);
-    connect(btn, &QPushButton::customContextMenuRequested, this, [btn](const QPoint& pos)
+    connect(btn, &QWidget::customContextMenuRequested, this, [btn](const QPoint& pos)
     {
         DMenu* menu = DMenu::getButtonMenu();
         menu->show(btn->getMusicIndex());
@@ -848,7 +848,7 @@ BaseMusicButton* Widget::addNeteaseMusicBtn(const NeteaseSongInfo& info)
 	btn->setContextMenuPolicy(Qt::CustomContextMenu);
 	btn->setColor(SETTING_HANDLER->getStruct().mainColor);
 	connect(btn, &BaseMusicButton::clicked, this, &Widget::slotNeteaseMusicBtnClicked);
-	connect(btn, &QPushButton::customContextMenuRequested, this, [btn](const QPoint& pos)
+	connect(btn, &QWidget::customContextMenuRequested, this, [btn](const QPoint& pos)
 	{
 		//DMenu* menu = DMenu::getButtonMenu();
 		//menu->show(btn->getMusicIndex());

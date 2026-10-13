@@ -115,6 +115,7 @@
     <ClCompile Include="src\morewidget.cpp" />
     <ClCompile Include="src\MultiBtnWidget.cpp" />
     <ClCompile Include="src\LocalMusicButton.cpp" />
+    <ClCompile Include="src\MusicImageLoader.cpp" />
     <ClCompile Include="src\MusicInfoWidget.cpp" />
     <ClCompile Include="src\NCM\NCMHandler.cpp" />
     <ClCompile Include="src\NCM\ncmToMp3.cpp" />
@@ -178,6 +179,7 @@
     <QtMoc Include="src\DSystemTrayMenu.h" />
     <QtMoc Include="src\DProgressBar.h" />
     <QtMoc Include="src\ImageHandler.h" />
+    <QtMoc Include="src\MusicImageLoader.h" />
     <QtMoc Include="src\MultiBtnWidget.h" />
     <QtMoc Include="src\OneMessageBox.h" />
     <QtMoc Include="src\DColorButton.h" />

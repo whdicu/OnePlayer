@@ -13,3 +13,6 @@ struct NCMMusicInfo
 
 // 解析 NCM 文件，结果写入 structMusicData，成功返回 0
 int getFileData(const QString& fileName, NCMMusicInfo* structMusicData);
+
+// 只解析元数据与封面图片，不读取也不解密音频数据（取封面用，开销远小于 getFileData）
+int getMusicInfo(const QString& fileName, NCMMusicInfo* structMusicData);

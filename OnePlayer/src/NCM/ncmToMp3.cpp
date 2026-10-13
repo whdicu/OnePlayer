@@ -113,15 +113,9 @@ static int readLittleEndianInt32(QFile& f)
 	return (buf[3] << 8 | buf[2]) << 16 | (buf[1] << 8 | buf[0]);
 }
 
-int getFileData(const QString& fileName, NCMMusicInfo* structMusicData)
+// 解析 ncm 头部：rc4 密钥、元数据（json）与封面图片，读取位置停在音频数据之前
+static int parseNCMHead(QFile& f, NCMMusicInfo* structMusicData, QByteArray& rc4Key)
 {
-	QFile f(fileName);
-	if (!f.open(QIODevice::ReadOnly))
-	{
-		qWarning() << "No such file:" << fileName;
-		return -1;
-	}
-
 	static const unsigned char meta_key[] = { 0x23,0x31,0x34,0x6C,0x6A,0x6B,0x5F,0x21,0x5C,0x5D,0x26,0x30,0x55,0x3C,0x27,0x28 };
 	static const unsigned char core_key[] = { 0x68,0x7A,0x48,0x52,0x41,0x6D,0x73,0x6F,0x35,0x6B,0x49,0x6E,0x62,0x61,0x78,0x57 };
 
@@ -130,7 +124,7 @@ int getFileData(const QString& fileName, NCMMusicInfo* structMusicData)
 
 	// 读取并解密 rc4 密钥
 	int len = readLittleEndianInt32(f);
-	QByteArray rc4Key = f.read(len);
+	rc4Key = f.read(len);
 	{
 		unsigned char* p = reinterpret_cast<unsigned char*>(rc4Key.data());
 		for (int i = 0; i < len; i++)
@@ -165,6 +159,35 @@ int getFileData(const QString& fileName, NCMMusicInfo* structMusicData)
 	f.seek(f.pos() + 9);
 	len = readLittleEndianInt32(f);
 	structMusicData->imgData = f.read(len);
+
+	return 0;
+}
+
+// 只解析元数据与封面图片，不读取也不解密音频数据
+int getMusicInfo(const QString& fileName, NCMMusicInfo* structMusicData)
+{
+	QFile f(fileName);
+	if (!f.open(QIODevice::ReadOnly))
+	{
+		qWarning() << __FUNCTION__ << "No such file:" << fileName;
+		return -1;
+	}
+
+	QByteArray rc4Key;
+	return parseNCMHead(f, structMusicData, rc4Key);
+}
+
+int getFileData(const QString& fileName, NCMMusicInfo* structMusicData)
+{
+	QFile f(fileName);
+	if (!f.open(QIODevice::ReadOnly))
+	{
+		qWarning() << "No such file:" << fileName;
+		return -1;
+	}
+
+	QByteArray rc4Key;
+	parseNCMHead(f, structMusicData, rc4Key);
 
 	// 读取所有剩余音乐数据（QFile::readAll 替代原来的 10MB 循环 realloc）
 	structMusicData->data = f.readAll();

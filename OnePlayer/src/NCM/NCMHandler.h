@@ -21,5 +21,8 @@ struct CPPMusicInfo
 namespace NCMHandler
 {
 	CPPMusicInfo dealNCM(const QString& filename, ImageDownloadCallBack* callBack = nullptr);
+
+	// 只读取ncm文件中的封面图片，不解密音频数据
+	QImage getCoverImage(const QString& filename);
 };
 

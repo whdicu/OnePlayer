@@ -25,7 +25,11 @@ private slots:
     void on_btn_space_clicked() {emit clicked(info_.id);}
 
 private:
-    void enterEvent(QEnterEvent *);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+	void enterEvent(QEnterEvent*);
+#else
+	void enterEvent(QEvent*);
+#endif
     void leaveEvent(QEvent *);
 
     Ui::NeteaseMusicBtn* ui;

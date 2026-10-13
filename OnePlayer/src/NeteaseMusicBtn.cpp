@@ -37,7 +37,11 @@ void NeteaseMusicBtn::refreshStyle()
 	}
 }
 
-void NeteaseMusicBtn::enterEvent(QEnterEvent *)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+void NeteaseMusicBtn::enterEvent(QEnterEvent*)
+#else
+void NeteaseMusicBtn::enterEvent(QEvent*)
+#endif
 {
     if (!isPlaying_)
         setStyleSheet(NETEASE_HOVER_STYLE.arg(color_.red()).arg(color_.green()).arg(color_.blue()));

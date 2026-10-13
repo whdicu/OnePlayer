@@ -101,3 +101,17 @@ CPPMusicInfo NCMHandler::dealNCM(const QString& filename, ImageDownloadCallBack*
 
 	return ret;
 }
+
+QImage NCMHandler::getCoverImage(const QString& filename)
+{
+	NCMMusicInfo musicData;
+	if (getMusicInfo(filename, &musicData) != 0)
+	{
+		qWarning() << __FUNCTION__ << "getMusicInfo failed:" << filename;
+		return QImage();
+	}
+
+	QImage image;
+	image.loadFromData(musicData.imgData);
+	return image;
+}

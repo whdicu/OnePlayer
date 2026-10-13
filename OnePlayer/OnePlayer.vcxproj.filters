@@ -102,6 +102,9 @@
     <QtMoc Include="src\ImageHandler.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="src\MusicImageLoader.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
     <QtMoc Include="src\NeteaseMusicBtn.h">
       <Filter>widgets</Filter>
     </QtMoc>
@@ -147,6 +150,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\ImageHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MusicImageLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\MusicInfoWidget.cpp">
