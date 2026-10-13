@@ -18,20 +18,7 @@
 {
 	/*background-color: rgba(255, 0, 0, 0.5);*/
 	background-color: transparent;
-}
-
-QPushButton
-{
-	background-color: rgb(182, 209, 200);
-	/*border: 1px solid #5c5c66;*/
-	border-radius: 20px;
-}
-
-QPushButton:hover
-{
-	background-color: rgba(182, 209, 200, 0.75);
-}
-</string>
+}</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="spacing">

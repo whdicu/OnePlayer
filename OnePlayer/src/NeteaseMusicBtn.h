@@ -17,9 +17,7 @@ class NeteaseMusicBtn : public BaseMusicButton
 public:
 	NeteaseMusicBtn(const NeteaseSongInfo& info, QWidget *parent = nullptr);
     ~NeteaseMusicBtn();
-    virtual void setNormalStyle() {is_playing_ = false; setStyleSheet(NETEASE_NORMAL_STYLE);}
-    virtual void setPlayingStyle() {is_playing_ = true; setStyleSheet(NETEASE_PLAYING_STYLE);}
-	virtual void setSelectStyle() {}
+	virtual void refreshStyle() override;
 
 private slots:
     void on_btn_name_clicked() {emit clicked(info_.id);}
@@ -31,7 +29,7 @@ private:
     void leaveEvent(QEvent *);
 
     Ui::NeteaseMusicBtn* ui;
-    bool is_playing_;
+    bool isPlaying_;
 	NeteaseSongInfo info_;
 };
 

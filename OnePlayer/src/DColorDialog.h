@@ -8,6 +8,7 @@
 class QBoxLayout;
 class QHBoxLayout;
 class QLineEdit;
+class QPushButton;
 class QSpinBox;
 
 enum MouseState
@@ -42,6 +43,7 @@ private:
 	QBoxLayout* makeRGBLayout();
 	void refreshColorSpin();
 	void refreshColorWidgetWidth();
+	void refreshSelectedColor();
 
 	void resizeEvent(QResizeEvent* event) override;
 	void mousePressEvent(QMouseEvent* event) override;
@@ -58,6 +60,7 @@ private:
 	QSpinBox* redSpin_;
 	QSpinBox* greenSpin_;
 	QSpinBox* blueSpin_;
+	QPushButton* btnYes_;
 	QPoint pressPos_;  // 拖动窗口时记录按下的点
 	QPoint pressGlobalPos_;  // 拖动窗口时记录按下的全局坐标点
 	QRect pressRect_;  // 鼠标按下时记录当前窗口的rect

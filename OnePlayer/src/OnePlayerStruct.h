@@ -56,8 +56,8 @@ const static int STACKED_MUSIC_BTN_HEIGHT = 355;
 /****************************** 时间 ******************************/
 // 主界面显示隐藏的过渡动画时间;
 const static int MAIN_WIDGET_ANIMATION_TIME = 300;
-const static QEasingCurve MAIN_WIDGET_SHOW_EASING = QEasingCurve::InQuad;
-const static QEasingCurve MAIN_WIDGET_HIDE_EASING = QEasingCurve::OutQuad;
+const static QEasingCurve MAIN_WIDGET_SHOW_EASING = QEasingCurve::InOutQuad;
+const static QEasingCurve MAIN_WIDGET_HIDE_EASING = QEasingCurve::InOutQuad;
 
 // 右侧按钮框的过渡动画Widget
 const static int MORE_BTN_WIDGET_ANIMATION_TIME = 300;
@@ -83,9 +83,9 @@ const static QStringList BUTTON_MENU_STR_LIST =
 
 /****************************** 样式 ******************************/
 // 本地音乐按钮样式
-static const QString LOCAL_NORMAL_STYLE = "QPushButton { color: #5c5c66; background-color: rgba(182, 209, 200, 0.25); border-radius: 20px; padding-left: 10px; padding-right: 10px; } QPushButton:hover {background-color: rgba(182, 209, 200, 0.5);}";
-static const QString LOCAL_PLAYING_STYLE = "QPushButton { color: #5c5c66; background-color: rgb(182, 209, 200);border-radius: 20px; padding-left: 10px; padding-right: 10px; }";
-static const QString LOCAL_SELECT_STYLE = "QPushButton { color: #5c5c66; background-color: rgba(182, 209, 200, 0.5); border-radius: 20px; padding-left: 10px; padding-right: 10px; }";
+static const QString LOCAL_NORMAL_STYLE = "QPushButton { color: #5c5c66; background-color: rgba(%1, %2, %3, 0.25); border-radius: 20px; padding-left: 10px; padding-right: 10px; } QPushButton:hover {background-color: rgba(%1, %2, %3, 0.5);}";
+static const QString LOCAL_PLAYING_STYLE = "QPushButton { color: #5c5c66; background-color: rgb(%1, %2, %3);border-radius: 20px; padding-left: 10px; padding-right: 10px; }";
+static const QString LOCAL_SELECT_STYLE = "QPushButton { color: #5c5c66; background-color: rgba(%1, %2, %3, 0.5); border-radius: 20px; padding-left: 10px; padding-right: 10px; }";
 
 // 网易云音乐按钮样式
 static const QString NETEASE_NORMAL_STYLE =
@@ -94,7 +94,7 @@ static const QString NETEASE_NORMAL_STYLE =
 	background-color: transparent; \
 	text-align : left; \
 } #widget { \
-	background-color: rgba(182, 209, 200, 0.25); \
+	background-color: rgba(%1, %2, %3, 0.25); \
 	border-radius: 20px; \
 } #btn_name{ \
 	padding-left: 15px; \
@@ -107,7 +107,7 @@ static const QString NETEASE_PLAYING_STYLE =
 	background-color: transparent; \
 	text-align : left; \
 } #widget { \
-	background-color: rgb(182, 209, 200); \
+	background-color: rgb(%1, %2, %3); \
 	border-radius: 20px; \
 } #btn_name{ \
 	padding-left: 15px; \
@@ -119,7 +119,7 @@ static const QString NETEASE_HOVER_STYLE =
 	background-color: transparent; \
 	text-align : left; \
 } #widget { \
-	background-color: rgba(182, 209, 200, 0.5); \
+	background-color: rgba(%1, %2, %3, 0.5); \
 	border-radius: 20px; \
 } #btn_name{ \
 	padding-left: 15px; \
@@ -129,7 +129,7 @@ static const QString NETEASE_HOVER_STYLE =
 static const QString ONLINE_NORMAL_STYLE =
 "QPushButton { \
 	color: #5c5c66; \
-	background-color: rgba(182, 209, 200, 0.25); \
+	background-color: rgba(%1, %2, %3, 0.25); \
 	border-radius: 0px; \
 } #btn_name { \
 	text-align: left; \
@@ -147,7 +147,7 @@ static const QString ONLINE_NORMAL_STYLE =
 static const QString ONLINE_PLAYING_STYLE =
 "QPushButton { \
 	color: #5c5c66; \
-	background-color: rgb(182, 209, 200); \
+	background-color: rgb(%1, %2, %3); \
 	border-radius: 0px; \
 } #btn_name { \
 	text-align: left; \
@@ -165,7 +165,7 @@ static const QString ONLINE_PLAYING_STYLE =
 static const QString ONLINE_HOVER_STYLE = 
 "QPushButton { \
 	color: #5c5c66; \
-	background-color: rgba(182, 209, 200, 0.5); \
+	background-color: rgba(%1, %2, %3, 0.5); \
 	border-radius: 0px; \
 } #btn_name { \
 	text-align: left; \
@@ -182,19 +182,19 @@ static const QString ONLINE_HOVER_STYLE =
 
 static const QString PLAY_LIST_NORMAL_STYLE =
 "#widget_bg { \
-	background-color: rgba(182, 209, 200, 0.25); \
+	background-color: rgba(%1, %2, %3, 0.25); \
 	border-radius: 20px; \
 }";
 
 static const QString PLAY_LIST_PLAYING_STYLE =
 "#widget_bg { \
-	background-color: rgb(182, 209, 200); \
+	background-color: rgb(%1, %2, %3); \
 	border-radius: 20px; \
 }";
 
 static const QString PLAY_LIST_HOVER_STYLE =
 "#widget_bg { \
-	background-color: rgba(182, 209, 200, 0.5); \
+	background-color: rgba(%1, %2, %3, 0.5); \
 	border-radius: 20px; \
 }";
 

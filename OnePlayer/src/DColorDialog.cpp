@@ -27,6 +27,7 @@ DColorDialog::DColorDialog(const DList<DPair<QColor, QString>>& defaultColors, Q
 	, redSpin_(nullptr)
 	, greenSpin_(nullptr)
 	, blueSpin_(nullptr)
+	, btnYes_(nullptr)
 	, mouseIsPressed_(false)
 	, mouseState_(FreeState)
 {
@@ -36,6 +37,7 @@ DColorDialog::DColorDialog(const DList<DPair<QColor, QString>>& defaultColors, Q
 
 	QVBoxLayout* btnLayout = new QVBoxLayout;
 	btnLayout->setMargin(0);
+	btnLayout->setSpacing(10);
 	for (const DPair<QColor, QString>& pair : defaultColors)
 	{
 		DColorButton* btn = new DColorButton(pair.first, pair.second);
@@ -48,7 +50,7 @@ DColorDialog::DColorDialog(const DList<DPair<QColor, QString>>& defaultColors, Q
 	btnWidget->setLayout(btnLayout);
 
 	colorWidget_ = new QWidget;
-	colorWidget_->setFixedSize(110, 132);
+	colorWidget_->setFixedSize(110, 140);
 	colorWidget_->setStyleSheet("border-radius: 20px; background-color: white;");
 
 	QHBoxLayout* hLayout1 = new QHBoxLayout;
@@ -72,21 +74,6 @@ DColorDialog::DColorDialog(const DList<DPair<QColor, QString>>& defaultColors, Q
 	rulerWidget_->setStyleSheet("color: #5c5c66; background-color: white; border-radius: 20px;");
 	rulerWidget_->setLayout(htmlLayout);
 
-	QPushButton* btnYes = new QPushButton(tr("行吧"));
-	btnYes->setFont(FONT);
-	btnYes->setFlat(true);
-	btnYes->setCursor(Qt::PointingHandCursor);
-	btnYes->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
-	btnYes->setMinimumHeight(40);
-	btnYes->setStyleSheet("QPushButton { \
-		color: #5c5c66; \
-		background-color: white; \
-		border-radius: 20px; } \
-	QPushButton:hover { \
-		background-color: rgba(255, 255, 255, 0.5); \
-	}");
-	connect(btnYes, &QPushButton::clicked, this, &QDialog::accept);
-
 	QPushButton* btnNo = new QPushButton(tr("算了"));
 	btnNo->setFont(FONT);
 	btnNo->setFlat(true);
@@ -102,18 +89,28 @@ DColorDialog::DColorDialog(const DList<DPair<QColor, QString>>& defaultColors, Q
 	}");
 	connect(btnNo, &QPushButton::clicked, this, &QDialog::reject);
 
+	btnYes_ = new QPushButton(tr("行吧"));
+	btnYes_->setFont(FONT);
+	btnYes_->setFlat(true);
+	btnYes_->setCursor(Qt::PointingHandCursor);
+	btnYes_->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
+	btnYes_->setMinimumHeight(40);
+	connect(btnYes_, &QPushButton::clicked, this, &QDialog::accept);
+
 	QHBoxLayout* hLayout2 = new QHBoxLayout;
 	hLayout2->setMargin(0);
-	hLayout2->addWidget(btnYes);
 	hLayout2->addWidget(btnNo);
+	hLayout2->addWidget(btnYes_);
 
 	QVBoxLayout* rightLayout = new QVBoxLayout;
+	rightLayout->setSpacing(10);
 	rightLayout->addLayout(hLayout1);
 	rightLayout->addWidget(rulerWidget_);
 	rightLayout->addLayout(hLayout2);
 
 	QHBoxLayout* mainLayout = new QHBoxLayout;
 	mainLayout->setMargin(20);
+	mainLayout->setSpacing(20);
 	mainLayout->addWidget(btnWidget);
 	mainLayout->addLayout(rightLayout);
 
@@ -131,6 +128,33 @@ DColorDialog::DColorDialog(const DList<DPair<QColor, QString>>& defaultColors, Q
 	outSideLayout->setMargin(0);
 	outSideLayout->addWidget(outSideWidget);
 	setLayout(outSideLayout);
+
+	refreshSelectedColor();
+}
+
+void DColorDialog::refreshSelectedColor()
+{
+	colorWidget_->setStyleSheet(QString("border-radius: 20px; background-color: %1;")
+		.arg(DStyle::color2Str(selectedColor_)));
+
+	// 行吧按钮的背景用当前选中的颜色，hover 时和其它按钮一样半透明
+	int r = 255;
+	int g = 255;
+	int b = 255;
+	if (selectedColor_.isValid())
+	{
+		r = selectedColor_.red();
+		g = selectedColor_.green();
+		b = selectedColor_.blue();
+	}
+
+	btnYes_->setStyleSheet(QString("QPushButton { \
+		color: #5c5c66; \
+		background-color: rgba(%1, %2, %3, 0.5); \
+		border-radius: 20px; } \
+	QPushButton:hover { \
+		background-color: rgb(%1, %2, %3); \
+	}").arg(r).arg(g).arg(b));
 }
 
 DColorDialog::~DColorDialog()
@@ -140,8 +164,7 @@ DColorDialog::~DColorDialog()
 void DColorDialog::setCurrentColor(const QColor& currentColor)
 {
 	selectedColor_ = currentColor;
-	colorWidget_->setStyleSheet(QString("border-radius: 20px; background-color: %1;")
-		.arg(DStyle::color2Str(selectedColor_)));
+	refreshSelectedColor();
 	htmlEdit_->setText(selectedColor_.name().toUpper());
 	refreshColorSpin();
 }
@@ -160,8 +183,7 @@ void DColorDialog::slotHTMLEditTextChanged(const QString& text)
 		return;
 
 	selectedColor_ = QColor(text);
-	colorWidget_->setStyleSheet(QString("border-radius: 20px; background-color: %1;")
-		.arg(DStyle::color2Str(selectedColor_)));
+	refreshSelectedColor();
 	refreshColorSpin();
 }
 
@@ -222,8 +244,7 @@ QBoxLayout* DColorDialog::makeRGBLayout()
 	connect(redSpin_, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, [this](int value)
 	{
 		selectedColor_.setRed(value);
-		colorWidget_->setStyleSheet(QString("border-radius: 20px; background-color: %1;")
-			.arg(DStyle::color2Str(selectedColor_)));
+		refreshSelectedColor();
 		htmlEdit_->blockSignals(true);
 		htmlEdit_->setText(selectedColor_.name().toUpper());
 		htmlEdit_->blockSignals(false);
@@ -232,8 +253,7 @@ QBoxLayout* DColorDialog::makeRGBLayout()
 	connect(greenSpin_, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, [this](int value)
 	{
 		selectedColor_.setGreen(value);
-		colorWidget_->setStyleSheet(QString("border-radius: 20px; background-color: %1;")
-			.arg(DStyle::color2Str(selectedColor_)));
+		refreshSelectedColor();
 		htmlEdit_->blockSignals(true);
 		htmlEdit_->setText(selectedColor_.name().toUpper());
 		htmlEdit_->blockSignals(false);
@@ -242,8 +262,7 @@ QBoxLayout* DColorDialog::makeRGBLayout()
 	connect(blueSpin_, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, [this](int value)
 	{
 		selectedColor_.setBlue(value);
-		colorWidget_->setStyleSheet(QString("border-radius: 20px; background-color: %1;")
-			.arg(DStyle::color2Str(selectedColor_)));
+		refreshSelectedColor();
 		htmlEdit_->blockSignals(true);
 		htmlEdit_->setText(selectedColor_.name().toUpper());
 		htmlEdit_->blockSignals(false);

@@ -42,6 +42,7 @@ public:
 	~SettingTabWidget();
 	void setMusicDir(const QString& dir);
 	void setDownloadDir(const QString& dir);
+	void setColor(const QColor& color);
 
 signals:
 	void sig_btn_open_dir_clicked();
@@ -61,4 +62,5 @@ private slots:
 private:
 	Ui::SettingTabWidget ui;
 	DList<QPushButton*> btn_list_;
+	int currentIndex_;
 };

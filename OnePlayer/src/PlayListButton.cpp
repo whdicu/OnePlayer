@@ -22,10 +22,31 @@ PlayListButton::~PlayListButton()
 
 void PlayListButton::setChoosed()
 {
-	if (choosedBtn_)
-		choosedBtn_->setStyleSheet(PLAY_LIST_NORMAL_STYLE + PLAY_LIST_BTNS_STYLE);
-	setStyleSheet(PLAY_LIST_PLAYING_STYLE + PLAY_LIST_BTNS_STYLE);
+	PlayListButton* oldBtn = choosedBtn_;
 	choosedBtn_ = this;
+
+	// restore the old button to normal style
+	if (oldBtn && oldBtn != this)
+		oldBtn->setColor(oldBtn->oldColor_);
+
+	// show the playing style on this button
+	setColor(oldColor_);
+}
+
+void PlayListButton::setColor(const QColor& color)
+{
+	if (!color.isValid())
+	{
+		qWarning() << __FUNCTION__ << "color invalid!";
+		return;
+	}
+
+	oldColor_ = color;
+
+	// keep the playing style when this button is the current one
+	QString style = (this == choosedBtn_) ? PLAY_LIST_PLAYING_STYLE : PLAY_LIST_NORMAL_STYLE;
+	setStyleSheet(style.arg(oldColor_.red()).arg(oldColor_.green()).arg(oldColor_.blue())
+		+ PLAY_LIST_BTNS_STYLE);
 }
 
 void PlayListButton::on_btn_name_clicked()
@@ -50,12 +71,18 @@ void PlayListButton::enterEvent(QEnterEvent*)
 void PlayListButton::enterEvent(QEvent*)
 #endif
 {
-	if (SETTING_HANDLER->getStruct().playListName != ui->btn_name->text())
-		setStyleSheet(PLAY_LIST_HOVER_STYLE + PLAY_LIST_BTNS_STYLE);
+	if (this == choosedBtn_)
+		return;
+
+	setStyleSheet(PLAY_LIST_HOVER_STYLE.arg(oldColor_.red()).arg(oldColor_.green()).arg(oldColor_.blue())
+		+ PLAY_LIST_BTNS_STYLE);
 }
 
 void PlayListButton::leaveEvent(QEvent*)
 {
-	if (SETTING_HANDLER->getStruct().playListName != ui->btn_name->text())
-		setStyleSheet(PLAY_LIST_NORMAL_STYLE + PLAY_LIST_BTNS_STYLE);
+	if (this == choosedBtn_)
+		return;
+
+	setStyleSheet(PLAY_LIST_NORMAL_STYLE.arg(oldColor_.red()).arg(oldColor_.green()).arg(oldColor_.blue())
+		+ PLAY_LIST_BTNS_STYLE);
 }

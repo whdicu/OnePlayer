@@ -27,6 +27,8 @@ public:
 
 	bool isAnimateHide() { return isAnimateHide_; }
 
+	void setColor(const QColor& color);
+
 signals:
 	void focusOnBtnAt(DSizeType oldFocusIndex, DSizeType newFocusIndex);
 	void sigBtnCloseClicked();

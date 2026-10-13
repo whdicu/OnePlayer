@@ -136,15 +136,20 @@ cv::Mat ImageHandler::QImageToCvMat(const QImage& inImage,
 		// 8-bit, 4 channel
 	case QImage::Format_RGBA8888:
 	{
-		QImage   swapped = inImage.rgbSwapped();
+		// 使用 rgbSwapped 会导致转换后的mat在cv::write时崩溃
+		//QImage   swapped = inImage.rgbSwapped();
 
-		cv::Mat  mat(swapped.height(), swapped.width(),
-			CV_8UC4, const_cast<uchar*>(swapped.bits()),
-			swapped.bytesPerLine());
+		cv::Mat  mat(inImage.height(), inImage.width(),
+			CV_8UC4, const_cast<uchar*>(inImage.bits()),
+			inImage.bytesPerLine());
 
-		return (inCloneImageData ? mat.clone() : mat);
+		cv::Mat transMat;
+		cv::cvtColor(mat, transMat, cv::COLOR_RGBA2RGB);
+
+		return (inCloneImageData ? transMat.clone() : transMat);
 	}
 	case QImage::Format_ARGB32:
+	case QImage::Format_ARGB32_Premultiplied:
 	{
 		cv::Mat  mat(inImage.height(), inImage.width(),
 			CV_8UC4, const_cast<uchar*>(inImage.bits()),
@@ -173,7 +178,7 @@ cv::Mat ImageHandler::QImageToCvMat(const QImage& inImage,
 		cv::Mat mat = cv::Mat(inImage.height(), inImage.width(),
 			CV_8UC3, const_cast<uchar*>(inImage.bits()),
 			inImage.bytesPerLine()).clone();
-		cv::cvtColor(mat, mat, cv::COLOR_RGB2BGR);  // 快
+
 		return mat;
 	}
 

@@ -62,11 +62,11 @@
   </ItemDefinitionGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="QtSettings">
     <QtInstall>qt-6.5.1-msvc</QtInstall>
-    <QtModules>core;gui;widgets</QtModules>
+    <QtModules>core;gui;svg;widgets</QtModules>
     <QtBuildConfig>debug</QtBuildConfig>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="QtSettings">
-    <QtModules>concurrent;core;gui;multimedia;network;widgets</QtModules>
+    <QtModules>concurrent;core;gui;multimedia;network;svg;widgets</QtModules>
     <QtBuildConfig>release</QtBuildConfig>
     <QtInstall>qt5.9.4-msvc2017-x64</QtInstall>
   </PropertyGroup>

@@ -17,6 +17,7 @@ namespace Ui { class Widget; }
 QT_END_NAMESPACE
 
 class KeyInfo;
+class PlayListEdit;
 class QPropertyAnimation;
 
 class Widget : public QWidget
@@ -135,5 +136,7 @@ private:
     bool shutdownBtnClicked_;
 
 	bool isAnimateHide_;
+	bool isDefaultImage_;  // 主界面背景当前显示的是否为默认图片
+	PlayListEdit* playListEdit_;
 };
 #endif // WIDGET_H

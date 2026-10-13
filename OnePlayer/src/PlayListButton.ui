@@ -32,12 +32,7 @@
    <string>Form</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">#widget_bg {
-	background-color: rgba(182, 209, 200, 0.25);
-	border-radius: 20px;
-}
-
-#btn_name {
+   <string notr="true">#btn_name {
 	color: #5c5c66;
 	background-color: transparent;
 	padding-left: 10px;

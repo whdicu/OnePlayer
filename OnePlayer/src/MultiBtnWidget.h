@@ -23,6 +23,8 @@ public:
 
 	void setBtnPlayListIcon(const QIcon& icon);
 
+	void setColor(const QColor& color);
+
 signals:
 	void sigBtnNeteaseClicked();
 	void sigBtnPlayListClicked();

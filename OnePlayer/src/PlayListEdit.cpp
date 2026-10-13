@@ -1,4 +1,5 @@
 #include "PlayListEdit.h"
+#include "HDQt/include/DStyle.h"
 #include <QKeyEvent>
 
 
@@ -11,6 +12,11 @@ PlayListEdit::PlayListEdit(QWidget *parent)
 
 PlayListEdit::~PlayListEdit()
 {
+}
+
+void PlayListEdit::setColor(const QColor& color)
+{
+	ui.widget->setStyleSheet(QString("QPushButton { background-color: %1; }").arg(DStyle::color2Str(color)));
 }
 
 void PlayListEdit::on_btn_add_clicked()

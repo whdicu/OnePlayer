@@ -4,11 +4,12 @@
 #include <QPushButton>
 
 
-const static QString CHECHED_BTN_STYLE = "border: none; background-color: rgba(182, 209, 200, 0.75); border-top-left-radius: 20px; border-top-right-radius: 20px;";
+const static QString CHECHED_BTN_STYLE = "border: none; background-color: rgba(%1, %2, %3, 0.75); border-top-left-radius: 20px; border-top-right-radius: 20px;";
 
 
 SettingTabWidget::SettingTabWidget(QWidget *parent)
 	: QWidget(parent)
+	, currentIndex_(0)
 {
 	ui.setupUi(this);
 
@@ -34,7 +35,6 @@ SettingTabWidget::SettingTabWidget(QWidget *parent)
 	}
 	static_cast<QHBoxLayout*>(ui.btn_widget->layout())->addStretch();
 	ui.stacked_widget->setCurrentIndex(1);
-	btn_list_.at(0)->setStyleSheet(CHECHED_BTN_STYLE);
 
 	// 初始化播放器模式下拉框
 	for (auto it = csmap_playerModeStr.begin(); it != csmap_playerModeStr.end(); ++it)
@@ -81,6 +81,33 @@ void SettingTabWidget::setMusicDir(const QString& dir)
 void SettingTabWidget::setDownloadDir(const QString& dir)
 {
 	ui.btn_open_dir_download->setText(dir);
+}
+
+void SettingTabWidget::setColor(const QColor& color)
+{
+	for (int i = 0; i < btn_list_.size(); ++i)
+	{
+		if (currentIndex_ == i)
+			btn_list_.at(i)->setStyleSheet(CHECHED_BTN_STYLE.arg(color.red()).arg(color.green()).arg(color.blue()));
+		else
+			btn_list_.at(i)->setStyleSheet("");
+	}
+
+	ui.btn_widget->setStyleSheet(QString(R"(#btn_widget QPushButton:hover {
+		background-color: rgba(%1, %2, %3, 0.5);
+		border: none;
+		border-top-left-radius: 20px;
+		border-top-right-radius: 20px;
+	})").arg(color.red()).arg(color.green()).arg(color.blue()));
+
+	ui.stacked_widget->setStyleSheet(QString(R"(#stacked_widget > QWidget > QWidget{
+		background-color: rgba(%1, %2, %3, 0.75);
+		border: none;
+		border-top-left-radius: 0px;
+		border-top-right-radius: 0px;
+		border-bottom-left-radius: 20px;
+		border-bottom-right-radius: 20px;
+	})").arg(color.red()).arg(color.green()).arg(color.blue()));
 }
 
 void SettingTabWidget::on_cmb_mode_currentIndexChanged(int index)

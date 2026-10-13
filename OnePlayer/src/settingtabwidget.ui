@@ -51,28 +51,10 @@ QPushButton
 	background-color: transparent;
 	border: none;
 }
-#btn_widget QPushButton:hover
-{
-	background-color: rgba(182, 209, 200, 0.5);
-	border: none;
-	border-top-left-radius: 20px;
-	border-top-right-radius: 20px;
-}
 
- 
 #stacked_widget
 {
 	border: none;
-	border-bottom-left-radius: 20px;
-	border-bottom-right-radius: 20px;
-}
-
-#stacked_widget&gt;QWidget&gt;QWidget
-{
-	background-color: rgba(182, 209, 200, 0.75);
-	border: none;
-	border-top-left-radius: 0px;
-	border-top-right-radius: 0px;
 	border-bottom-left-radius: 20px;
 	border-bottom-right-radius: 20px;
 }

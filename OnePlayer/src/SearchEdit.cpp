@@ -4,6 +4,8 @@
 #include <QPropertyAnimation>
 #include <QRegularExpression>
 #include "settinghandler.h"
+#include "HDQt/include/DStyle.h"
+
 
 SearchEdit::SearchEdit(QWidget *parent)
 	: QWidget(parent)
@@ -55,6 +57,11 @@ void SearchEdit::moveToHide()
 {
 	isAnimateHide_ = true;
 	move(x(), -height());
+}
+
+void SearchEdit::setColor(const QColor& color)
+{
+	ui->widget_find->setStyleSheet(QString("QPushButton { background-color: %1; }").arg(DStyle::color2Str(color)));
 }
 
 // 查找框内上一个按钮

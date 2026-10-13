@@ -11,6 +11,9 @@ MultiBtnWidget::MultiBtnWidget(QWidget *parent)
 {
 	ui.setupUi(this);
 
+	ui.btn_netease->setVisible(false);
+	ui.btn_search->setVisible(false);
+
 	// 内部按钮的动画
 	endPos1_ = ui.btn_netease->pos();
 	animation1_ = new QPropertyAnimation(ui.btn_netease, "pos");
@@ -221,4 +224,15 @@ void MultiBtnWidget::setBtnNeteaseInfo(const QImage& image, const QString& tips)
 void MultiBtnWidget::setBtnPlayListIcon(const QIcon & icon)
 {
 	ui.btn_play_list->setIcon(icon);
+}
+
+void MultiBtnWidget::setColor(const QColor& color)
+{
+	ui.widget->setStyleSheet(QString("QPushButton { \
+		background-color: rgb(%1, %2, %3); \
+		/*border: 1px solid #5c5c66;*/ \
+		border-radius: 20px; \
+	} QPushButton:hover { \
+		background-color: rgba(%1, %2, %3, 0.75); \
+	}").arg(color.red()).arg(color.green()).arg(color.blue()));
 }

@@ -32,18 +32,7 @@
    <string>Form</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">#btn_name {
-	color: #5c5c66;
-	background-color: rgba(182, 209, 200, 0.25);
-	border-radius: 20px;
-	padding-left: 10px;
-	padding-right: 10px;
-	/*text-overflow: ellipsis;*//*无效*/
-}
-
-#btn_name:hover {
-	background-color: rgba(182, 209, 200, 0.5);
-}</string>
+   <string notr="true"/>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
    <property name="spacing">

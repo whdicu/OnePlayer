@@ -40,7 +40,6 @@
 
 #btn_add {
 	border-radius: 14px;
-	background-color: #b6d1c8;
 }</string>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">

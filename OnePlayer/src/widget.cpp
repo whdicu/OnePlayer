@@ -21,6 +21,7 @@
 #include <QDesktopServices>
 #include <QElapsedTimer>
 #include <QKeyEvent>
+#include <QFile>
 #include <QFileDialog>
 #include <QLocale>
 #include <QMediaMetaData>
@@ -34,6 +35,7 @@
 #include <QRegularExpression>
 #include <QScrollBar>
 #include <QShortcut>
+#include <QSvgRenderer>
 #include <QTcpSocket>
 #include <QThread>
 #include <QTimer>
@@ -50,6 +52,48 @@ bool pointInWidget(QWidget* widget, QPoint pos)
         pos.y() > p.y() && pos.y() < p.y() + widget->height());
 }
 
+QImage getDefaultImage(const QColor& color=QColor())
+{
+	QFile file(":/svgs/music_bg.svg");
+	if (!file.open(QIODevice::ReadOnly))
+	{
+		qWarning() << __FUNCTION__ << "failed to open music_bg.svg";
+		return QImage();
+	}
+
+	QString svgContent = QString::fromUtf8(file.readAll());
+	file.close();
+
+	// 用传入颜色替换 svg 中 rect 的背景色，颜色非法时保留原色
+	if (color.isValid())
+	{
+		QRegularExpression fillRe("(<rect\\b[^>]*?\\bfill=\")[^\"]*(\")");
+		svgContent.replace(fillRe, "\\1" + color.name() + "\\2");
+	}
+
+	QSvgRenderer renderer(svgContent.toUtf8());
+	if (!renderer.isValid())
+	{
+		qWarning() << __FUNCTION__ << "invalid svg content";
+		return QImage(":/svgs/music_bg.svg");
+	}
+
+	QSize size = renderer.defaultSize();
+	if (!size.isValid())
+	{
+		size = QSize(1024, 1024);
+	}
+
+	QImage image(size, QImage::Format_ARGB32_Premultiplied);
+	image.fill(Qt::transparent);
+
+	QPainter painter(&image);
+	renderer.render(&painter);
+	painter.end();
+
+	return image;
+}
+
 Widget::Widget(const QString& filepath, QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::Widget)
@@ -62,7 +106,9 @@ Widget::Widget(const QString& filepath, QWidget *parent)
     , isShowAnimation_(true)
     , shutdownBtnClicked_(false)
     , isAnimateHide_(true)
+    , isDefaultImage_(false)
     , stackedMusicBtnAnimationTimer_(nullptr)
+	, playListEdit_(new PlayListEdit)
 {
     ui->setupUi(this);
     setWindowFlags(Qt::FramelessWindowHint);
@@ -114,9 +160,9 @@ Widget::Widget(const QString& filepath, QWidget *parent)
 	stackedLocalBtnsAnimation_->setDuration(MORE_BTN_WIDGET_ANIMATION_TIME);
 
 	// 创建播放列表界面开头的添加框
-	PlayListEdit* edit = new PlayListEdit(this);
-	ui->play_list_layout->addWidget(edit);
-	connect(edit, &PlayListEdit::sigAdd, this, [this](const QString& playListName)
+	playListEdit_ = new PlayListEdit(this);
+	ui->play_list_layout->addWidget(playListEdit_);
+	connect(playListEdit_, &PlayListEdit::sigAdd, this, [this](const QString& playListName)
 	{
 		SETTING_HANDLER->addPlayList(playListName, DVector<QString>());
 		refreshPlayListBtns();
@@ -226,11 +272,6 @@ void Widget::slotPositionChanged(qint64 pos)
         {
             DWarning << "ui->label_now is nullptr!";
             return;
-        }
-
-        if (pos > 0)
-        {
-            SETTING_HANDLER->getStruct().musicPosition = pos;
         }
 
         auto time_s = pos / 1000;
@@ -662,13 +703,13 @@ void Widget::refreshPlayListBtns()
 		//QString str = filename.mid(0, filename.indexOf('.'));
 		PlayListButton* btn = new PlayListButton(playListName, this);
 		btn->setContextMenuPolicy(Qt::CustomContextMenu);
+		btn->setColor(SETTING_HANDLER->getStruct().mainColor);
 		if (SETTING_HANDLER->getStruct().playListName == playListName)
 			btn->setChoosed();
 
 		connect(btn, &PlayListButton::sigPlayListClicked, this, [btn, this](const QString& playListName)
 		{
 			SETTING_HANDLER->getStruct().playListName = playListName;
-			//SETTING_HANDLER->getStruct().musicPosition = 0;
 			SETTING_HANDLER->setMusicIndex(0);
 
 			switch (SETTING_HANDLER->getStruct().playMode)
@@ -724,6 +765,50 @@ void Widget::refreshPlayListBtns()
 void Widget::refreshMainColor(QColor mainColor)
 {
 	ui->widget_btn->setStyleSheet(QString("#widget_btn { background-color: %1; }").arg(DStyle::color2Str(mainColor)));
+	ui->multi_btn_widget->setColor(mainColor);
+	ui->setting_tab_widget->setColor(mainColor);
+	ui->find_widget->setColor(mainColor);
+	playListEdit_->setColor(mainColor);
+	ui->progress->setStyleSheet(QString(R"(
+	#progress::handle:horizontal {
+		background: %1;
+	})").arg(DStyle::color2Str(mainColor)));  // 滑块设置
+
+	// 当前显示的是默认图片时，用新主色重新渲染 svg 背景并显示
+	if (isDefaultImage_)
+	{
+		drawImage(QImage());
+	}
+
+	// 音乐按钮
+	QLayoutItem* child;
+	for (int i = 0; i < ui->music_layout->count(); ++i)
+	{
+		child = ui->music_layout->itemAt(i);
+		if (!child || !child->widget())
+			continue;
+
+		BaseMusicButton* btn = qobject_cast<BaseMusicButton*>(child->widget());
+		if (nullptr == btn)
+			continue;
+
+		btn->setColor(mainColor);
+	}
+
+	// 播放列表按钮
+	// 第一个是搜索框
+	for (int i = 1; i < ui->play_list_layout->count(); ++i)
+	{
+		child = ui->play_list_layout->itemAt(i);
+		if (!child || !child->widget())
+			continue;
+
+		PlayListButton* btn = qobject_cast<PlayListButton*>(child->widget());
+		if (nullptr == btn)
+			continue;
+
+		btn->setColor(mainColor);
+	}
 }
 
 void Widget::appendNeteasePlayListBtns(const DVector<NeteasePlayListInfo>& infos)
@@ -731,6 +816,9 @@ void Widget::appendNeteasePlayListBtns(const DVector<NeteasePlayListInfo>& infos
 	for (const auto& info : infos)
 	{
 		PlayListButton* btn = new PlayListButton(info, this);
+		btn->setColor(SETTING_HANDLER->getStruct().mainColor);
+		if (SETTING_HANDLER->getStruct().playListName == NETEASE_PLAY_LIST_PREFIX + QString::number(info.id) + '_' + info.name)
+			btn->setChoosed();
 		connect(btn, &PlayListButton::sigNeteasePlayListClicked, this, &Widget::slotNeteasePlayListClicked);
 		ui->play_list_layout->addWidget(btn);
 	}
@@ -742,6 +830,7 @@ BaseMusicButton* Widget::addLocalMusicBtn(const QUrl& url)
 	//QString str = filename.mid(0, filename.indexOf('.'));
     LocalMusicButton* btn = new LocalMusicButton(url.fileName(), this);
     btn->setContextMenuPolicy(Qt::CustomContextMenu);
+	btn->setColor(SETTING_HANDLER->getStruct().mainColor);
 	connect(btn, &LocalMusicButton::clicked, this, &Widget::slotLocalMusicBtnClicked);
     connect(btn, &QPushButton::customContextMenuRequested, this, [btn](const QPoint& pos)
     {
@@ -756,6 +845,7 @@ BaseMusicButton* Widget::addNeteaseMusicBtn(const NeteaseSongInfo& info)
 {
 	NeteaseMusicBtn* btn = new NeteaseMusicBtn(info, this);
 	btn->setContextMenuPolicy(Qt::CustomContextMenu);
+	btn->setColor(SETTING_HANDLER->getStruct().mainColor);
 	connect(btn, &BaseMusicButton::clicked, this, &Widget::slotNeteaseMusicBtnClicked);
 	connect(btn, &QPushButton::customContextMenuRequested, this, [btn](const QPoint& pos)
 	{
@@ -1119,7 +1209,9 @@ void Widget::initMultiFuncWidget()
 
 void Widget::drawImage(const QImage& image)
 {
-	cv::Mat originMat = ImageHandler::QImageToCvMat(image.isNull() ? QImage(":/images/music.png") : image);
+	isDefaultImage_ = image.isNull();
+
+	cv::Mat originMat = ImageHandler::QImageToCvMat(image.isNull() ? getDefaultImage(SETTING_HANDLER->getStruct().mainColor) : image);
 	cv::Mat fitMat = originMat;
 	switch (SETTING_HANDLER->getStruct().bgMode)
 	{
@@ -1314,7 +1406,7 @@ void Widget::init()
 	info.title = "歌曲名";
 	info.singers = "歌手";
 	info.album = "专辑";
-	info.image = QImage(":/images/music.png");
+	info.imgIsReady = true;
 	refreshImageWidget(info);
 
 	if (isNeteaseLogin)
@@ -1359,7 +1451,6 @@ void Widget::init()
 
 	slotMusicIndexChanged(SETTING_HANDLER->getMusicIndex(), SETTING_HANDLER->getMusicIndex());  // 初始化被播放的那个音乐按钮样式
 
-
 	// 播放之前上次关闭时放的歌
 	if (!SETTING_HANDLER->getStruct().playOnStart)
 	{
@@ -1375,6 +1466,9 @@ void Widget::init()
 void Widget::uninit()
 {
 	NETEASE_HANDLER->uninit();
+
+	qint64 musicPos = player_->getPosition();
+	SETTING_HANDLER->getStruct().musicPosition = musicPos;
 	SETTING_HANDLER->save();
 }
 

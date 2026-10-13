@@ -11,6 +11,8 @@ public:
 	PlayListEdit(QWidget *parent = Q_NULLPTR);
 	~PlayListEdit();
 
+	void setColor(const QColor& color);
+
 signals:
 	void sigAdd(const QString& playListName);
 

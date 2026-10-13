@@ -21,6 +21,7 @@ public:
     ~PlayListButton();
 
 	void setChoosed();
+	void setColor(const QColor& color);
 
 signals:
 	void sigPlayListClicked(const QString& playListName);
@@ -42,6 +43,7 @@ private:
     Ui::PlayListButton *ui;
 	static PlayListButton* choosedBtn_;
 	NeteasePlayListInfo info_;
+	QColor oldColor_;
 };
 
 #endif // PLAYLISTBUTTON_H
