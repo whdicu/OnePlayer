@@ -1144,9 +1144,16 @@ void Widget::mouseReleaseEvent(QMouseEvent* event)
 
 void Widget::mouseDoubleClickEvent(QMouseEvent* event)
 {
-	if (event->pos().y() < 20)
+	int y2bottom = ui->multi_func_widget->y() + ui->multi_func_widget->height();
+	int y2top = y2bottom - ui->multi_func_widget->height() + ui->stacked_music_btn->height();;
+
+	if (event->pos().y() <= ui->widget_top->height())
 	{
 		ui->scrollArea->verticalScrollBar()->setValue(0);
+	}
+	else if (event->pos().y() >= y2top && event->pos().y() <= y2bottom)
+	{
+		ui->scrollArea->verticalScrollBar()->setValue(ui->scrollArea->verticalScrollBar()->maximum());
 	}
 }
 
