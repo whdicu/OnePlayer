@@ -56,7 +56,7 @@ void LocalMusicButton::refreshStyle()
 		setStyleSheet(LOCAL_PLAYING_STYLE.arg(color_.red()).arg(color_.green()).arg(color_.blue()));
 		break;
 	case BaseMusicButton::Selected:
-		setStyleSheet(LOCAL_SELECT_STYLE.arg(color_.red()).arg(color_.green()).arg(color_.blue()));
+		setStyleSheet(LOCAL_HOVER_STYLE.arg(color_.red()).arg(color_.green()).arg(color_.blue()));
 		break;
 	default:
 		qWarning() << __FUNCTION__ << "unknow state:" << state_;

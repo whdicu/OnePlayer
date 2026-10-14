@@ -92,7 +92,7 @@ static const QString LOCAL_NORMAL_STYLE =
 	background-color: transparent; \
 	text-align : left; \
 } #widget { \
-	background-color: rgba(%1, %2, %3, 0.25); \
+	background-color: rgba(%1, %2, %3, 0.5); \
 	border-radius: 20px; \
 } #btn_name { \
 	padding-left: 10px; \
@@ -112,26 +112,13 @@ static const QString LOCAL_PLAYING_STYLE =
 	padding-right: 10px; \
 }";
 
-static const QString LOCAL_SELECT_STYLE =
-"QPushButton { \
-	color: #5c5c66; \
-	background-color: transparent; \
-	text-align : left; \
-} #widget { \
-	background-color: rgba(%1, %2, %3, 0.5); \
-	border-radius: 20px; \
-} #btn_name { \
-	padding-left: 10px; \
-	padding-right: 10px; \
-}";
-
 static const QString LOCAL_HOVER_STYLE =
 "QPushButton { \
 	color: #5c5c66; \
 	background-color: transparent; \
 	text-align : left; \
 } #widget { \
-	background-color: rgba(%1, %2, %3, 0.5); \
+	background-color: rgba(%1, %2, %3, 0.75); \
 	border-radius: 20px; \
 } #btn_name { \
 	padding-left: 10px; \
@@ -145,7 +132,7 @@ static const QString NETEASE_NORMAL_STYLE =
 	background-color: transparent; \
 	text-align : left; \
 } #widget { \
-	background-color: rgba(%1, %2, %3, 0.25); \
+	background-color: rgba(%1, %2, %3, 0.5); \
 	border-radius: 20px; \
 } #btn_name{ \
 	padding-left: 15px; \
@@ -170,7 +157,7 @@ static const QString NETEASE_HOVER_STYLE =
 	background-color: transparent; \
 	text-align : left; \
 } #widget { \
-	background-color: rgba(%1, %2, %3, 0.5); \
+	background-color: rgba(%1, %2, %3, 0.75); \
 	border-radius: 20px; \
 } #btn_name{ \
 	padding-left: 15px; \
@@ -180,7 +167,7 @@ static const QString NETEASE_HOVER_STYLE =
 static const QString ONLINE_NORMAL_STYLE =
 "QPushButton { \
 	color: #5c5c66; \
-	background-color: rgba(%1, %2, %3, 0.25); \
+	background-color: rgba(%1, %2, %3, 0.5); \
 	border-radius: 0px; \
 } #btn_name { \
 	text-align: left; \
@@ -216,7 +203,7 @@ static const QString ONLINE_PLAYING_STYLE =
 static const QString ONLINE_HOVER_STYLE = 
 "QPushButton { \
 	color: #5c5c66; \
-	background-color: rgba(%1, %2, %3, 0.5); \
+	background-color: rgba(%1, %2, %3, 0.75); \
 	border-radius: 0px; \
 } #btn_name { \
 	text-align: left; \
@@ -233,7 +220,7 @@ static const QString ONLINE_HOVER_STYLE =
 
 static const QString PLAY_LIST_NORMAL_STYLE =
 "#widget_bg { \
-	background-color: rgba(%1, %2, %3, 0.25); \
+	background-color: rgba(%1, %2, %3, 0.5); \
 	border-radius: 20px; \
 }";
 
@@ -245,7 +232,7 @@ static const QString PLAY_LIST_PLAYING_STYLE =
 
 static const QString PLAY_LIST_HOVER_STYLE =
 "#widget_bg { \
-	background-color: rgba(%1, %2, %3, 0.5); \
+	background-color: rgba(%1, %2, %3, 0.75); \
 	border-radius: 20px; \
 }";
 

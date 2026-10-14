@@ -1204,8 +1204,10 @@ void Widget::initMultiFuncWidget()
     ui->stacked_music_btn->resize(ui->multi_func_widget->width(), ui->stacked_music_btn->height());
     ui->find_widget->moveToHide();
     ui->find_widget->resize(ui->multi_func_widget->width(), ui->find_widget->height());
+	// 高度必须取stacked_music_btn的高度（和搜索框关闭后的状态一致），
+	// 用multi_func_widget->height()会超出可视区域，导致列表底部滚动不到
     ui->stacked_local_btns->setGeometry(QRect(ui->stacked_local_btns->x(), 0
-        , ui->multi_func_widget->width(), ui->multi_func_widget->height()));
+        , ui->multi_func_widget->width(), ui->stacked_music_btn->height()));
 }
 
 void Widget::drawImage(const QImage& image)
